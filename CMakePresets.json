@@ -1,0 +1,37 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "linux-release-host",
+      "displayName": "Rasgo Performance — Linux Release host",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build-app",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "RASGO_PERFORMANCE_BUILD_APP": "ON",
+        "RASGO_PERFORMANCE_MODAL_MATTER_PACKAGE": "${sourceDir}/vendor/studio-dsp/cmake/modal-matter",
+        "RASGO_PERFORMANCE_MODULE_COHORT_PACKAGE": "${sourceDir}/vendor/studio-dsp/cmake/performance-cohort-v1",
+        "RASGO_PERFORMANCE_MODULE_COHORT_V2_PACKAGE": "${sourceDir}/vendor/studio-dsp/cmake/performance-cohort-v2",
+        "RASGO_PERFORMANCE_MODULE_COHORT_V3_PACKAGE": "${sourceDir}/vendor/studio-dsp/cmake/performance-cohort-v3",
+        "RASGO_PERFORMANCE_MODULE_COHORT_V4_PACKAGE": "${sourceDir}/vendor/studio-dsp/cmake/performance-cohort-v4",
+        "RASGO_PERFORMANCE_FRACTURE_V5_PACKAGE": "${sourceDir}/vendor/studio-dsp/cmake/performance-fracture-v5"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "linux-release-host",
+      "configurePreset": "linux-release-host"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "linux-release-functional",
+      "configurePreset": "linux-release-host",
+      "output": { "outputOnFailure": true },
+      "execution": { "stopOnFailure": true },
+      "filter": { "exclude": { "label": "stress" } }
+    }
+  ]
+}

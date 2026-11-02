@@ -1,0 +1,30 @@
+/build/
+/build-*/
+/third_party/JUCE/
+/.local-build/
+/validation-output/
+/recordings/
+/audicoes/
+*.wav
+*.aif
+*.aiff
+*.flac
+*.mp3
+*.ogg
+*.opus
+*.webm
+*.log
+*.dmp
+*.core
+# Pacotes gerados (saem da CI, nos releases)
+*.deb
+*.dmg
+*.exe
+*.zip
+*.tar.gz
+_CPack_Packages/
+/JUCE-checkout/
+# Diários de trabalho (ponto de retomada e tarefas): ficam só no monorepo
+# privado do RASGO — citam outros projetos e caminhos locais.
+/CONTINUIDADE.md
+/TAREFAS.md

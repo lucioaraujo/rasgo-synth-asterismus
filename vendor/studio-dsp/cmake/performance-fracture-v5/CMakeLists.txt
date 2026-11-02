@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.16)
+set(RASGO_SYNTH_PERFORMANCE_FRACTURE_V5_VERSION 5.0.0)
+set(_fracture_root "${CMAKE_CURRENT_LIST_DIR}/../../src/dsp")
+set(_fracture_file "RasgoFracture.hpp")
+set(_fracture_expected "83c92aefe7cccdb302ea498a3db26a6bd63768ab286970b2f0c739b0c92a0a0c")
+file(SHA256 "${_fracture_root}/${_fracture_file}" _fracture_actual)
+if(NOT _fracture_actual STREQUAL _fracture_expected)
+    message(FATAL_ERROR "Performance fracture v5 audit mismatch: ${_fracture_file}")
+endif()
+add_library(rasgo_synth_performance_fracture_v5 INTERFACE)
+add_library(rasgo::performance_fracture_v5 ALIAS rasgo_synth_performance_fracture_v5)
+target_compile_features(rasgo_synth_performance_fracture_v5 INTERFACE cxx_std_17)
+target_include_directories(rasgo_synth_performance_fracture_v5 INTERFACE "${_fracture_root}/..")
+target_compile_definitions(rasgo_synth_performance_fracture_v5
+    INTERFACE RASGO_PERFORMANCE_WITH_RASGO_FRACTURE=1
+              RASGO_SYNTH_PERFORMANCE_FRACTURE_V5_VERSION=50000)

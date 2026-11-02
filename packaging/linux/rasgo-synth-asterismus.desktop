@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Rasgo Synth Asterismus
+GenericName=Generative instrument
+GenericName[pt]=Instrumento generativo
+Comment=A sky of stars that relate, dance and play
+Comment[pt]=Um céu de estrelas que se relacionam, dançam e tocam
+Exec=rasgo-synth-asterismus
+Icon=rasgo-synth-asterismus
+Terminal=false
+Categories=AudioVideo;Audio;Music;
+StartupWMClass=Rasgo Synth Asterismus

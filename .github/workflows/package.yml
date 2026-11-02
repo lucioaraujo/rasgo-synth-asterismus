@@ -1,0 +1,201 @@
+name: Asterismus — build, test & package
+
+# Builds Rasgo Synth Asterismus, runs the whole test suite and generates the
+# platform packages on GitHub's hosted runners (real Windows and macOS
+# toolchains). Adapted on 2026-11-02 from the Trioio workflow
+# (lucioaraujo/trioio, .github/workflows/package.yml, same author), itself
+# from the Antitotem one: the targets, the executable name, the JUCE path
+# variable and the bundled assets.
+#
+# RASGO multiplatform distribution standard:
+#   - Windows: static VC++ runtime (CMakeLists.txt) + a step that FAILS if the
+#     .exe depends on the VC++ Redistributable; NSIS installer + portable .zip;
+#   - macOS: Universal 2 (10.15+) and the whole .app sealed ad hoc;
+#   - Linux: .deb and .tar.gz built on ubuntu-22.04;
+#   - JUCE pinned to a tag; a GitHub release from `v*` tags (with a hyphen,
+#     e.g. v0.2.0-preview, a pre-release).
+# Still to come (docs/PUBLICACAO.md): AppImage and launch tests in containers
+# of other distributions.
+#
+# Triggers: version tags and the manual button only — never every push nor
+# pull requests. Routine validation is local (ctest); CI is the release gate
+# (a full run costs ~160 billed minutes: macOS counts ×10, Windows ×2).
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: package (${{ matrix.os }}, ${{ matrix.generator }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # ubuntu-22.04, NOT latest: a .deb inherits the library versions of
+          # the machine that built it.
+          - os: ubuntu-22.04
+            generator: DEB;TGZ
+            artifact-glob: |
+              build/*.deb
+              build/*.tar.gz
+          - os: windows-latest
+            generator: NSIS
+            artifact-glob: |
+              build/*.exe
+              build/*.zip
+          - os: macos-latest
+            generator: DragNDrop
+            artifact-glob: build/*.dmg
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Asterismus
+        uses: actions/checkout@v4
+
+      # JUCE is not versioned in this repository. Pinned to the tag the
+      # instrument is developed with.
+      - name: Checkout JUCE
+        uses: actions/checkout@v4
+        with:
+          repository: juce-framework/JUCE
+          ref: '9.0.0'
+          path: JUCE-checkout
+
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libasound2-dev libjack-jackd2-dev \
+            libcurl4-openssl-dev \
+            libfreetype6-dev libfontconfig1-dev \
+            libx11-dev libxcomposite-dev libxcursor-dev libxext-dev \
+            libxinerama-dev libxrandr-dev libxrender-dev \
+            libgtk-3-dev \
+            libglu1-mesa-dev mesa-common-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev \
+            || sudo apt-get install -y libwebkit2gtk-4.0-dev
+
+      - name: Install NSIS (Windows)
+        if: runner.os == 'Windows'
+        run: choco install nsis -y
+
+      - name: Configure
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DRASGO_PERFORMANCE_BUILD_APP=ON
+          -DRASGO_PERFORMANCE_JUCE_ROOT=${{ github.workspace }}/JUCE-checkout
+
+      - name: Build (app and tests)
+        run: cmake --build build --config Release --parallel 2
+
+      # the whole suite on each system: a platform defect shows here first
+      - name: Test
+        working-directory: build
+        run: ctest -C Release --output-on-failure --timeout 900
+
+      - name: Validate macOS app bundle
+        if: runner.os == 'macOS'
+        run: |
+          set -euo pipefail
+          APP=$(find build -maxdepth 7 -name "Rasgo Synth Asterismus.app" -print -quit)
+          if [ -z "$APP" ]; then echo "::error::No .app bundle found"; exit 1; fi
+          EXE="$APP/Contents/MacOS/Rasgo Synth Asterismus"
+          file "$EXE"
+          if ! (lipo -info "$EXE" | grep -q "x86_64" && lipo -info "$EXE" | grep -q "arm64"); then
+            echo "::error::Expected a Universal 2 (x86_64+arm64) binary"; exit 1
+          fi
+          MINOS=$(otool -l "$EXE" | awk '/LC_BUILD_VERSION/{f=1} f && /minos/{print $2; exit}')
+          echo "minos=$MINOS"
+          if [[ "$MINOS" != 10.15* ]]; then
+            echo "::error::minos $MINOS is not the project's deployment target (10.15)"; exit 1
+          fi
+          # the fonts travel next to the executable (assetsDirectory())
+          test -d "$APP/Contents/MacOS/assets/fonts" \
+            || { echo "::error::assets/ missing from the .app"; exit 1; }
+          plutil -p "$APP/Contents/Info.plist"
+          # Seal the WHOLE bundle ad hoc, both slices (unsealed, Apple Silicon
+          # tends to say "is damaged"; sealed, it is the ordinary
+          # unidentified-developer warning that INSTALL.md explains).
+          codesign --force --deep --sign - "$APP"
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          for arch in x86_64 arm64; do
+            codesign -dv --arch "$arch" "$APP" 2>&1 | grep -q "Signature=adhoc" \
+              || { echo "::error::$arch slice without ad-hoc signature"; exit 1; }
+          done
+
+      # The .exe must not depend on the Visual C++ Redistributable (this
+      # runner has it, so a launch here would never notice).
+      - name: No dynamic VC++ runtime (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Recurse -Path build -Filter "Rasgo Synth Asterismus.exe" | Select-Object -First 1
+          if (-not $exe) { Write-Error 'Rasgo Synth Asterismus.exe not found'; exit 1 }
+          $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+          $dumpbin = Get-ChildItem -Recurse -Path "$vs\VC\Tools\MSVC" -Filter dumpbin.exe | Where-Object { $_.FullName -match 'Hostx64\\x64' } | Select-Object -First 1
+          $deps = & $dumpbin.FullName /DEPENDENTS $exe.FullName
+          $deps
+          $bad = $deps | Select-String -Pattern 'VCRUNTIME|MSVCP|api-ms-win-crt'
+          if ($bad) { Write-Error "the .exe depends on the dynamic Visual C++ runtime: $bad"; exit 1 }
+          "ok: no dependency on the Visual C++ Redistributable"
+
+      - name: Package
+        working-directory: build
+        shell: bash
+        run: cpack -G "${{ matrix.generator }}" -C Release
+
+      - name: Portable .zip (Windows)
+        if: runner.os == 'Windows'
+        working-directory: build
+        run: cpack -G ZIP -C Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: asterismus-${{ matrix.os }}
+          path: ${{ matrix.artifact-glob }}
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [package]
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all packages
+        uses: actions/download-artifact@v4
+        with:
+          path: pkgs
+
+      - name: Check what arrived
+        run: |
+          find pkgs -type f -print
+          for ext in deb tar.gz dmg exe zip; do
+            find pkgs -type f -name "*.$ext" | grep -q . \
+              || { echo "::error::no .$ext package among the artifacts"; exit 1; }
+          done
+
+      - name: Create the release with the packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PRE=""
+          case "${GITHUB_REF_NAME}" in *-*) PRE="--prerelease" ;; esac
+          gh release create "${GITHUB_REF_NAME}" ${PRE} \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "Rasgo Synth Asterismus ${GITHUB_REF_NAME}" \
+            --verify-tag \
+            --notes "Install: see [INSTALL.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/INSTALL.md) — on first launch Windows and macOS show a security warning; it is expected (no paid signing). Instalação: veja o INSTALL.md.
+
+          Stated limitation: the Windows and macOS packages were built and checked by CI, not yet opened on real Windows/macOS machines; the macOS package is ad-hoc signed." \
+            $(find pkgs -type f \( -name '*.deb' -o -name '*.tar.gz' -o -name '*.dmg' -o -name '*.exe' -o -name '*.zip' \))
