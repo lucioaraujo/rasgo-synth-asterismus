@@ -292,6 +292,10 @@ public:
         return ecology_.relationPhenomenon(sourceActorId, destinationActorId);
     }
 
+    bool setActorPinned(std::uint16_t actorId, bool pinned) noexcept {
+        return prepared_ && ecology_.setActorPinned(actorId, pinned);
+    }
+    bool actorPinned(std::uint16_t actorId) const noexcept { return ecology_.actorPinned(actorId); }
     bool setActorStar(std::uint16_t actorId, PerformanceModuleBody star) noexcept {
         return prepared_ && ecology_.setActorStar(actorId, star);
     }

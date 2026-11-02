@@ -286,6 +286,13 @@ public:
         return queued;
     }
 
+    // Fixar a estrela de um corpo: a VARIAÇÃO não a apaga.
+    bool setActorPinned(std::uint16_t actorId, bool pinned) noexcept {
+        return loaded_ && actorId != kInvalidActorId
+            && ecologyCommands_.push({EcologyCommand::Kind::ActorPin, actorId, kInvalidActorId,
+                                      pinned ? 1.0 : 0.0});
+    }
+
     // Trocar a estrela de um corpo (Count desfaz a troca).
     bool setActorStar(std::uint16_t actorId, PerformanceModuleBody star) noexcept {
         return loaded_ && actorId != kInvalidActorId
@@ -451,7 +458,7 @@ private:
     };
 
     struct EcologyCommand {
-        enum class Kind : std::uint8_t { Presence, RelationIntensity, RelationPhenomenon, Position, MotionField, PopulationPhenomenon, ActorMotionField, ActorMotionDirection, SeedCollage, ActorSeedVariation, SkyAnchor, MotionFamily, ConstellationMotion, ActorStar };
+        enum class Kind : std::uint8_t { Presence, RelationIntensity, RelationPhenomenon, Position, MotionField, PopulationPhenomenon, ActorMotionField, ActorMotionDirection, SeedCollage, ActorSeedVariation, SkyAnchor, MotionFamily, ConstellationMotion, ActorStar, ActorPin };
         Kind kind = Kind::Presence;
         std::uint16_t sourceActorId = kInvalidActorId;
         std::uint16_t destinationActorId = kInvalidActorId;
@@ -563,6 +570,8 @@ private:
                         static_cast<std::uint8_t>(command.value)), command.secondaryValue);
             else if (command.kind == EcologyCommand::Kind::Position)
                 engine_.setActorPosition(command.sourceActorId, command.value, command.secondaryValue);
+            else if (command.kind == EcologyCommand::Kind::ActorPin)
+                engine_.setActorPinned(command.sourceActorId, command.value > 0.5);
             else if (command.kind == EcologyCommand::Kind::ActorStar)
                 engine_.setActorStar(command.sourceActorId,
                     static_cast<PerformanceModuleBody>(static_cast<std::uint8_t>(command.value)));

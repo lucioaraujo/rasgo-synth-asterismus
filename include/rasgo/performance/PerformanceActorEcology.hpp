@@ -495,6 +495,27 @@ public:
         }
         return true;
     }
+    // Fixar a estrela de um corpo (2/11): a VARIAÇÃO e os eclipses não a
+    // apagam. Segue o ator quando as vozes são refeitas.
+    bool setActorPinned(std::uint16_t actorId, bool pinned) noexcept {
+        if (actorId == kInvalidActorId) return false;
+        std::size_t free = pinnedActors_.size();
+        for (std::size_t index = 0U; index < pinnedActors_.size(); ++index) {
+            if (pinnedActors_[index] == actorId) {
+                if (!pinned) pinnedActors_[index] = kInvalidActorId;
+                return true;
+            }
+            if (free == pinnedActors_.size() && pinnedActors_[index] == kInvalidActorId) free = index;
+        }
+        if (!pinned) return true;
+        if (free == pinnedActors_.size()) return false;
+        pinnedActors_[free] = actorId;
+        return true;
+    }
+    bool actorPinned(std::uint16_t actorId) const noexcept {
+        return actorId != kInvalidActorId
+            && std::find(pinnedActors_.begin(), pinnedActors_.end(), actorId) != pinnedActors_.end();
+    }
     // O giro e a viagem da constelação inteira (30/10).
     bool setConstellationMotion(PerformanceConstellationMotion motion) noexcept {
         if (static_cast<std::uint8_t>(motion) >= static_cast<std::uint8_t>(PerformanceConstellationMotion::Count))
@@ -1063,6 +1084,10 @@ public:
                 director_.setCollectiveFamily(collectiveFamily_);
                 for (std::size_t index = 0U; index < std::min(activeVoiceCount, skyBodies_.size()); ++index) {
                     director_.setBodyFamily(index, voices_[index].family);
+                    // O limite explícito: sem ele o GCC 13 vê um índice 8
+                    // possível depois de expandir actorPinned (falso alarme).
+                    const auto pinnedId = index < voices_.size() ? voices_[index].actorId : kInvalidActorId;
+                    director_.setPinned(index, actorPinned(pinnedId));
                     director_.setFieldFamily(index, voices_[index].motionField);
                 }
                 // Os cabos desenhados (as relações do território e os seus
@@ -1956,6 +1981,8 @@ private:
         PerformanceModuleBody star = PerformanceModuleBody::Count;
     };
     std::array<StarSwap, 8> starSwaps_{};
+    std::array<std::uint16_t, 8> pinnedActors_{{kInvalidActorId, kInvalidActorId, kInvalidActorId, kInvalidActorId,
+                                                   kInvalidActorId, kInvalidActorId, kInvalidActorId, kInvalidActorId}};
     PerformanceMotionFamily collectiveFamily_ = PerformanceMotionFamily::Count;
     double fractureLevel_ = 0.0;
     std::uint32_t tearCuts_ = 0U;

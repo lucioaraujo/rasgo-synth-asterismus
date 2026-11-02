@@ -674,6 +674,10 @@ public:
     std::function<void(std::size_t, PerformanceMotionFamily)> onMotionFamilyChanged;
     std::function<void(PerformanceConstellationMotion)> onConstellationMotionChanged;
     std::function<void(std::size_t)> onStarSwapRequested;
+    void setPinnedNodes(const std::array<bool, 8>& pinned) {
+        pinnedNodes_ = pinned;
+        repaint();
+    }
     std::function<void(std::size_t, bool)> onOrbitDirectionChanged;
 
     void setModuleNames(const std::array<juce::String, 8>& names) {
@@ -1281,6 +1285,15 @@ public:
             graphics.setColour(juce::Colour(0xfff2e7d5).withMultipliedAlpha(glow));
             graphics.drawEllipse(point.x - nodeRadius - 1.5f, point.y - nodeRadius - 1.5f,
                                  nodeRadius * 2.0f + 3.0f, nodeRadius * 2.0f + 3.0f, 1.2f);
+            if (index < pinnedNodes_.size() && pinnedNodes_[index]) {
+                // Fixada (2/11): um losango cheio acima da estrela, sempre
+                // aceso — a VARIAÇÃO não a apaga.
+                juce::Path pin;
+                const float top = point.y - nodeRadius - 11.0f;
+                pin.addQuadrilateral(point.x, top - 4.0f, point.x + 4.0f, top, point.x, top + 4.0f, point.x - 4.0f, top);
+                graphics.setColour(juce::Colour(0xfff0b860));
+                graphics.fillPath(pin);
+            }
             if (skyChorusVisible_) {
                 // O coro de fases: um ponteiro mostra onde, dentro do pulso,
                 // a estrela ataca (meio-dia = no pulso; uma volta = um passo).
@@ -1684,6 +1697,7 @@ private:
     std::size_t skyFocusCount_ = 0U;
     double skyTension_ = 0.0;
     std::array<double, 8> starBrightness_{{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}};
+    std::array<bool, 8> pinnedNodes_{};
     std::array<double, 8> chorusPhase_{};
     bool skyMotion_ = false;
     std::array<juce::Point<float>, 8> skyPositions_{};
@@ -3820,21 +3834,28 @@ private:
     void showStarSwapMenu(std::size_t node) {
         const auto actorId = constellationGraph_.actorIdAt(node);
         if (actorId == kInvalidActorId || node >= starSwaps_.size()) return;
-        const auto current = displayedAsterism(identitySeed_)[node];
+        const auto shown = displayedAsterism(identitySeed_);
+        const auto current = shown[node];
+        // O menu da troca (2/11, gestão de 28 estrelas): a estrela atual e o
+        // FIXAR no alto; as famílias em submenus, com quantas estrelas cada
+        // uma tem; a volta à estrela da seed no fim.
         juce::PopupMenu menu;
-        menu.addSectionHeader(uiText(supportLanguage_, "TROCAR A ESTRELA DO CORPO ", "SWAP THE STAR OF BODY ",
-                                     "CHANGER L’ÉTOILE DU CORPS ", "CAMBIAR LA ESTRELLA DEL CUERPO ")
-                              + juce::String(static_cast<int>(node + 1U)));
+        menu.addSectionHeader(uiText(supportLanguage_, "CORPO ", "BODY ", "CORPS ", "CUERPO ")
+                              + juce::String(static_cast<int>(node + 1U)) + " · " + moduleDisplayName(current));
+        menu.addItem(1100, uiText(supportLanguage_, "FIXAR ESTA ESTRELA (a VARIAÇÃO não a apaga)",
+                                  "PIN THIS STAR (VARIATION won't dim it)",
+                                  "ÉPINGLER CETTE ÉTOILE (la VARIATION ne l’éteint pas)",
+                                  "FIJAR ESTA ESTRELLA (la VARIACIÓN no la apaga)"),
+                     true, starPinned_[node]);
+        menu.addSeparator();
+        menu.addSectionHeader(uiText(supportLanguage_, "TROCAR POR", "SWAP FOR", "REMPLACER PAR", "CAMBIAR POR"));
         static constexpr std::array<PerformanceStarFunction, 5> functions{{
             PerformanceStarFunction::Tone, PerformanceStarFunction::Texture,
             PerformanceStarFunction::Voice, PerformanceStarFunction::Pulse, PerformanceStarFunction::Control}};
-        // CONTROLE (2/11): estrelas que não soam — filtram os ataques das outras.
-        static constexpr std::array<const char*, 5> functionNames{{"TOM", "TEXTURA", "VOZ", "PULSO",
-                                                                  "CONTROLE · NÃO SOA, FILTRA AS OUTRAS"}};
-        const auto shown = displayedAsterism(identitySeed_);
         for (std::size_t group = 0U; group < functions.size(); ++group) {
-            menu.addSeparator();
-            menu.addSectionHeader(utf8(functionNames[group]));
+            juce::PopupMenu family;
+            int count = 0;
+            bool holdsCurrent = false;
             if (group == 0U) {
                 // O Modal (30/10): um ressonador, um corpo — se outro corpo já
                 // o toca, o item mostra qual e fica desligado.
@@ -3842,23 +3863,34 @@ private:
                 for (std::size_t index = 0U; index < shown.size(); ++index)
                     if (shown[index] == PerformanceModuleBody::ModalResonator) { holder = index; break; }
                 const bool elsewhere = holder < shown.size() && holder != node;
-                menu.addItem(900, moduleDisplayName(PerformanceModuleBody::ModalResonator)
-                                 + (elsewhere ? uiText(supportLanguage_, "  · no corpo ", "  · in body ",
-                                                       "  · dans le corps ", "  · en el cuerpo ")
-                                                    + juce::String(static_cast<int>(holder + 1U))
-                                              : juce::String{}),
-                             !elsewhere, shown[node] == PerformanceModuleBody::ModalResonator);
+                family.addItem(900, moduleDisplayName(PerformanceModuleBody::ModalResonator)
+                                   + (elsewhere ? uiText(supportLanguage_, "  · no corpo ", "  · in body ",
+                                                         "  · dans le corps ", "  · en el cuerpo ")
+                                                      + juce::String(static_cast<int>(holder + 1U))
+                                                : juce::String{}),
+                               !elsewhere, current == PerformanceModuleBody::ModalResonator);
+                ++count;
+                holdsCurrent = current == PerformanceModuleBody::ModalResonator;
             }
+            if (functions[group] == PerformanceStarFunction::Control)
+                family.addSectionHeader(uiText(supportLanguage_, "não soam: filtram os ataques das outras",
+                                               "silent: they filter the others' attacks",
+                                               "muettes : elles filtrent les attaques des autres",
+                                               "no suenan: filtran los ataques de las otras"));
             for (std::size_t index = 0U; index < kPerformanceSkyStars.size(); ++index) {
                 const auto star = kPerformanceSkyStars[index];
                 if (performanceStarFunction(star) != functions[group]) continue;
                 const bool library = std::find(kPerformanceSeedStars.begin(), kPerformanceSeedStars.end(), star)
                     == kPerformanceSeedStars.end();
-                menu.addItem(static_cast<int>(index) + 1, moduleDisplayName(star)
-                                 + (library ? uiText(supportLanguage_, "  · biblioteca", "  · library",
-                                                     "  · bibliothèque", "  · biblioteca") : juce::String{}),
-                             true, star == current);
+                family.addItem(static_cast<int>(index) + 1, moduleDisplayName(star)
+                                   + (library ? uiText(supportLanguage_, "  · biblioteca", "  · library",
+                                                       "  · bibliothèque", "  · biblioteca") : juce::String{}),
+                               true, star == current);
+                ++count;
+                holdsCurrent = holdsCurrent || star == current;
             }
+            menu.addSubMenu(familyName(functions[group]) + "  (" + juce::String(count) + ")", family, true,
+                            nullptr, holdsCurrent);
         }
         menu.addSeparator();
         menu.addItem(1000, uiText(supportLanguage_, "VOLTAR À ESTRELA DA SEED", "BACK TO THE SEED'S STAR",
@@ -3866,6 +3898,22 @@ private:
                      starSwaps_[node] != PerformanceModuleBody::Count);
         menu.showMenuAsync(juce::PopupMenu::Options{}, [this, node, actorId](int result) {
             if (result == 0) return;
+            if (result == 1100) {
+                const bool pin = !starPinned_[node];
+                if (!controller_.setActorPinned(actorId, pin)) {
+                    lastAction_ = uiText(supportLanguage_, "fixar não entrou na fila realtime", "pin not queued",
+                                         "épinglage non mis en file", "fijar no encolado");
+                    return;
+                }
+                starPinned_[node] = pin;
+                constellationGraph_.setPinnedNodes(starPinned_);
+                lastAction_ = uiText(supportLanguage_, "CORPO ", "BODY ", "CORPS ", "CUERPO ")
+                    + juce::String(static_cast<int>(node + 1U))
+                    + (pin ? uiText(supportLanguage_, " · fixado", " · pinned", " · épinglé", " · fijado")
+                           : uiText(supportLanguage_, " · solto", " · unpinned", " · libéré", " · suelto"));
+                repaint();
+                return;
+            }
             const auto star = result == 1000 ? PerformanceModuleBody::Count
                 : result == 900 ? PerformanceModuleBody::ModalResonator
                                 : kPerformanceSkyStars[static_cast<std::size_t>(result - 1)];
@@ -3882,6 +3930,19 @@ private:
                 + moduleDisplayName(displayedAsterism(identitySeed_)[node]);
             repaint();
         });
+    }
+
+    juce::String familyName(PerformanceStarFunction function) const {
+        switch (function) {
+        case PerformanceStarFunction::Tone: return uiText(supportLanguage_, "TOM", "TONE", "TON", "TONO");
+        case PerformanceStarFunction::Texture:
+            return uiText(supportLanguage_, "TEXTURA", "TEXTURE", "TEXTURE", "TEXTURA");
+        case PerformanceStarFunction::Voice: return uiText(supportLanguage_, "VOZ", "VOICE", "VOIX", "VOZ");
+        case PerformanceStarFunction::Pulse: return uiText(supportLanguage_, "PULSO", "PULSE", "PULSATION", "PULSO");
+        case PerformanceStarFunction::Control:
+            return uiText(supportLanguage_, "CONTROLE", "CONTROL", "CONTRÔLE", "CONTROL");
+        }
+        return {};
     }
 
     void refreshCohortIdentity(std::uint32_t seed) {
@@ -5541,6 +5602,8 @@ private:
         PerformanceModuleBody::Count, PerformanceModuleBody::Count, PerformanceModuleBody::Count,
         PerformanceModuleBody::Count, PerformanceModuleBody::Count}};
     std::uint32_t identitySeed_ = 0U;
+    // As estrelas fixadas pelo performer (2/11), por corpo.
+    std::array<bool, 8> starPinned_{};
     std::array<double, 8> shownBrightness_{{-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0}};
     double lastAudioRestartMs_ = 0.0;
     std::uint32_t audioRestarts_ = 0U;

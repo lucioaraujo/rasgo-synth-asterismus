@@ -360,6 +360,12 @@ public:
     void setBodyFamily(std::size_t slot, PerformanceMotionFamily family) noexcept {
         if (slot < kBodies) bodyFamily_[slot] = family;
     }
+    // Uma estrela fixada pelo performer (2/11) fica acesa: a VARIAÇÃO e os
+    // eclipses não a apagam.
+    void setPinned(std::size_t slot, bool pinned) noexcept {
+        if (slot < kBodies) pinned_[slot] = pinned;
+    }
+    bool pinned(std::size_t slot) const noexcept { return slot < kBodies && pinned_[slot]; }
     void setFieldFamily(std::size_t slot, PerformanceMotionField field) noexcept {
         if (slot >= kBodies) return;
         fieldFamily_[slot] = field == PerformanceMotionField::Pulse ? PerformanceMotionFamily::Foam
@@ -480,7 +486,7 @@ public:
     double brightness(std::size_t slot) const noexcept { return slot < kBodies ? brightness_[slot] : 1.0; }
     double level(std::size_t slot) const noexcept { return slot < kBodies ? level_[slot] : 1.0; }
     double brightnessTarget(std::size_t slot) const noexcept {
-        return slot < kBodies ? brightnessTarget_[slot] : 1.0;
+        return slot < kBodies && !pinned_[slot] ? brightnessTarget_[slot] : 1.0;
     }
     void setInfluence(double influence) noexcept {
         influence_ = std::isfinite(influence) ? std::clamp(influence, 0.0, 1.0) : 0.0;
@@ -500,6 +506,7 @@ public:
             double target = mixerVariation_ ? brightnessTarget_[slot] * level_[slot] : 1.0;
             // O sol encoberto escurece durante o eclipse.
             if (mixerVariation_ && eclipseBeatsLeft_ > 0U && slot == eclipseSun_) target *= 0.15;
+            if (pinned_[slot]) target = 1.0;
             brightness_[slot] += (target - brightness_[slot]) * fade;
         }
         if (influence_ <= 0.0) {
@@ -781,6 +788,7 @@ private:
     double draconicOffset_ = 0.0;
     std::uint64_t lunation_ = 0U;
     std::size_t eclipseSun_ = kBodies;
+    std::array<bool, kBodies> pinned_{};
     std::uint32_t eclipseBeatsLeft_ = 0U;
     std::uint32_t eclipseCount_ = 0U;
     std::array<std::uint64_t, kBodies> onsets_{};
@@ -1421,7 +1429,8 @@ private:
             }
             for (std::size_t slot = 0U; slot < kBodies; ++slot) {
                 if (slot < 3U) brightnessTarget_[slot] = 1.0;
-                brightness_[slot] = brightnessTarget_[slot];
+                // A abertura acende direto; uma estrela fixada já nasce acesa.
+                brightness_[slot] = pinned_[slot] ? 1.0 : brightnessTarget_[slot];
                 litBars_[slot] = brightnessTarget_[slot] > 0.5 ? lifeBars(slot, 1U) : 0U;
                 restBars_[slot] = brightnessTarget_[slot] > 0.5 ? 0U : 2U + mix(seed_ ^ static_cast<std::uint32_t>(slot)) % 6U;
             }

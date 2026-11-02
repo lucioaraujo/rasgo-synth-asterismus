@@ -141,6 +141,19 @@ Ordem proposta (uma por vez, com teste, medição de custo e escuta):
 
 ## 4. Como gerenciar muitos módulos com 8 lugares
 
+**Feito em 2/11:** o menu da troca (estrela em foco → faixa da BIBLIOTECA)
+mostra no alto o corpo e a estrela atual, o item **FIXAR ESTA ESTRELA** e as
+cinco famílias em **submenus** com a contagem de cada uma (TOM 14 com o Modal, TEXTURA 5,
+VOZ 3, PULSO 3, CONTROLE 4 — a família da estrela atual vem marcada); a volta
+à estrela da seed no fim. **Fixar**: a VARIAÇÃO e os eclipses não apagam a
+estrela (o diretor força o brilho 1 no corpo); segue o ator quando as vozes
+são refeitas; um losango âmbar acima da estrela na Constelação. Teste no
+diretor: fixada, nunca abaixo de 0,99 em 4 min, enquanto as outras apagam.
+Falta: arrastar com 8 lugares cheios trocando a que está embaixo; a troca e
+a fixação entrarem no documento de sessão (salvar sessão).
+
+Plano original:
+
 - **BIBLIOTECA por família** (Tom, Textura, Voz, Pulso, Recurso) com o estado
   de cada módulo (ativo, candidato, em auditoria), em vez da linha de texto
   de hoje;

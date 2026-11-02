@@ -171,6 +171,29 @@ int main() {
                     "reciprocal relations stay bounded") && ok;
     }
 
+    // A pinned star (2/11) stays lit through the variation and the eclipses,
+    // while the others still go out.
+    {
+        PerformanceSkyDirector director;
+        director.prepare(kRate);
+        director.setSeed(2026U);
+        director.setMixerVariation(true);
+        director.setPinned(5U, true);
+        auto bodies = opening();
+        double pinnedMin = 1.0;
+        bool otherWentOut = false;
+        for (std::uint64_t sample = 0U; sample < static_cast<std::uint64_t>(kRate * 240.0); ++sample) {
+            director.advance(bodies, 120.0);
+            if (sample < 4800U) continue;
+            pinnedMin = std::min(pinnedMin, director.brightness(5U));
+            for (std::size_t slot = 0U; slot < bodies.size(); ++slot)
+                if (slot != 5U && director.brightnessTarget(slot) < 0.5) otherWentOut = true;
+        }
+        std::cout << "pinned star: lowest brightness " << pinnedMin << '\n';
+        ok = expect(director.pinned(5U) && pinnedMin > 0.99, "a pinned star stays lit") && ok;
+        ok = expect(otherWentOut, "the other stars still vary") && ok;
+    }
+
     // Mixer variation: the seed opens a figure, stars fade, go out and
     // re-ignite, between three and six stay lit, and the mix follows the
     // Constellation's movement; switched off, every star shines fully.
