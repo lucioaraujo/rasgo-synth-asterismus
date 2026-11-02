@@ -20,6 +20,8 @@ enum class PerformanceModuleBody : std::uint8_t {
     Footnote, Bluff, Spectral,
     // Estrelas de controle (2/11): não soam, mudam como as outras tocam.
     Sieve, Polymeter, Hocket, Rupture,
+    // Reescritas a partir do conceito (2/11, grupo B).
+    Harmonaig, Bloom,
     Count
 };
 

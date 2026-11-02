@@ -65,6 +65,7 @@
 #include <dsp/FootnotePluck.hpp>
 #include "PerformanceBluffSignal.hpp"
 #include "PerformanceSpectralObject.hpp"
+#include "PerformanceHarmonyStars.hpp"
 #include <dsp/VosimOscillator.hpp>
 #include <dsp/WalshOscillator.hpp>
 #endif
@@ -85,7 +86,7 @@ inline constexpr std::array<PerformanceModuleBody, 14> kPerformanceSeedStars{{
 // As estrelas que o céu sabe tocar: as da seed e, depois delas, as estrelas
 // da biblioteca (30/10) — o performer as põe num corpo trocando a estrela
 // dele; a seed não as escolhe (docs/MODULOS_RESTANTES_E_REPOSITORIO.md).
-inline constexpr std::array<PerformanceModuleBody, 22> kPerformanceSkyStars{{
+inline constexpr std::array<PerformanceModuleBody, 24> kPerformanceSkyStars{{
     PerformanceModuleBody::Acid, PerformanceModuleBody::Gendyn,
     PerformanceModuleBody::Percussion, PerformanceModuleBody::FmFlute,
     PerformanceModuleBody::Theremin, PerformanceModuleBody::Scat,
@@ -95,7 +96,8 @@ inline constexpr std::array<PerformanceModuleBody, 22> kPerformanceSkyStars{{
     PerformanceModuleBody::Atropelo, PerformanceModuleBody::Galo,
     PerformanceModuleBody::Tuba, PerformanceModuleBody::Footnote, PerformanceModuleBody::Bluff,
     PerformanceModuleBody::Spectral, PerformanceModuleBody::Sieve, PerformanceModuleBody::Polymeter,
-    PerformanceModuleBody::Hocket, PerformanceModuleBody::Rupture}};
+    PerformanceModuleBody::Hocket, PerformanceModuleBody::Rupture, PerformanceModuleBody::Harmonaig,
+    PerformanceModuleBody::Bloom}};
 
 // A função musical de cada estrela, a mesma do catálogo
 // (PerformanceModuleLibrary): é ela que dá a cada corpo do primeiro
@@ -197,6 +199,8 @@ inline constexpr std::string_view performanceStarLibraryId(PerformanceModuleBody
     case PerformanceModuleBody::Polymeter: return "polymeter";
     case PerformanceModuleBody::Hocket: return "hocket";
     case PerformanceModuleBody::Rupture: return "rupture";
+    case PerformanceModuleBody::Harmonaig: return "harmonaig";
+    case PerformanceModuleBody::Bloom: return "bloom";
     default: return {};
     }
 }
@@ -228,6 +232,8 @@ inline constexpr std::string_view performanceStarRole(PerformanceModuleBody body
     case PerformanceModuleBody::Polymeter: return "cada estrela no seu próprio ciclo";
     case PerformanceModuleBody::Hocket: return "hoquetus: ninguém ataca duas vezes seguidas";
     case PerformanceModuleBody::Rupture: return "ruptura: o céu se cala de repente";
+    case PerformanceModuleBody::Harmonaig: return "acorde de quatro vozes que anda em quartas";
+    case PerformanceModuleBody::Bloom: return "melodia fractal: tronco e galho";
     default: return {};
     }
 }
@@ -259,6 +265,8 @@ inline constexpr std::array<const char*, 3> performanceStarControlNames(
     case PerformanceModuleBody::Polymeter: return {"CICLO", "PULSOS", "ESPALHA"};
     case PerformanceModuleBody::Hocket: return {"GRUPO", "PACIÊNCIA", "ALCANCE"};
     case PerformanceModuleBody::Rupture: return {"PERÍODO", "DURAÇÃO", "CHANCE"};
+    case PerformanceModuleBody::Harmonaig: return {"INVERSÃO", "ABERTURA", "MOVIMENTO"};
+    case PerformanceModuleBody::Bloom: return {"CAMINHO", "REGISTRO", "DURAÇÃO"};
     default: return {"I", "II", "III"};
     }
 }
@@ -906,6 +914,8 @@ private:
             case PerformanceModuleBody::Footnote: range = {{{13, 16, 11, 16}}, 0.06, 0.13}; break;
             case PerformanceModuleBody::Bluff: range = {{{8, 12, 8, 12}}, 0.18, 0.30}; break;
             case PerformanceModuleBody::Spectral: range = {{{8, 12, 8, 12}}, 0.25, 0.40}; break;
+            case PerformanceModuleBody::Harmonaig: range = {{{4, 6, 4, 6}}, 0.25, 0.50}; break;
+            case PerformanceModuleBody::Bloom: range = {{{8, 11, 8, 11}}, 0.40, 0.65}; break;
             default: range = {{{8, 8, 8, 8}}, 0.25, 0.25}; break;
             }
             counts_[star] = range.minDensity != range.maxDensity;
@@ -1024,6 +1034,11 @@ private:
     // O Spectral (30/10): o período-base é medido entre as batidas da
     // estrela (PerformanceSpectralObject.hpp).
     PerformanceSpectralObject spectral_{};
+    // Harmonaig e Bloom (2/11): reescritas em PerformanceHarmonyStars.hpp.
+    PerformanceHarmonaigPad harmonaig_{};
+    PerformanceBloomMelody bloom_{};
+    int harmonaigRoot_ = 0;
+    std::uint32_t harmonaigBeat_ = 0U;
     std::size_t spectralSinceBeat_ = 0U, spectralInterval_ = 0U;
     std::uint32_t spectralBeat_ = 0U;
     rasgo::ScatVoice scat_{};
@@ -1047,6 +1062,10 @@ private:
         bluffAnswer_.setPartialRatio(3.0);
         bluffAnswer_.setDecayTime(0.8);
         spectral_.prepare(sampleRate_, 0x5EC7A1U);
+        harmonaig_.prepare(sampleRate_);
+        harmonaigRoot_ = 0;
+        harmonaigBeat_ = 0U;
+        bloom_.prepare(sampleRate_, 0xB100F5U);
         spectralSinceBeat_ = spectralInterval_ = 0U;
         spectralBeat_ = 0U;
         acid_.setSampleRate(sampleRate_);
@@ -1103,6 +1122,8 @@ private:
         galo_.configure(seed ^ 0x9e3779b9U, galoRatios, galoDecays, galoGains);
         bluff_.configure(0.7, seed ^ 0xB10FF00DU);
         spectral_.setPartialSet(static_cast<PerformanceSpectralObject::PartialSet>((seed >> 3U) % 3U));
+        bloom_.reseed(seed ^ 0xB100F5U);
+        harmonaigRoot_ = static_cast<int>((seed >> 5U) % 7U);
         configureStarControls();
 
         circuitPhase_ = 1.0; // a seed fala já na próxima amostra
@@ -1236,6 +1257,31 @@ private:
             return (static_cast<double>(bluffCall_.tick()) * 0.8
                     + static_cast<double>(bluffAnswer_.tick()) * (0.25 + bluff_.responseGain() * 0.75))
                 * holdGain;
+        case PerformanceModuleBody::Harmonaig: {
+            // Um acorde de quatro vozes (raiz, 3ª, 5ª, 7ª no modo do céu) que
+            // anda em quartas a cada 1, 2 ou 4 batidas (MOVIMENTO). INVERSÃO:
+            // que tom vai ao grave; ABERTURA: uma ou duas oitavas em cima.
+            const std::uint32_t span = control[2] > 0.66 ? 1U : control[2] < 0.33 ? 4U : 2U;
+            if (starTick(memoryTick_) && harmonaigBeat_++ % span == 0U) {
+                harmonaigRoot_ = (harmonaigRoot_ + 3) % 7;
+                harmonaig_.voice(std::clamp(frequency * 0.5, 40.0, 330.0), harmonaigRoot_,
+                                 static_cast<int>(std::lround(control[0] * 3.0)), control[1]);
+                markAttack(frequency * 0.5);
+            }
+            return harmonaig_.tick() * holdGain;
+        }
+        case PerformanceModuleBody::Bloom: {
+            // A melodia fractal: cada batida da frase toca o próximo passo do
+            // tronco (5) ou do galho (25); ao fim da volta, CAMINHO é a chance
+            // de trocar de nível. REGISTRO: uma oitava abaixo a uma acima.
+            if (starTick(phraseTick_)) {
+                bloom_.setGateSamples(static_cast<std::uint32_t>(sampleRate_ * (0.06 + control[2] * 0.5)));
+                bloom_.step(std::clamp(frequency, 50.0, 880.0), control[0],
+                            std::round(control[1] * 2.0) - 1.0);
+                markAttack(frequency);
+            }
+            return bloom_.tick() * holdGain;
+        }
         case PerformanceModuleBody::Sieve:
             // Peneira (Xenakis, "Sieves", 1990): (A, 0) ∪ (B, R) sobre a
             // contagem de ataques de cada estrela.
@@ -1456,6 +1502,14 @@ private:
         case PerformanceModuleBody::Bluff:
             bluffPitch_ = std::clamp(pitch, 80.0, 1800.0);
             bluffCall_.trigger(bluffPitch_);
+            break;
+        case PerformanceModuleBody::Harmonaig:
+            harmonaigRoot_ = (harmonaigRoot_ + 3) % 7;
+            harmonaig_.voice(std::clamp(pitch * 0.5, 40.0, 330.0), harmonaigRoot_,
+                             static_cast<int>(std::lround(control[0] * 3.0)), control[1]);
+            break;
+        case PerformanceModuleBody::Bloom:
+            bloom_.step(std::clamp(pitch, 50.0, 880.0), control[0], std::round(control[1] * 2.0) - 1.0);
             break;
         case PerformanceModuleBody::Spectral:
             if (spectralInterval_ > 0U) spectral_.beginPeriod(spectralInterval_ * 2U);

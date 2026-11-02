@@ -68,13 +68,15 @@ inline constexpr std::array<PerformanceLibraryEntry, 29> kPerformanceModuleLibra
      0U, "Studio OrganismStem::Tuba"},
     {"bass-fallback", "Bass Fallback", PerformanceModuleFamily::Tone, PerformanceLibraryState::NeedsAudit,
      0U, "Studio OrganismStem::BassFallback"},
-    {"harmonaig", "Harmonaig", PerformanceModuleFamily::Voice, PerformanceLibraryState::NeedsAudit,
+    // Harmonaig e Bloom: reescritas a partir do conceito desde 2/11
+    // (PerformanceHarmonyStars.hpp).
+    {"harmonaig", "Harmonaig", PerformanceModuleFamily::Voice, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Harmonaig"},
     // Sieve, Polymeter, Hocket, Rupture: estrelas de controle desde 2/11 (não
     // soam; filtram os ataques das outras — PerformanceSky::controlGate).
     {"sieve", "Sieve", PerformanceModuleFamily::Resource, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Sieve"},
-    {"bloom", "Bloom", PerformanceModuleFamily::Tone, PerformanceLibraryState::NeedsAudit,
+    {"bloom", "Bloom", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Bloom"},
     {"hocket", "Hocket", PerformanceModuleFamily::Pulse, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Hocket"},

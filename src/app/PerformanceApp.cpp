@@ -3637,6 +3637,8 @@ private:
         case PerformanceModuleBody::Polymeter: return "POLYMETER";
         case PerformanceModuleBody::Hocket: return "HOCKET";
         case PerformanceModuleBody::Rupture: return "RUPTURE";
+        case PerformanceModuleBody::Harmonaig: return "HARMONAIG";
+        case PerformanceModuleBody::Bloom: return "BLOOM";
         default: return utf8("MÓDULO");
         }
     }

@@ -22,9 +22,9 @@ void testLibrarySeparatesAudibleCohortsFromPotential() {
     }
     // 30/10: the Tuba became a library star (sounding, placed by the
     // performer), leaving thirteen sourced Studio organisms to adapt.
-    expect(kPerformanceModuleLibrary.size() == 29U && active == 22U && candidates == 1U
-               && studioOnly == 6U,
-           "library preserves twenty-two playable stars, one candidate and six sourced Studio organisms");
+    expect(kPerformanceModuleLibrary.size() == 29U && active == 24U && candidates == 1U
+               && studioOnly == 4U,
+           "library preserves twenty-four playable stars, one candidate and four sourced Studio organisms");
     const auto* flute = findPerformanceModule("fm-flute");
     const auto* walsh = findPerformanceModule("walsh");
     const auto* vosim = findPerformanceModule("vosim");
@@ -46,8 +46,12 @@ void testLibrarySeparatesAudibleCohortsFromPotential() {
            && modal != nullptr && modal->state == PerformanceLibraryState::RealtimeCandidate
            && modal->cohortMask == 31U,
            "library exposes sounding cohorts and the explicitly gated ModalResonator candidate");
-    expect(harmonaig != nullptr && harmonaig->state == PerformanceLibraryState::NeedsAudit
-               && harmonaig->source == "Studio OrganismStem::Harmonaig",
+    // Harmonaig toca desde 2/11 (reescrito); o Thermal Static segue só
+    // catalogado, com a proveniência explícita.
+    const auto* thermal = findPerformanceModule("thermal-static");
+    expect(harmonaig != nullptr && harmonaig->state == PerformanceLibraryState::ActiveCohort
+               && thermal != nullptr && thermal->state == PerformanceLibraryState::NeedsAudit
+               && thermal->source == "Studio OrganismStem::ThermalStatic",
            "Studio-only organisms retain explicit provenance instead of appearing as false audio modules");
     expect(performanceModuleLibraryIndex("walsh") == 8U
                && performanceModuleLibraryIndex("hard-sync") == 9U

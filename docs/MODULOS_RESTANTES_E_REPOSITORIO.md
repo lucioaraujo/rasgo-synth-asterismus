@@ -34,7 +34,8 @@ Ordem proposta (uma por vez, com teste, medição de custo e escuta):
 2. **Footnote** e **Bluff Signal** (feitos em 30/10);
 3. **Spectral Object** (adaptação para tempo real — feito em 30/10);
 4. as estrelas de controle (grupo C — feitas em 2/11);
-5. as reescritas do grupo B, começando por **Harmonaig** e **Bloom**.
+5. as reescritas do grupo B, começando por **Harmonaig** e **Bloom** (feitos
+   em 2/11; faltam Thermal Static, Core, Texture, Bass Fallback).
 
 ## 3.1 Feito em 30/10
 
@@ -99,6 +100,20 @@ Ordem proposta (uma por vez, com teste, medição de custo e escuta):
   nunca deixa os dois atacarem no mesmo instante; a Ruptura corta.
   Escolha minha, para a escuta do autor: o alcance é **o céu todo** (não só os
   vizinhos na Constelação) e o parâmetro vale com uma amostra de atraso.
+- **Harmonaig e Bloom** (2/11, grupo B) reescritos a partir do conceito em
+  `PerformanceHarmonyStars.hpp` (24 tocáveis). No Studio eram comportamentos
+  do `PieceRenderer` (fases 77 e 79, só lido); nada copiado. Conceitos
+  citados: o quantizador de acordes harmonàig da Instruō (Jason Lim) e o
+  sequenciador Bloom da Qu-Bit Electronix (Andrew Ikenberry).
+  - **HARMONAIG** (Tom): pad de quatro vozes raiz/3ª/5ª/7ª empilhadas em
+    terças no modo do céu (dórico; a qualidade de cada acorde vem do modo),
+    que anda em quartas a cada 1, 2 ou 4 batidas, com portamento de ~90 ms.
+    Controles INVERSÃO, ABERTURA, MOVIMENTO.
+  - **BLOOM** (Tom): tronco de 5 graus (−4 a +4) e galho de 25 (o tronco
+    aplicado a si mesmo); ao fim de cada volta, CAMINHO é a chance de trocar
+    de nível. Serra com polyBLEP e passa-baixas suave. Controles CAMINHO,
+    REGISTRO, DURAÇÃO.
+  Teste próprio: `test_performance_harmony_stars.cpp`.
 - Os controles das estrelas da biblioteca começavam em zero fora de um corpo
   (a tabela de padrões tinha 14 entradas); agora seguem o mesmo ciclo.
 - Em todas: a seed segue escolhendo entre as 14; nenhum asterismo muda (hash
