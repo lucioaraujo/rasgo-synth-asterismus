@@ -274,7 +274,7 @@ public:
             "Xenakis), POLYMETER (cada estrela no seu ciclo), HOCKET (um ataque por vez) e RUPTURE (o céu se cala de repente). O MODAL fica "
             "num corpo só.\n\n"
             "9. GRAVAR UMA REALIZAÇÃO\n"
-            "REC/CODA inicia uma tomada WAV estéreo de 24 bits; durante PLAY, o mesmo botão pede a coda e fecha o arquivo após a cauda. "
+            "PLAY só toca. REC começa a gravar uma tomada WAV estéreo de 24 bits (e começa a tocar, se estiver parado); gravando, a caixa de transporte e a moldura ficam vermelhas, com o tempo da tomada, e o botão vira CODA: ele pede a coda e fecha o arquivo após a cauda — em âmbar, CODA · FINALIZANDO. O caminho do arquivo aparece na linha de status. "
             "Gravando, a peça também termina sozinha quando você deixa o instrumento seguir sem tocar em nada por um tempo (cerca de 100 a 190 tempos), depois de a seed percorrer algumas viradas; o cabeçalho avisa CODA EM BREVE. "
             "STOP é uma interrupção técnica, não a coda. A performance também pode alcançar um epílogo após inatividade.\n\n"
             "REGRA CENTRAL\n"
@@ -360,7 +360,7 @@ private:
                         "6. LISTEN AND ORCHESTRATE\nEach module is a star with its own stem: up to eight bodies in the Field, each on its own channel in the Matter Field. A star at zero presence is unlit and uses no processing; raising its presence lights it. Lit stars relate through the sky’s web — answers, contagion, shadows and hockets — without one star’s sound leaking into another’s channel. Each material serves a role — pulse, trajectory, line, field, rupture, call, memory or trace. Use presence, mix, mute, solo and local controls to reveal or withdraw those roles. MASTER sets final level only.\n\n"
                         "7. THE SKY · WEB, FORM, TIME AND MOTION\nTRAMA switches on the sky's web: every bar the sky chooses pairs in focus (answer, contagion, shadow, hocket, pedal, friction, cadence) and the piece travels a form — OPENING, DEVELOPMENT, CONTRAST, RETURN — shown in the header. Time breathes (TEMPO 1.04×), swing comes from an orbit, each star counts its own cycle and the bar groups as 3+3+2 and the like. In development one star DRIFTS against the pulse; computed moons bring ECLIPSES. In the Constellation the stars move by physics — gravity, springs, pendulums, billiards, magnetism, spin, foam — and leave trails; strong collisions sound. VARIAÇÃO lets the sky light and dim stars in the mixer: the fader moves by itself (orange thumb) and returns to your value when you grab it. With TRAMA off the instrument sounds exactly as before.\n\n"
                         "8. THE LIBRARY · SWAP AND PIN STARS\nThe seed chooses the stars among the sky's 14; the LIBRARY holds 28. Click a star in the Constellation, then the LIBRARY strip: the menu shows the body's star, PIN THIS STAR and the families — TONE, TEXTURE, VOICE, PULSE and CONTROL. Choose another star and the body plays it; BACK TO THE SEED'S STAR undoes it. A pinned star (amber diamond) is not dimmed by VARIATION or by eclipses. CONTROL stars make no sound: lit, they filter the others' attacks — SIEVE (Xenakis's sieve), POLYMETER (each star in its own cycle), HOCKET (one attack at a time) and RUPTURE (the sky falls silent). The MODAL lives in one body only.\n\n"
-                        "9. RECORD A REALISATION\nREC/CODA starts a 24-bit stereo WAV take; during PLAY, the same button requests a coda and closes the file after its tail. While recording, the piece also ends by itself when you let the instrument run untouched for a while (about 100 to 190 beats) after the seed has gone through a few turns; the header warns CODA SOON. STOP is a technical interruption, not a coda.\n\n"
+                        "9. RECORD A REALISATION\nPLAY only plays. REC starts recording a 24-bit stereo WAV take (and starts playing if stopped); while recording, the transport box and the window frame turn red with the take time, and the button becomes CODA: it requests the coda and closes the file after its tail — amber, CODA · FINISHING. The file path appears in the status line. While recording, the piece also ends by itself when you let the instrument run untouched for a while (about 100 to 190 beats) after the seed has gone through a few turns; the header warns CODA SOON. STOP is a technical interruption, not a coda.\n\n"
                         "CENTRAL RULE\nEvery visible form and control must have a clear musical consequence.");
         case SupportLanguage::French:
             return utf8("1. COMMENCER · SEED ET TERRITOIRE\nUne seed ouvre une possibilité musicale : modules, rôles, matière, tempo et narration. Entrez un nombre ou utilisez ALEA. Elle définit aussi les valeurs initiales des modules sans effacer le dessin déjà réalisé dans le Champ.\n\n"
@@ -371,7 +371,7 @@ private:
                         "6. ÉCOUTER ET ORCHESTRER\nChaque module est une étoile avec son propre stem : jusqu’à huit corps dans le Champ, chacun sur son canal du Champ de matières. Une étoile à présence nulle est éteinte et ne consomme pas de calcul ; monter sa présence l’allume. Les étoiles allumées se relient par la trame du ciel — réponses, contagions, ombres et hoquets — sans que le son de l’une fuie dans le canal de l’autre. Chaque matière a une fonction — pulsation, trajectoire, ligne, champ, rupture, appel, mémoire ou trace. Utilisez présence, mix, mute, solo et contrôles locaux pour révéler ou retirer ces fonctions. MASTER ne règle que le niveau final.\n\n"
                         "7. LE CIEL · TRAME, FORME, TEMPS ET MOUVEMENT\nTRAMA allume la trame du ciel : à chaque mesure le ciel choisit des paires en focus (réponse, contagion, ombre, hoquet, pédale, friction, cadence) et la pièce parcourt une forme — OUVERTURE, DÉVELOPPEMENT, CONTRASTE, RETOUR — affichée dans l’en-tête. Le temps respire (TEMPO 1,04×), le swing vient d’une orbite, chaque étoile compte son propre cycle et la mesure se groupe en 3+3+2 et ainsi de suite. Dans le développement une étoile DÉRIVE contre la pulsation ; des lunes calculées amènent des ÉCLIPSES. Dans la Constellation les étoiles bougent par la physique — gravité, ressorts, pendules, billard, magnétisme, effet, mousse — et laissent des traînées ; les chocs forts sonnent. VARIAÇÃO laisse le ciel allumer et éteindre des étoiles dans le mixeur : le fader bouge seul (curseur orange) et revient à votre valeur quand vous le prenez. TRAMA éteinte, l’instrument sonne exactement comme avant.\n\n"
                         "8. LA BIBLIOTHÈQUE · CHANGER ET ÉPINGLER DES ÉTOILES\nLa seed choisit les étoiles parmi les 14 du ciel ; la BIBLIOTHÈQUE en contient 28. Cliquez sur une étoile de la Constellation puis sur la bande BIBLIOTHÈQUE : le menu montre l’étoile du corps, ÉPINGLER CETTE ÉTOILE et les familles — TON, TEXTURE, VOIX, PULSATION et CONTRÔLE. Choisissez une autre étoile et le corps la joue ; RETOUR À L’ÉTOILE DE LA SEED annule. Une étoile épinglée (losange ambre) n’est pas éteinte par la VARIATION ni par les éclipses. Les étoiles de CONTRÔLE ne sonnent pas : allumées, elles filtrent les attaques des autres — SIEVE (le crible de Xenakis), POLYMETER (chaque étoile dans son cycle), HOCKET (une attaque à la fois) et RUPTURE (le ciel se tait d’un coup). Le MODAL vit dans un seul corps.\n\n"
-                        "9. ENREGISTRER\nREC/CODA lance une prise WAV stéréo 24 bits ; pendant PLAY, le même bouton demande une coda et ferme le fichier après sa queue. En enregistrement, la pièce se termine aussi d’elle-même quand vous laissez l’instrument jouer sans le toucher pendant un moment (environ 100 à 190 temps), après quelques tours de la seed ; l’en-tête annonce CODA PROCHE. STOP est une interruption technique, pas une coda.\n\n"
+                        "9. ENREGISTRER\nPLAY joue seulement. REC lance l’enregistrement d’une prise WAV stéréo 24 bits (et lance la lecture si elle est arrêtée) ; en enregistrement, la boîte de transport et le cadre deviennent rouges avec le temps de la prise, et le bouton devient CODA : il demande la coda et ferme le fichier après sa queue — en ambre, CODA · FIN EN COURS. Le chemin du fichier apparaît dans la ligne d’état. En enregistrement, la pièce se termine aussi d’elle-même quand vous laissez l’instrument jouer sans le toucher pendant un moment (environ 100 à 190 temps), après quelques tours de la seed ; l’en-tête annonce CODA PROCHE. STOP est une interruption technique, pas une coda.\n\n"
                         "RÈGLE CENTRALE\nToute forme et tout contrôle visibles doivent avoir une conséquence musicale claire.");
         case SupportLanguage::Spanish:
             return utf8("1. COMENZAR · SEED Y TERRITORIO\nUna seed abre una posibilidad musical: módulos, funciones, materia, tempo y narrativa. Escriba un número o use ALEA. También define valores iniciales de los módulos sin borrar el dibujo ya realizado en el Campo.\n\n"
@@ -382,7 +382,7 @@ private:
                         "6. ESCUCHAR Y ORQUESTAR\nCada módulo es una estrella con stem propio: hasta ocho cuerpos en el Campo, cada uno en su canal del Campo de materias. Una estrella con presencia cero queda apagada y no consume procesamiento; subir la presencia la enciende. Las estrellas encendidas se relacionan por la trama del cielo — respuestas, contagios, sombras y hoquetus — sin que el sonido de una se filtre en el canal de otra. Cada materia cumple una función — pulso, trayectoria, línea, campo, ruptura, llamada, memoria o vestigio. Use presencia, mix, mute, solo y controles locales para revelar o retirar esas funciones. MASTER define solo el nivel final.\n\n"
                         "7. EL CIELO · TRAMA, FORMA, TIEMPO Y MOVIMIENTO\nTRAMA enciende la trama del cielo: en cada compás el cielo elige pares en foco (respuesta, contagio, sombra, hoquetus, pedal, fricción, cadencia) y la pieza recorre una forma — APERTURA, DESARROLLO, CONTRASTE, RETORNO — mostrada en la cabecera. El tiempo respira (TEMPO 1,04×), el swing viene de una órbita, cada estrella cuenta su propio ciclo y el compás se agrupa en 3+3+2 y similares. En el desarrollo una estrella DERIVA contra el pulso; lunas calculadas traen ECLIPSES. En la Constelación las estrellas se mueven por física — gravedad, resortes, péndulos, billar, magnetismo, efecto, espuma — y dejan estelas; los choques fuertes suenan. VARIAÇÃO deja que el cielo encienda y apague estrellas en el mezclador: el fader se mueve solo (cursor naranja) y vuelve a su valor cuando usted lo toma. Con la TRAMA apagada, el instrumento suena exactamente como antes.\n\n"
                         "8. LA BIBLIOTECA · CAMBIAR Y FIJAR ESTRELLAS\nLa seed elige las estrellas entre las 14 del cielo; la BIBLIOTECA tiene 28. Haga clic en una estrella de la Constelación y luego en la franja BIBLIOTECA: el menú muestra la estrella del cuerpo, FIJAR ESTA ESTRELLA y las familias — TONO, TEXTURA, VOZ, PULSO y CONTROL. Elija otra estrella y el cuerpo la toca; VOLVER A LA ESTRELLA DE LA SEED lo deshace. Una estrella fijada (rombo ámbar) no se apaga con la VARIACIÓN ni con los eclipses. Las estrellas de CONTROL no suenan: encendidas, filtran los ataques de las otras — SIEVE (la criba de Xenakis), POLYMETER (cada estrella en su ciclo), HOCKET (un ataque a la vez) y RUPTURE (el cielo calla de golpe). El MODAL vive en un solo cuerpo.\n\n"
-                        "9. GRABAR UNA REALIZACIÓN\nREC/CODA inicia una toma WAV estéreo de 24 bits; durante PLAY, el mismo botón solicita una coda y cierra el archivo después de la cola. Grabando, la pieza también termina sola cuando deja que el instrumento siga sin tocar nada durante un tiempo (unos 100 a 190 tiempos), tras algunas vueltas de la seed; la cabecera avisa CODA PRÓXIMA. STOP es una interrupción técnica, no una coda.\n\n"
+                        "9. GRABAR UNA REALIZACIÓN\nPLAY solo toca. REC empieza a grabar una toma WAV estéreo de 24 bits (y empieza a tocar si está detenido); grabando, la caja de transporte y el marco se ponen rojos con el tiempo de la toma, y el botón pasa a CODA: solicita la coda y cierra el archivo tras la cola — en ámbar, CODA · FINALIZANDO. La ruta del archivo aparece en la línea de estado. Grabando, la pieza también termina sola cuando deja que el instrumento siga sin tocar nada durante un tiempo (unos 100 a 190 tiempos), tras algunas vueltas de la seed; la cabecera avisa CODA PRÓXIMA. STOP es una interrupción técnica, no una coda.\n\n"
                         "REGLA CENTRAL\nToda forma y control visible debe tener una consecuencia musical clara.");
         default: return {};
         }
@@ -2954,10 +2954,10 @@ private:
         // REC starts a take; while it is open the same physical control asks
         // for its composed ending. Naming both states here makes CODA
         // discoverable before the performer has to guess its location.
-        recordButton_.setButtonText("REC/CODA");
+        recordButton_.setButtonText("REC");
         recordButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff6b5035));
         recordButton_.setColour(juce::TextButton::textColourOffId, juce::Colour(0xfff2e7d5));
-        recordButton_.setTooltip(utf8("V · REC inicia uma realização gravada; REC/CODA durante PLAY pede o fim composto e fecha o WAV após a cauda."));
+        recordButton_.setTooltip(utf8("V · REC começa a gravar (e a tocar, se estiver parado); gravando, o botão vira CODA: pede o fim composto e fecha o WAV após a cauda. PLAY só toca."));
         recordButton_.onClick = [this] { toggleRecording(); };
         addAndMakeVisible(recordButton_);
         mixerVariationButton_.setColour(juce::TextButton::textColourOffId, juce::Colour(0xfff2e7d5));
@@ -5062,13 +5062,10 @@ private:
         refreshHoldVisual();
     }
 
-    void togglePlaying() {
+    // PLAY só toca (2/11, decisão do autor: "a gravação começa quando o
+    // usuário define fazer a gravação"); a tomada abre pelo REC.
+    void togglePlaying(bool openedTake = false) {
         const auto requested = !playingRequested_;
-        bool openedTake = false;
-        if (requested && !recorder_.recording()) {
-            if (!beginRecording()) return;
-            openedTake = true;
-        }
         if (!controller_.setPlaying(requested)) {
             if (openedTake) closeRecording(uiText(supportLanguage_, "tomada cancelada", "take cancelled",
                                                   "prise annulée", "toma cancelada"));
@@ -5100,7 +5097,11 @@ private:
                 "CODA solicitada · la grabación se cierra tras la cola"));
             return;
         }
-        togglePlaying();
+        // REC abre a tomada. Parado: a música começa junto, e a tomada começa
+        // com a peça. Tocando: grava a partir daqui.
+        takeStartedWithPlay_ = !playingRequested_;
+        if (!beginRecording()) return;
+        if (!playingRequested_) togglePlaying(true);
     }
 
     bool requestMorceauCoda(const juce::String& trace, const juce::String& action) {
@@ -5135,7 +5136,7 @@ private:
         // Com um álbum, a tomada vai à pasta dele com o número da faixa.
         const auto take = directory.getChildFile((album_.active()
                 ? "FAIXA_" + juce::String(static_cast<int>(album_.current())).paddedLeft('0', 2) + "_"
-                : juce::String("RASGO_PERFORMANCE_"))
+                : juce::String("RASGO_ASTERISMUS_"))
             + juce::Time::getCurrentTime().formatted("%Y-%m-%d_%H-%M-%S") + ".wav");
         if (!recorder_.start(take, rate)) {
             lastAction_ = uiText(supportLanguage_, "REC não pôde abrir o arquivo", "REC could not open the file",
@@ -5144,8 +5145,6 @@ private:
         }
         stemRecorder_.start(take, rate, moduleDisplayNames_);
         // Onde está gravando (2/11): na linha de status e na dica do REC.
-        lastAction_ = uiText(supportLanguage_, "GRAVANDO em ", "RECORDING to ", "ENREGISTREMENT dans ", "GRABANDO en ")
-            + take.getFullPathName();
         recordButton_.setTooltip(uiText(supportLanguage_, "Gravando em: ", "Recording to: ", "Enregistrement dans : ",
                                         "Grabando en: ") + take.getFullPathName());
         takeSeed_ = controller_.document() != nullptr ? controller_.document()->territory.seed : 0U;
@@ -5162,8 +5161,8 @@ private:
         takeTrace_.add("start:seed=" + juce::String(takeSeed_));
         recordButton_.setButtonText("CODA");
         recordButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffb95b46));
-        lastAction_ = uiText(supportLanguage_, "REC mix estéreo 24-bit · ", "REC 24-bit stereo mix · ",
-                             "REC mix stéréo 24 bits · ", "REC mezcla estéreo 24 bits · ") + take.getFileName();
+        lastAction_ = uiText(supportLanguage_, "GRAVANDO em ", "RECORDING to ", "ENREGISTREMENT dans ", "GRABANDO en ")
+            + take.getFullPathName();
         return true;
     }
 
@@ -5214,6 +5213,17 @@ private:
         asterismJson += "]";
         PerformanceAudioMeasurement measurement;
         const bool measurementAvailable = measureTakeAudio(take, measurement);
+        // A loudness da tomada: a do motor quando a tomada começou com o PLAY
+        // (a medição integrada recomeça no PLAY); a do próprio arquivo quando
+        // o REC entrou com a música já tocando.
+        PerformanceTrackLevel takeLevel;
+        {
+            const auto telemetry = controller_.readTelemetry();
+            takeLevel.integratedLufs = telemetry.integratedCentiLufs / 100.0;
+            takeLevel.maxTruePeakDbtp = 20.0 * std::log10(std::max(1.0e-6, telemetry.maxTruePeakMicros / 1000000.0));
+            if (!takeStartedWithPlay_)
+                if (const auto measured = measureWavLevel(take.getFullPathName().toStdString())) takeLevel = *measured;
+        }
         const auto state = codaRequested_ ? "finalizado" : "interrompido";
         const auto manifest = take.withFileExtension(".json");
         const auto seconds = rate > 0.0 ? static_cast<double>(acceptedSamples) / rate : 0.0;
@@ -5277,11 +5287,9 @@ private:
             + "  \"mixerVariation\": " + (controller_.mixerVariation() ? "true" : "false") + ",\n"
             + "  \"starCapacity\": " + juce::String(static_cast<int>(controller_.starCapacity())) + ",\n"
             // A medição da peça (BS.1770, desde o PLAY; docs/SAIDA_DE_AUDIO.md).
-            + "  \"loudness\": {\"integratedLufs\": "
-                + juce::String(controller_.readTelemetry().integratedCentiLufs / 100.0, 2)
-                + ", \"maxTruePeakDbtp\": "
-                + juce::String(20.0 * std::log10(std::max(1.0e-6,
-                      controller_.readTelemetry().maxTruePeakMicros / 1000000.0)), 2)
+            + "  \"loudness\": {\"integratedLufs\": " + juce::String(takeLevel.integratedLufs, 2)
+                + ", \"maxTruePeakDbtp\": " + juce::String(takeLevel.maxTruePeakDbtp, 2)
+                + ", \"measuredFrom\": \"" + (takeStartedWithPlay_ ? "engine-since-play" : "take-file") + "\""
                 + ", \"limiterMaxReductionDb\": "
                 + juce::String(controller_.readTelemetry().limiterMaxReductionCentiDb / 100.0, 2)
                 + ", \"stage\": \"post-safety\"},\n"
@@ -5304,7 +5312,6 @@ private:
         if (album_.active() && take.getParentDirectory() == albumDirectory_) {
             // O registro de faixas (album.json): a tomada entra com a faixa, a
             // seed, o andamento, a memória lembrada, a duração e a loudness.
-            const auto telemetry = controller_.readTelemetry();
             PerformanceAlbumTake entry;
             entry.track = album_.current();
             entry.seed = takeSeed_;
@@ -5313,14 +5320,14 @@ private:
             entry.memory = lastRecalledMemory_;
             entry.started = takeStartedAt_.toStdString();
             entry.seconds = seconds;
-            entry.integratedLufs = telemetry.integratedCentiLufs / 100.0;
-            entry.maxTruePeakDbtp = 20.0 * std::log10(std::max(1.0e-6, telemetry.maxTruePeakMicros / 1000000.0));
+            entry.integratedLufs = takeLevel.integratedLufs;
+            entry.maxTruePeakDbtp = takeLevel.maxTruePeakDbtp;
             entry.percurso = takePercurso_;
             album_.addTake(entry);
             writeAlbumRegister();
             refreshAlbumButtons();
         }
-        recordButton_.setButtonText("REC/CODA");
+        recordButton_.setButtonText("REC");
         recordButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff6b5035));
         lastAction_ = prefix + utf8(" · ")
             + juce::String(rate > 0.0 ? static_cast<double>(acceptedSamples) / rate : 0.0, 1)
@@ -5532,10 +5539,10 @@ private:
             "Espace · DÉMARRER ouvre la prise et PLAY ; STOP interrompt en préservant un WAV valide.",
             "Espacio · INICIAR abre la toma y PLAY; STOP interrumpe y conserva un WAV válido."));
         recordButton_.setTooltip(uiText(l,
-            "V · REC inicia uma realização gravada; REC/CODA durante PLAY pede o fim composto e fecha o WAV após a cauda.",
-            "V · REC starts a recorded realisation; REC/CODA during PLAY requests the composed ending and closes the WAV after its tail.",
-            "V · REC lance une réalisation enregistrée ; REC/CODA pendant PLAY demande la fin composée et ferme le WAV après sa queue.",
-            "V · REC inicia una realización grabada; REC/CODA durante PLAY solicita el final compuesto y cierra el WAV tras la cola."));
+            "V · REC começa a gravar (e a tocar, se estiver parado); gravando, o botão vira CODA e pede o fim composto. PLAY só toca.",
+            "V · REC starts recording (and playing, if stopped); while recording the button becomes CODA and requests the composed ending. PLAY only plays.",
+            "V · REC lance l’enregistrement (et la lecture, si arrêtée) ; en enregistrement le bouton devient CODA et demande la fin composée. PLAY joue seulement.",
+            "V · REC empieza a grabar (y a tocar, si está detenido); grabando, el botón pasa a CODA y solicita el final compuesto. PLAY solo toca."));
         tutorialButton_.setButtonText(uiText(l, "TUTORIAL", "GUIDE", "TUTORIEL", "TUTORIAL"));
         tutorialButton_.setTooltip(uiText(l,
             "Abre um guia do Campo, Constelação, seed, gestos e gravação.",
@@ -6497,6 +6504,7 @@ private:
     bool percurso_ = false;
     std::uint8_t percursoSection_ = 255U;
     bool takePercurso_ = false;
+    bool takeStartedWithPlay_ = true;
     std::atomic<bool> albumMastering_{false};
     std::string lastRecalledMemory_;
     juce::Label seedLabel_;
