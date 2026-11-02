@@ -1043,6 +1043,11 @@ private:
     // O Footnote (30/10): duas parciais senoidais em razão inarmônica,
     // disparadas (vendor/studio-dsp/src/dsp/FootnotePluck.hpp, commit cfe1698).
     rasgo::FootnotePluck footnote_{};
+    // Ganho das estrelas da biblioteca que soavam baixo (2/11), medido pela
+    // intensidade de quando soam (janelas de 400 ms), não pela média — elas
+    // são raras e de ataque. Só ganho, nunca timbre, e só até o pico de cada
+    // uma caber em 1. Footnote, Bluff, Spectral, Bloom, Thermal, Texture.
+    static constexpr std::array<double, 6> kLibraryTrim{{1.0, 1.25, 1.35, 1.75, 1.0, 1.25}};
     // O Bluff (30/10): o sinal e a confirmação são dois plucks harmônicos
     // (oitava limpa, ao contrário do Footnote); o jogo de blefe e confiança
     // fica em PerformanceBluffSignal.hpp.
@@ -1261,7 +1266,7 @@ private:
                 footnote_.trigger(std::clamp(pitch, 80.0, 2400.0));
                 markAttack(pitch);
             }
-            return static_cast<double>(footnote_.tick()) * 0.9 * holdGain;
+            return static_cast<double>(footnote_.tick()) * kLibraryTrim[0] * holdGain;
         case PerformanceModuleBody::Bluff:
             // VERDADE: quanto dos sinais é genuíno (0,2–1). JANELA: a
             // expectativa, de 1 a 4 batidas. O sinal soa sempre igual; a
@@ -1284,7 +1289,7 @@ private:
             }
             return (static_cast<double>(bluffCall_.tick()) * 0.8
                     + static_cast<double>(bluffAnswer_.tick()) * (0.25 + bluff_.responseGain() * 0.75))
-                * holdGain;
+                * kLibraryTrim[1] * holdGain;
         case PerformanceModuleBody::Harmonaig: {
             // Um acorde de quatro vozes (raiz, 3ª, 5ª, 7ª no modo do céu) que
             // anda em quartas a cada 1, 2 ou 4 batidas (MOVIMENTO). INVERSÃO:
@@ -1308,14 +1313,14 @@ private:
                             std::round(control[1] * 2.0) - 1.0);
                 markAttack(frequency);
             }
-            return bloom_.tick() * holdGain;
+            return bloom_.tick() * kLibraryTrim[3] * holdGain;
         }
         case PerformanceModuleBody::ThermalStatic:
             // A vida térmica: esquenta (CALOR), morre — devagar ou, com a
             // chance de MORTE, de repente — esfria e volta. ESTÁTICA: os
             // estalos, mais densos quanto mais quente.
             return thermal_.tick(std::clamp(frequency * 0.5, 30.0, 400.0), control[0], control[1], control[2])
-                * holdGain;
+                * kLibraryTrim[4] * holdGain;
         case PerformanceModuleBody::Core:
             if (starTick(phraseTick_)) {
                 const double pitch = phrasePitch(frequency);
@@ -1325,7 +1330,7 @@ private:
             return core_.tick(control[0], control[1], 0.12 + control[2] * 1.5) * holdGain;
         case PerformanceModuleBody::Texture:
             return texture_.tick(std::clamp(frequency * 4.0, 120.0, 4000.0), control[0], control[1], control[2],
-                                 c.density) * holdGain;
+                                 c.density) * kLibraryTrim[5] * holdGain;
         case PerformanceModuleBody::BassFallback:
             if (starTick(memoryTick_)) {
                 const double pitch = phrasePitch(frequency);
@@ -1398,7 +1403,7 @@ private:
                     markAttack(spectral_.partialFrequency(0U));
                 }
             }
-            return std::tanh(spectral_.tick() * 0.55) * holdGain;
+            return std::tanh(spectral_.tick() * 0.55) * kLibraryTrim[2] * holdGain;
         }
         case PerformanceModuleBody::Theremin:
             theremin_.setGain(static_cast<float>(0.18 + control[1] * 1.12));

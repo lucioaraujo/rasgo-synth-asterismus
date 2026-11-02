@@ -134,6 +134,19 @@ Ordem proposta (uma por vez, com teste, medição de custo e escuta):
     fraseado na memória do céu, com portamento. REGISTRO (sub, grave,
     médio-grave), ATAQUE, DURAÇÃO.
   Teste próprio: `test_performance_concept_stars.cpp`.
+- **Equilíbrio de nível** (2/11). A média engana nas estrelas raras e de
+  ataque; a medida usada foi a intensidade de quando soam (o máximo e a
+  mediana do RMS em janelas de 400 ms, 30 s, seed 181). As da seed soam entre
+  −5 e −16 dB (o Acid, a −27, é da seed e não foi mexido). Ganhos só nas da
+  biblioteca, sem timbre, até o pico de cada uma caber em 1
+  (`kLibraryTrim`): Footnote ×1,0, Bluff ×1,25, Spectral ×1,35, Bloom ×1,75,
+  Thermal ×1 (dentro da voz: o zumbido de 0,42 para 0,69 e os estalos de 0,5
+  para 0,17, para a voz sozinha caber em 1), Texture ×1,25. Máximo em 400 ms depois: Footnote −13, Bluff −14,
+  Spectral −6, Bloom −13, Thermal −7, Texture −11 dB (o Galo, −6). O
+  Footnote segue mais baixo na mediana (−26): é um sininho curto e raro, e o
+  pico já está em 1 — subir mais pediria mudar o decaimento (timbre), que fica
+  para a escuta. Correção no caminho: Thermal e Texture não calculavam o
+  filtro antes da 16ª amostra (um estalo de partida com pico 1,57).
 - Os controles das estrelas da biblioteca começavam em zero fora de um corpo
   (a tabela de padrões tinha 14 entradas); agora seguem o mesmo ciclo.
 - Em todas: a seed segue escolhendo entre as 14; nenhum asterismo muda (hash

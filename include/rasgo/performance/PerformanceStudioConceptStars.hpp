@@ -74,6 +74,10 @@ public:
         cooling_ = 0.0;
         deaths_ = abruptDeaths_ = 0U;
         phase_ = 0.0;
+        // Os coeficientes desde a primeira amostra (antes, só a partir da
+        // 16ª: um estalo de partida com pico 1,57).
+        filter_ = {};
+        filter_.set(3880.0, 0.8, rate_);
     }
     // CALOR: quão depressa esquenta (uma vida de ~40 s a ~6 s); MORTE: a
     // chance de a morte ser abrupta; ESTÁTICA: a densidade dos estalos.
@@ -108,7 +112,9 @@ public:
         const double crackleChance = (0.0004 + staticDensity * 0.004) * (0.3 + heat_);
         const double crackle = noise_.white() * 0.5 + 0.5 < crackleChance ? noise_.white() : 0.0;
         crackle_ = crackle_ * 0.6 + crackle;
-        return (low * 0.42 + crackle_ * 0.5 * (0.4 + staticDensity)) * life_;
+        // O zumbido mais presente que os estalos (2/11: soava 8 dB abaixo
+        // das outras estrelas quando vivo).
+        return (low * 0.69 + crackle_ * 0.17 * (0.4 + staticDensity)) * life_;
     }
     double heat() const noexcept { return heat_; }
     double life() const noexcept { return life_; }
@@ -163,6 +169,8 @@ public:
         pinkState_.fill(0.0);
         brown_ = 0.0;
         drift_ = 0.0;
+        band_ = {};
+        band_.set(800.0, 1.0, rate_);
     }
     // COR: branco → rosa → marrom; FOCO: a ressonância da banda; MOVIMENTO:
     // a velocidade com que a banda anda (com a densidade do céu).
