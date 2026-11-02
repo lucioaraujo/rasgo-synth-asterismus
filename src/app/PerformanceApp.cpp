@@ -5,12 +5,17 @@
 #include <cmath>
 #include <functional>
 #include <limits>
+#include <memory>
+#include <optional>
 
 #include <rasgo/performance/PerformanceConstellationGeometry.hpp>
 #include <rasgo/performance/PerformanceAudioMeasurement.hpp>
 #include <rasgo/performance/PerformanceModuleTypes.hpp>
 #include <rasgo/performance/PerformanceModuleLibrary.hpp>
 #include <rasgo/performance/PerformanceLayout.hpp>
+#include <rasgo/performance/PerformanceMemory.hpp>
+#include <rasgo/performance/PerformanceAlbum.hpp>
+#include <rasgo/performance/PerformanceAlbumMaster.hpp>
 #include <rasgo/performance/PerformanceSessionController.hpp>
 #include <rasgo/performance/PerformanceSky.hpp>
 #include <rasgo/performance/PerformanceTerritoryFactory.hpp>
@@ -911,6 +916,26 @@ public:
     // Famílias de movimento (30/10). Sem estrela em foco: o campo inteiro,
     // LIVRE → BILHAR → ESPUMA → PÊNDULOS → MAGNÉTICO → GRAVIDADE. Com uma
     // estrela em foco: CAMPO (segue o campo) e depois as seis.
+    // A MEMÓRIA (2/11): ler e restaurar a DANÇA e o CÉU guardados; restaurar
+    // avisa o motor pelos mesmos callbacks dos cliques.
+    PerformanceMotionFamily collectiveFamily() const noexcept { return collectiveFamily_; }
+    PerformanceMotionFamily bodyFamily(std::size_t index) const noexcept {
+        return index < bodyFamilies_.size() ? bodyFamilies_[index] : PerformanceMotionFamily::Count;
+    }
+    PerformanceConstellationMotion constellationMotion() const noexcept { return constellationMotion_; }
+    void restoreMotion(PerformanceMotionFamily collective, const std::array<PerformanceMotionFamily, 8>& bodies,
+                       PerformanceConstellationMotion motion) {
+        collectiveFamily_ = collective;
+        bodyFamilies_ = bodies;
+        constellationMotion_ = motion;
+        if (onMotionFamilyChanged) {
+            onMotionFamilyChanged(kNoNode, collectiveFamily_);
+            for (std::size_t index = 0U; index < bodyFamilies_.size(); ++index)
+                onMotionFamilyChanged(index, bodyFamilies_[index]);
+        }
+        if (onConstellationMotionChanged) onConstellationMotionChanged(constellationMotion_);
+        repaint();
+    }
     void cycleMotionFamily() noexcept {
         constexpr auto count = static_cast<std::uint8_t>(PerformanceMotionFamily::Count);
         if (selectedNode_ >= bodyFamilies_.size()) {
@@ -2290,15 +2315,47 @@ public:
                                                         headerLayout.recordingBox.y,
                                                         headerLayout.recordingBox.width,
                                                         headerLayout.recordingBox.height);
-        graphics.setColour(juce::Colour(0xff2c2521));
+        // A gravação em destaque (2/11, pedido do autor: "não sei quando está
+        // gravando; destacar a gravação em curso, e outro destaque para quando
+        // ela está em vias de finalizar"). Gravando: vermelho, ponto que pulsa
+        // e o tempo da tomada. Coda pedida, ou a peça perto de terminar
+        // sozinha: âmbar, pulso mais rápido. A moldura da janela acompanha.
+        const bool recording = recorder_.recording();
+        const bool codaSoon = recording && !codaRequested_ && telemetry.codaReadinessMicros >= 850000U;
+        const bool finishing = recording && (codaRequested_ || codaSoon);
+        const double now = juce::Time::getMillisecondCounterHiRes() / 1000.0;
+        const float pulse = 0.55f + 0.45f * static_cast<float>(std::sin(now * (finishing ? 9.0 : 4.0)));
+        const auto takeSeconds = recording && takeSampleRate_ > 0.0
+            ? static_cast<int>(static_cast<double>(recorder_.acceptedSamples()) / takeSampleRate_) : 0;
+        const auto clock = juce::String(takeSeconds / 60).paddedLeft('0', 2) + ":"
+            + juce::String(takeSeconds % 60).paddedLeft('0', 2);
+        const auto alarm = finishing ? juce::Colour(0xfff0b860) : juce::Colour(0xffe0503c);
+        if (recording) {
+            graphics.setColour(alarm.withAlpha(0.35f + 0.5f * pulse));
+            graphics.drawRect(getLocalBounds().reduced(14), 4);
+        }
+        graphics.setColour(!recording ? juce::Colour(0xff2c2521)
+                                      : finishing ? juce::Colour(0xff4f3814) : juce::Colour(0xff4a1c1a));
         graphics.fillRoundedRectangle(recordingBox.toFloat(), 5.0f);
-        graphics.setColour(juce::Colour(0xff8b5a36));
-        graphics.drawRoundedRectangle(recordingBox.toFloat(), 5.0f, 1.0f);
-        graphics.setColour(juce::Colour(0xffd8b48c));
+        graphics.setColour(!recording ? juce::Colour(0xff8b5a36) : alarm.withAlpha(0.5f + 0.5f * pulse));
+        graphics.drawRoundedRectangle(recordingBox.toFloat(), 5.0f, recording ? 2.0f : 1.0f);
+        auto titleRow = recordingBox.reduced(8, 0).removeFromTop(13);
+        if (recording) {
+            const auto dot = titleRow.removeFromLeft(12).toFloat().withSizeKeepingCentre(8.0f, 8.0f);
+            graphics.setColour(alarm.withAlpha(pulse));
+            if (finishing) graphics.fillRect(dot.reduced(0.5f));  // quadrado: está acabando
+            else graphics.fillEllipse(dot);                       // ponto: gravando
+        }
+        graphics.setColour(recording ? juce::Colour(0xfff2e7d5) : juce::Colour(0xffd8b48c));
         graphics.setFont(branding::mono(9.0f, juce::Font::bold));
-        graphics.drawText(uiText(supportLanguage_, "TRANSPORTE · REC / CODA", "TRANSPORT · REC / CODA",
-                                 "TRANSPORT · REC / CODA", "TRANSPORTE · REC / CODA"), recordingBox.reduced(8, 0).removeFromTop(13),
-                          juce::Justification::centredLeft);
+        graphics.drawText(!recording ? uiText(supportLanguage_, "TRANSPORTE · REC / CODA", "TRANSPORT · REC / CODA",
+                                              "TRANSPORT · REC / CODA", "TRANSPORTE · REC / CODA")
+                          : codaRequested_ ? uiText(supportLanguage_, "CODA · FINALIZANDO  ", "CODA · FINISHING  ",
+                                                    "CODA · FIN EN COURS  ", "CODA · FINALIZANDO  ") + clock
+                          : codaSoon ? uiText(supportLanguage_, "CODA EM BREVE  ", "CODA SOON  ", "CODA PROCHE  ",
+                                              "CODA PRÓXIMA  ") + clock
+                          : uiText(supportLanguage_, "GRAVANDO  ", "RECORDING  ", "ENREGISTREMENT  ", "GRABANDO  ") + clock,
+                          titleRow, juce::Justification::centredLeft);
         drawZone(graphics, sceneArea_, uiText(supportLanguage_, "CENAS · MORPH AJUSTÁVEL", "SCENES · ADJUSTABLE MORPH",
                                                "SCÈNES · MORPH RÉGLABLE", "ESCENAS · MORPH AJUSTABLE"));
         drawZone(graphics, gestureArea_, gestureZoneTitle());
@@ -2388,11 +2445,19 @@ public:
         // Uma única linha operacional: memória de cena e duração do morph
         // permanecem juntos, sem uma segunda faixa de botões desconectada.
         auto sceneRow = sceneArea_.reduced(8, 4);
+        {
+            // ÁLBUM e PERCURSO na faixa de título das cenas, à direita (como a
+            // VARIAÇÃO na faixa de título da Constelação).
+            auto title = sceneRow.withHeight(24).reduced(0, 2);
+            albumButton_.setBounds(title.removeFromRight(170).reduced(2, 0));
+            percursoButton_.setBounds(title.removeFromRight(118).reduced(2, 0));
+        }
         sceneRow.removeFromTop(28);
         undoCaptureButton_.setBounds(sceneRow.removeFromLeft(92).reduced(2, 0));
         captureButton_.setBounds(sceneRow.removeFromLeft(96).reduced(2, 0));
+        memoryButton_.setBounds(sceneRow.removeFromLeft(92).reduced(2, 0));
         morphLabel_.setBounds(sceneRow.removeFromLeft(74).reduced(1, 4));
-        morphSlider_.setBounds(sceneRow.removeFromLeft(112).reduced(2, 0));
+        morphSlider_.setBounds(sceneRow.removeFromLeft(96).reduced(2, 0));
         const auto sceneButtonWidth = juce::jlimit(52, 86,
             sceneRow.getWidth() / static_cast<int>(sceneButtons_.size()));
         for (auto& button : sceneButtons_)
@@ -3049,6 +3114,21 @@ private:
         undoCaptureButton_.onClick = [this] { undoLastCapture(); };
         undoCaptureButton_.setEnabled(false);
         addAndMakeVisible(undoCaptureButton_);
+        // A MEMÓRIA (2/11): guardar e lembrar sessões com nome.
+        memoryButton_.setButtonText(utf8("MEMÓRIA"));
+        memoryButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff3f5a4a));
+        memoryButton_.setColour(juce::TextButton::textColourOffId, juce::Colour(0xfff2e7d5));
+        memoryButton_.onClick = [this] { showMemoryMenu(); };
+        addAndMakeVisible(memoryButton_);
+        loadMemories();
+        albumButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff3f5a4a));
+        albumButton_.setColour(juce::TextButton::textColourOffId, juce::Colour(0xfff2e7d5));
+        albumButton_.onClick = [this] { showAlbumMenu(); };
+        addAndMakeVisible(albumButton_);
+        percursoButton_.setColour(juce::TextButton::textColourOffId, juce::Colour(0xfff2e7d5));
+        percursoButton_.onClick = [this] { setPercurso(!percurso_); };
+        addAndMakeVisible(percursoButton_);
+        refreshAlbumButtons();
         morphLabel_.setText(morphLabelText(), juce::dontSendNotification);
         morphLabel_.setColour(juce::Label::textColourId, juce::Colour(0xffd18a45));
         morphLabel_.setFont(interfaceFont(10.0f, juce::Font::bold));
@@ -4177,45 +4257,613 @@ private:
         }
     }
 
+    // ---- O PERCURSO (2/11/2026) ----------------------------------------
+    // As cenas seguem a forma do céu: ABERTURA → cena 1, DESENVOLVIMENTO →
+    // ESPIRAL, CONTRASTE → RASGO, RETORNO → BALANÇO, com o MORPH escolhido.
+    // Gravando, quando o retorno acaba (a forma volta ao desenvolvimento), a
+    // tomada pede a coda: uma faixa é uma volta da forma. O performer pode
+    // intervir a qualquer momento; o PERCURSO só chama a cena da seção nova.
+    void setPercurso(bool on) {
+        percurso_ = on;
+        percursoSection_ = 255U;
+        if (on && !controller_.skyWeb() && !controller_.mixerVariation()) {
+            // A forma só anda com a TRAMA ou a VARIAÇÃO.
+            controller_.setSkyWeb(true);
+            refreshMixerVariationButton();
+        }
+        if (on) takePercurso_ = takePercurso_ || recorder_.recording();
+        refreshAlbumButtons();
+        lastAction_ = on ? uiText(supportLanguage_, "PERCURSO · as cenas seguem a forma do céu",
+                                  "PATH · scenes follow the sky's form", "PARCOURS · les scènes suivent la forme du ciel",
+                                  "RECORRIDO · las escenas siguen la forma del cielo")
+                         : uiText(supportLanguage_, "PERCURSO desligado", "PATH off", "PARCOURS coupé", "RECORRIDO apagado");
+        repaint();
+    }
+    void followPercurso(const PerformanceTelemetrySnapshot& telemetry) {
+        if (!percurso_ || !telemetry.playing) return;
+        const auto section = static_cast<std::uint8_t>(std::min<unsigned>(telemetry.skySection, 3U));
+        if (section == percursoSection_) return;
+        const bool returnEnded = percursoSection_ == 3U && section == 1U;
+        percursoSection_ = section;
+        recallScene(static_cast<std::uint16_t>(section + 1U));
+        appendTakeTrace("percurso:" + juce::String(static_cast<int>(section)));
+        if (returnEnded && recorder_.recording())
+            requestMorceauCoda("coda:percurso", uiText(supportLanguage_, "PERCURSO · o retorno acabou · CODA",
+                                                       "PATH · the return ended · CODA", "PARCOURS · le retour est fini · CODA",
+                                                       "RECORRIDO · el retorno terminó · CODA"));
+    }
+    void refreshAlbumButtons() {
+        percursoButton_.setButtonText(percurso_ ? uiText(supportLanguage_, "PERCURSO · ON", "PATH · ON", "PARCOURS · ON",
+                                                         "RECORRIDO · ON")
+                                                : uiText(supportLanguage_, "PERCURSO", "PATH", "PARCOURS", "RECORRIDO"));
+        percursoButton_.setColour(juce::TextButton::buttonColourId,
+                                  percurso_ ? juce::Colour(0xff9b6a3f) : juce::Colour(0xff3f5a4a));
+        albumButton_.setButtonText(album_.active()
+            ? uiText(supportLanguage_, "ÁLBUM · FAIXA ", "ALBUM · TRACK ", "ALBUM · PISTE ", "ÁLBUM · PISTA ")
+                + juce::String(static_cast<int>(album_.current())) + "/" + juce::String(static_cast<int>(album_.tracks()))
+            : uiText(supportLanguage_, "ÁLBUM", "ALBUM", "ALBUM", "ÁLBUM"));
+    }
+
+    // ---- O ÁLBUM (2/11/2026) -------------------------------------------
+    // Conceito do Modo Álbum do Studio (ver PerformanceAlbum.hpp). A pasta:
+    // ~/Music/Rasgo Synth Performance/albuns/<data> <nome>/, com as tomadas
+    // FAIXA_nn_… e o registro album.json.
+    void showAlbumMenu() {
+        juce::PopupMenu menu;
+        if (!album_.active()) {
+            menu.addItem(1, uiText(supportLanguage_, "NOVO ÁLBUM…", "NEW ALBUM…", "NOUVEL ALBUM…", "NUEVO ÁLBUM…"));
+        } else {
+            const auto current = album_.current();
+            menu.addSectionHeader(juce::String::fromUTF8(album_.name().c_str()) + "  ·  "
+                                  + uiText(supportLanguage_, "faixa ", "track ", "piste ", "pista ")
+                                  + juce::String(static_cast<int>(current)) + "/" + juce::String(static_cast<int>(album_.tracks())));
+            menu.addItem(2, uiText(supportLanguage_, "PRÓXIMA FAIXA", "NEXT TRACK", "PISTE SUIVANTE", "PISTA SIGUIENTE")
+                                + (current < album_.tracks() ? "  ·  " + trackSummary(current + 1U) : juce::String{}),
+                         current < album_.tracks());
+            menu.addItem(3, uiText(supportLanguage_, "FAIXA ANTERIOR", "PREVIOUS TRACK", "PISTE PRÉCÉDENTE", "PISTA ANTERIOR"),
+                         current > 1U);
+            menu.addItem(4, uiText(supportLanguage_, "RECOMEÇAR ESTA FAIXA", "RESTART THIS TRACK", "RECOMMENCER CETTE PISTE",
+                                   "REINICIAR ESTA PISTA"));
+            juce::PopupMenu tracks;
+            for (std::size_t track = 1U; track <= album_.tracks(); ++track)
+                tracks.addItem(100 + static_cast<int>(track), juce::String(static_cast<int>(track)) + ".  " + trackSummary(track),
+                               true, track == current);
+            menu.addSubMenu(uiText(supportLanguage_, "IR PARA A FAIXA", "GO TO TRACK", "ALLER À LA PISTE", "IR A LA PISTA"), tracks);
+            menu.addSeparator();
+            menu.addItem(7, uiText(supportLanguage_, "MASTERIZAR O ÁLBUM (só ganho, −16 LUFS, −1 dBTP)",
+                                   "MASTER THE ALBUM (gain only, −16 LUFS, −1 dBTP)",
+                                   "MASTERISER L’ALBUM (gain seul, −16 LUFS, −1 dBTP)",
+                                   "MASTERIZAR EL ÁLBUM (solo ganancia, −16 LUFS, −1 dBTP)"),
+                         !album_.takes().empty() && !albumMastering_.load());
+            menu.addItem(5, uiText(supportLanguage_, "ABRIR A PASTA DO ÁLBUM", "OPEN THE ALBUM FOLDER",
+                                   "OUVRIR LE DOSSIER DE L’ALBUM", "ABRIR LA CARPETA DEL ÁLBUM"));
+            menu.addItem(6, uiText(supportLanguage_, "ENCERRAR O ÁLBUM", "END THE ALBUM", "TERMINER L’ALBUM", "TERMINAR EL ÁLBUM"));
+        }
+        menu.showMenuAsync(juce::PopupMenu::Options{}.withTargetComponent(&albumButton_), [this](int result) {
+            if (result == 1) askNewAlbum();
+            else if (result == 2) goToAlbumTrack(album_.current() + 1U);
+            else if (result == 3) goToAlbumTrack(album_.current() - 1U);
+            else if (result == 4) goToAlbumTrack(album_.current());
+            else if (result == 5) albumDirectory_.startAsProcess();
+            else if (result == 7) masterAlbum();
+            else if (result == 6) {
+                writeAlbumRegister();
+                album_.end();
+                refreshAlbumButtons();
+                lastAction_ = uiText(supportLanguage_, "álbum encerrado · registro em ", "album ended · register in ",
+                                     "album terminé · registre dans ", "álbum terminado · registro en ")
+                    + albumDirectory_.getChildFile("album.json").getFullPathName();
+                repaint();
+            } else if (result > 100) goToAlbumTrack(static_cast<std::size_t>(result - 100));
+        });
+    }
+    juce::String trackSummary(std::size_t track) const {
+        const auto takes = album_.takesOf(track);
+        return "seed " + juce::String(static_cast<juce::int64>(album_.trackSeed(track))) + "  ·  "
+            + juce::String(album_.trackBpm(track), 1) + " BPM"
+            + (takes > 0U ? "  ·  " + juce::String(static_cast<int>(takes))
+                                + uiText(supportLanguage_, " tomada(s)", " take(s)", " prise(s)", " toma(s)")
+                          : juce::String{});
+    }
+    void askNewAlbum() {
+        auto* window = new juce::AlertWindow(uiText(supportLanguage_, "NOVO ÁLBUM", "NEW ALBUM", "NOUVEL ALBUM", "NUEVO ÁLBUM"),
+            uiText(supportLanguage_,
+                   "A seed do álbum deriva a seed de cada faixa; o andamento das faixas segue o contorno, em torno do TEMPO atual.",
+                   "The album seed derives each track's seed; track tempos follow the contour around the current TEMPO.",
+                   "La seed de l’album dérive la seed de chaque piste ; les tempos suivent le contour autour du TEMPO actuel.",
+                   "La seed del álbum deriva la seed de cada pista; los tempos siguen el contorno alrededor del TEMPO actual."),
+            juce::MessageBoxIconType::NoIcon, this);
+        window->addTextEditor("nome", "Asterismus " + juce::Time::getCurrentTime().formatted("%d-%m"),
+                              uiText(supportLanguage_, "Nome / tema", "Name / theme", "Nom / thème", "Nombre / tema"));
+        window->addTextEditor("faixas", "8", uiText(supportLanguage_, "Faixas (1–40)", "Tracks (1–40)", "Pistes (1–40)",
+                                                    "Pistas (1–40)"));
+        window->addTextEditor("seed", juce::String(static_cast<juce::int64>(
+                                  static_cast<std::uint32_t>(juce::Random::getSystemRandom().nextInt()))),
+                              uiText(supportLanguage_, "Seed do álbum", "Album seed", "Seed de l’album", "Seed del álbum"));
+        window->addComboBox("contorno", {uiText(supportLanguage_, "equilibrado", "balanced", "équilibré", "equilibrado"),
+                                         uiText(supportLanguage_, "contrastante", "contrasting", "contrasté", "contrastante"),
+                                         uiText(supportLanguage_, "ascendente", "rising", "ascendant", "ascendente"),
+                                         uiText(supportLanguage_, "arco", "arch", "arche", "arco")},
+                            uiText(supportLanguage_, "Contorno do andamento", "Tempo contour", "Contour du tempo",
+                                   "Contorno del tempo"));
+        window->addTextEditor("abertura", "15", uiText(supportLanguage_, "Abertura do andamento (0–35 %)",
+                                                       "Tempo spread (0–35 %)", "Écart de tempo (0–35 %)",
+                                                       "Apertura del tempo (0–35 %)"));
+        window->addButton(uiText(supportLanguage_, "COMEÇAR", "START", "COMMENCER", "EMPEZAR"), 1,
+                          juce::KeyPress(juce::KeyPress::returnKey));
+        window->addButton(uiText(supportLanguage_, "CANCELAR", "CANCEL", "ANNULER", "CANCELAR"), 0,
+                          juce::KeyPress(juce::KeyPress::escapeKey));
+        juce::Component::SafePointer<PerformanceHostComponent> safe(this);
+        window->enterModalState(true, juce::ModalCallbackFunction::create([safe, window](int result) {
+            if (safe == nullptr || result != 1) return;
+            const auto name = window->getTextEditorContents("nome").trim();
+            const auto tracks = window->getTextEditorContents("faixas").getIntValue();
+            const auto seed = window->getTextEditorContents("seed").getLargeIntValue();
+            const auto spread = window->getTextEditorContents("abertura").getDoubleValue();
+            const auto contour = static_cast<PerformanceAlbumContour>(
+                std::max(0, window->getComboBoxComponent("contorno")->getSelectedItemIndex()));
+            safe->beginAlbum(name, tracks, seed, contour, spread);
+        }), true);
+    }
+    void beginAlbum(const juce::String& name, int tracks, juce::int64 seed, PerformanceAlbumContour contour, double spread) {
+        const auto created = juce::Time::getCurrentTime();
+        if (!performanceMemoryNameValid(name.toStdString()) || tracks < 1 || tracks > static_cast<int>(kPerformanceAlbumMaxTracks)
+            || seed < 0 || seed > static_cast<juce::int64>(std::numeric_limits<std::uint32_t>::max())
+            || !album_.begin(name.toStdString(), static_cast<std::uint32_t>(seed), static_cast<std::size_t>(tracks),
+                             tempoSlider_.getValue(), contour, spread, created.toISO8601(true).toStdString())) {
+            lastAction_ = uiText(supportLanguage_, "álbum inválido (nome 1–40, faixas 1–40, seed de 32 bits)",
+                                 "invalid album (name 1–40, tracks 1–40, 32-bit seed)",
+                                 "album invalide (nom 1–40, pistes 1–40, seed 32 bits)",
+                                 "álbum inválido (nombre 1–40, pistas 1–40, seed de 32 bits)");
+            repaint();
+            return;
+        }
+        // Nome de pasta sem caracteres que os sistemas recusam.
+        const auto folder = created.formatted("%Y-%m-%d_%H-%M ") + juce::File::createLegalFileName(name);
+        albumDirectory_ = juce::File::getSpecialLocation(juce::File::userMusicDirectory)
+            .getChildFile("Rasgo Synth Performance").getChildFile("albuns").getChildFile(folder);
+        if (!albumDirectory_.createDirectory()) {
+            album_.end();
+            lastAction_ = uiText(supportLanguage_, "a pasta do álbum não pôde ser criada", "album folder could not be created",
+                                 "le dossier de l’album n’a pas pu être créé", "no se pudo crear la carpeta del álbum");
+            repaint();
+            return;
+        }
+        writeAlbumRegister();
+        goToAlbumTrack(1U);
+    }
+    // Uma faixa: a seed derivada entra ao vivo (como uma seed nova) com o
+    // andamento da faixa em todas as cenas, para o PERCURSO não o desfazer.
+    void goToAlbumTrack(std::size_t track) {
+        if (!album_.goTo(track)) return;
+        const auto seed = album_.trackSeed(track);
+        const auto bpm = album_.trackBpm(track);
+        auto document = PerformanceTerritoryFactory::makeForReleasedStems(seed, kPerformanceSafeBodyLimit);
+        for (std::size_t index = 0U; index < document.sceneCount; ++index) document.scenes[index].session.tempoBpm = bpm;
+        if (!controller_.queueTerritory(document)) {
+            lastAction_ = uiText(supportLanguage_, "faixa não enfileirada", "track not queued", "piste non mise en file",
+                                 "pista no encolada");
+            repaint();
+            return;
+        }
+        adoptDocument(document, 1U);
+        seedEditor_.setText(juce::String(static_cast<juce::int64>(seed)), false);
+        tempoSlider_.setValue(bpm, juce::sendNotificationSync);
+        refreshAlbumButtons();
+        lastAction_ = uiText(supportLanguage_, "FAIXA ", "TRACK ", "PISTE ", "PISTA ") + juce::String(static_cast<int>(track))
+            + "/" + juce::String(static_cast<int>(album_.tracks())) + "  ·  " + trackSummary(track)
+            + uiText(supportLanguage_, "  ·  REC grava na pasta do álbum", "  ·  REC records into the album folder",
+                     "  ·  REC enregistre dans le dossier de l’album", "  ·  REC graba en la carpeta del álbum");
+        repaint();
+    }
+    // MASTERIZAR: a tomada mais recente de cada faixa, numa thread de
+    // trabalho; as cópias vão para master/ com master.json (ganhos e níveis
+    // antes e depois). As tomadas originais não mudam.
+    void masterAlbum() {
+        if (albumMastering_.exchange(true)) return;
+        std::vector<std::pair<std::size_t, juce::File>> latest;
+        for (std::size_t track = 1U; track <= album_.tracks(); ++track) {
+            const PerformanceAlbumTake* last = nullptr;
+            for (const auto& take : album_.takes()) if (take.track == track) last = &take;
+            if (last != nullptr) latest.emplace_back(track, albumDirectory_.getChildFile(juce::String::fromUTF8(last->file.c_str())));
+        }
+        const auto folder = albumDirectory_.getChildFile("master");
+        lastAction_ = uiText(supportLanguage_, "masterizando o álbum…", "mastering the album…", "mastérisation de l’album…",
+                             "masterizando el álbum…");
+        repaint();
+        juce::Component::SafePointer<PerformanceHostComponent> safe(this);
+        const auto language = supportLanguage_;
+        juce::Thread::launch(juce::Thread::Priority::background, [safe, latest, folder, language] {
+            std::vector<PerformanceTrackLevel> levels;
+            bool ok = folder.createDirectory();
+            for (const auto& [track, file] : latest) {
+                const auto level = measureWavLevel(file.getFullPathName().toStdString());
+                ok = ok && level.has_value();
+                levels.push_back(level.value_or(PerformanceTrackLevel{}));
+            }
+            const auto plan = planAlbumMaster(levels);
+            juce::String report = "{\n  \"schema\": \"rasgo-asterismus-album-master\",\n  \"targetLufs\": "
+                + juce::String(plan.targetLufs, 1) + ",\n  \"ceilingDbtp\": " + juce::String(plan.ceilingDbtp, 1)
+                + ",\n  \"medianLufsBefore\": " + juce::String(plan.medianLufs, 2) + ",\n  \"albumGainDb\": "
+                + juce::String(plan.albumGainDb, 2)
+                + ",\n  \"method\": \"só ganho, sem limitador; cada faixa em direção à mediana (−3,1…+2,9 dB, o limite do Studio), depois um ganho comum\",\n  \"tracks\": [";
+            for (std::size_t index = 0U; ok && index < latest.size(); ++index) {
+                const auto target = folder.getChildFile(latest[index].second.getFileNameWithoutExtension() + "_master.wav");
+                ok = writeMasteredWav(latest[index].second.getFullPathName().toStdString(), target.getFullPathName().toStdString(),
+                                      plan.gainDb[index], static_cast<std::uint32_t>(index + 1U) * 0x9E3779B9U);
+                const auto after = measureWavLevel(target.getFullPathName().toStdString()).value_or(PerformanceTrackLevel{});
+                report += juce::String(index > 0U ? "," : "") + "\n    {\"track\": " + juce::String(static_cast<int>(latest[index].first))
+                    + ", \"source\": \"" + latest[index].second.getFileName() + "\", \"master\": \"" + target.getFileName()
+                    + "\", \"lufsBefore\": " + juce::String(levels[index].integratedLufs, 2) + ", \"gainDb\": "
+                    + juce::String(plan.gainDb[index], 2) + ", \"lufsAfter\": " + juce::String(after.integratedLufs, 2)
+                    + ", \"truePeakAfterDbtp\": " + juce::String(after.maxTruePeakDbtp, 2) + "}";
+            }
+            report += "\n  ]\n}\n";
+            if (ok) ok = folder.getChildFile("master.json").replaceWithText(report);
+            juce::MessageManager::callAsync([safe, ok, folder, count = latest.size(), language] {
+                if (safe == nullptr) return;
+                safe->albumMastering_.store(false);
+                safe->lastAction_ = ok ? uiText(language, "álbum masterizado · ", "album mastered · ", "album mastérisé · ",
+                                                "álbum masterizado · ")
+                                             + juce::String(static_cast<int>(count))
+                                             + uiText(language, " faixa(s) em ", " track(s) in ", " piste(s) dans ", " pista(s) en ")
+                                             + folder.getFullPathName()
+                                       : uiText(language, "masterização falhou (arquivo ausente ou ilegível)",
+                                                "mastering failed (missing or unreadable file)",
+                                                "échec de la mastérisation (fichier absent ou illisible)",
+                                                "la masterización falló (archivo ausente o ilegible)");
+                safe->repaint();
+            });
+        });
+    }
+
+    void writeAlbumRegister() {
+        if (albumDirectory_ == juce::File{}) return;
+        const auto text = album_.registerJson();
+        const auto file = albumDirectory_.getChildFile("album.json");
+        const auto temporary = albumDirectory_.getChildFile("album.json.novo");
+        if (!(temporary.replaceWithData(text.data(), text.size()) && temporary.moveFileTo(file)))
+            lastAction_ = uiText(supportLanguage_, "o registro do álbum não pôde ser gravado", "album register could not be written",
+                                 "le registre de l’album n’a pas pu être écrit", "no se pudo escribir el registro del álbum");
+    }
+
+    // ---- A MEMÓRIA (2/11/2026) ----------------------------------------
+    // Oito lugares com nome, guardados em arquivos .asterismus na pasta de
+    // dados do app; nada é carregado sozinho ao abrir (o app sempre abre algo
+    // novo). Conceito do banco de cenas do Aquorbium (ver PerformanceMemory.hpp).
+    static juce::File memoryDirectory() {
+        return juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
+            .getChildFile("RASGO").getChildFile("Rasgo Synth Asterismus").getChildFile("memorias");
+    }
+    static juce::File memoryFile(std::size_t slot) {
+        return memoryDirectory().getChildFile("memoria-" + juce::String(static_cast<int>(slot + 1U)) + ".asterismus");
+    }
+    static std::optional<PerformanceMemory> readMemoryFile(const juce::File& file) {
+        if (!file.existsAsFile() || file.isSymbolicLink()
+            || file.getSize() > static_cast<juce::int64>(kPerformanceMemoryMaximumBytes)) return std::nullopt;
+        juce::MemoryBlock data;
+        if (!file.loadFileAsData(data)) return std::nullopt;
+        PerformanceMemory memory;
+        if (parsePerformanceMemory(std::string_view(static_cast<const char*>(data.getData()), data.getSize()), memory)
+            != PerformanceMemoryError::None) return std::nullopt;
+        return memory;
+    }
+    static bool writeMemoryFile(const juce::File& file, const PerformanceMemory& memory) {
+        const auto text = serializePerformanceMemory(memory);
+        if (!file.getParentDirectory().createDirectory()) return false;
+        // Escreve ao lado e troca: um arquivo pela metade nunca substitui o bom.
+        const auto temporary = file.getSiblingFile(file.getFileName() + ".novo");
+        return temporary.replaceWithData(text.data(), text.size()) && temporary.moveFileTo(file);
+    }
+    void loadMemories() {
+        for (std::size_t slot = 0U; slot < memories_.size(); ++slot) memories_[slot] = readMemoryFile(memoryFile(slot));
+    }
+    juce::String memoryLabel(std::size_t slot) const {
+        const auto number = juce::String(static_cast<int>(slot + 1U)) + ". ";
+        if (!memories_[slot]) return number + uiText(supportLanguage_, "(vazia)", "(empty)", "(vide)", "(vacía)");
+        return number + juce::String::fromUTF8(memories_[slot]->name.c_str()) + "  ·  "
+            + juce::String::fromUTF8(memories_[slot]->created.c_str());
+    }
+
+    PerformanceMemory captureMemory(const juce::String& name) const {
+        PerformanceMemory memory;
+        memory.name = name.toStdString();
+        memory.created = juce::Time::getCurrentTime().formatted("%Y-%m-%d %H:%M").toStdString();
+        auto document = startupDocument_;
+        const auto sceneId = controller_.currentSceneId();
+        for (std::size_t index = 0U; index < document.sceneCount; ++index)
+            if (document.scenes[index].id == sceneId) fillSceneFromPerformance(document.scenes[index]);
+        memory.sceneId = sceneId;
+        memory.document = serializeSessionDocument(document);
+        memory.stemGain = stemGainValues_;
+        memory.stemMuted = stemMuted_;
+        memory.solo = soloStemIndex_ < 8U ? static_cast<int>(soloStemIndex_) : -1;
+        memory.moduleControls = moduleControlValues_;
+        memory.seedVariation = actorSeedVariationValues_;
+        memory.masterDb = masterSlider_.getValue();
+        memory.skyWeb = controller_.skyWeb();
+        memory.mixerVariation = controller_.mixerVariation();
+        memory.collectiveFamily = static_cast<std::uint8_t>(constellationGraph_.collectiveFamily());
+        for (std::size_t index = 0U; index < 8U; ++index) {
+            memory.bodyFamily[index] = static_cast<std::uint8_t>(constellationGraph_.bodyFamily(index));
+            memory.starSwap[index] = static_cast<std::uint8_t>(starSwaps_[index]);
+        }
+        memory.constellationMotion = static_cast<std::uint8_t>(constellationGraph_.constellationMotion());
+        memory.pinned = starPinned_;
+        return memory;
+    }
+
+    void showMemoryMenu() {
+        juce::PopupMenu menu;
+        menu.addSectionHeader(uiText(supportLanguage_, "MEMÓRIA · o app sempre abre algo novo",
+                                     "MEMORY · the app always opens something new",
+                                     "MÉMOIRE · l’app ouvre toujours du neuf", "MEMORIA · la app siempre abre algo nuevo"));
+        juce::PopupMenu store, recall, rename, erase, exporting, importing;
+        bool any = false;
+        for (std::size_t slot = 0U; slot < memories_.size(); ++slot) {
+            const auto id = static_cast<int>(slot);
+            const bool full = memories_[slot].has_value();
+            any = any || full;
+            store.addItem(100 + id, memoryLabel(slot));
+            if (full) {
+                recall.addItem(200 + id, memoryLabel(slot));
+                rename.addItem(300 + id, memoryLabel(slot));
+                erase.addItem(400 + id, memoryLabel(slot));
+                exporting.addItem(500 + id, memoryLabel(slot));
+            }
+            importing.addItem(600 + id, memoryLabel(slot));
+        }
+        menu.addSubMenu(uiText(supportLanguage_, "GUARDAR ESTA SESSÃO EM", "STORE THIS SESSION IN",
+                               "GARDER CETTE SESSION DANS", "GUARDAR ESTA SESIÓN EN"), store);
+        menu.addSubMenu(uiText(supportLanguage_, "LEMBRAR", "RECALL", "RAPPELER", "RECORDAR"), recall, any);
+        menu.addSeparator();
+        menu.addSubMenu(uiText(supportLanguage_, "RENOMEAR", "RENAME", "RENOMMER", "RENOMBRAR"), rename, any);
+        menu.addSubMenu(uiText(supportLanguage_, "APAGAR", "DELETE", "EFFACER", "BORRAR"), erase, any);
+        menu.addItem(700, uiText(supportLanguage_, "DESFAZER A ÚLTIMA MUDANÇA NA MEMÓRIA", "UNDO THE LAST MEMORY CHANGE",
+                                 "ANNULER LE DERNIER CHANGEMENT", "DESHACER EL ÚLTIMO CAMBIO"),
+                     memoryUndo_.has_value());
+        menu.addSeparator();
+        menu.addSubMenu(uiText(supportLanguage_, "EXPORTAR PARA ARQUIVO", "EXPORT TO FILE",
+                               "EXPORTER VERS UN FICHIER", "EXPORTAR A ARCHIVO"), exporting, any);
+        menu.addSubMenu(uiText(supportLanguage_, "IMPORTAR DE ARQUIVO PARA", "IMPORT FROM FILE INTO",
+                               "IMPORTER D’UN FICHIER DANS", "IMPORTAR DE ARCHIVO A"), importing);
+        menu.showMenuAsync(juce::PopupMenu::Options{}.withTargetComponent(&memoryButton_), [this](int result) {
+            if (result <= 0) return;
+            const auto slot = static_cast<std::size_t>(result % 100);
+            if (result == 700) undoMemoryChange();
+            else if (result < 200) askMemoryName(slot, false);
+            else if (result < 300) recallMemory(slot);
+            else if (result < 400) askMemoryName(slot, true);
+            else if (result < 500) changeMemory(slot, std::nullopt,
+                                                uiText(supportLanguage_, "memória apagada", "memory deleted",
+                                                       "mémoire effacée", "memoria borrada"));
+            else if (result < 600) chooseMemoryFile(slot, true);
+            else chooseMemoryFile(slot, false);
+        });
+    }
+
+    // Guardar (ou renomear): pede o nome, sugerindo o atual ou "seed · data".
+    void askMemoryName(std::size_t slot, bool renaming) {
+        if (slot >= memories_.size()) return;
+        const auto suggestion = renaming && memories_[slot]
+            ? juce::String::fromUTF8(memories_[slot]->name.c_str())
+            : "seed " + juce::String(startupDocument_.territory.seed) + " · "
+                + juce::Time::getCurrentTime().formatted("%d/%m %H:%M");
+        auto* window = new juce::AlertWindow(
+            renaming ? uiText(supportLanguage_, "RENOMEAR A MEMÓRIA", "RENAME THE MEMORY", "RENOMMER LA MÉMOIRE",
+                              "RENOMBRAR LA MEMORIA")
+                     : uiText(supportLanguage_, "GUARDAR NA MEMÓRIA ", "STORE IN MEMORY ", "GARDER EN MÉMOIRE ",
+                              "GUARDAR EN LA MEMORIA ") + juce::String(static_cast<int>(slot + 1U)),
+            uiText(supportLanguage_, "Nome (até 40 caracteres):", "Name (up to 40 characters):",
+                   "Nom (40 caractères au plus) :", "Nombre (hasta 40 caracteres):"),
+            juce::MessageBoxIconType::NoIcon, this);
+        window->addTextEditor("nome", suggestion);
+        window->addButton(renaming ? uiText(supportLanguage_, "RENOMEAR", "RENAME", "RENOMMER", "RENOMBRAR")
+                                   : uiText(supportLanguage_, "GUARDAR", "STORE", "GARDER", "GUARDAR"),
+                          1, juce::KeyPress(juce::KeyPress::returnKey));
+        window->addButton(uiText(supportLanguage_, "CANCELAR", "CANCEL", "ANNULER", "CANCELAR"), 0,
+                          juce::KeyPress(juce::KeyPress::escapeKey));
+        juce::Component::SafePointer<PerformanceHostComponent> safe(this);
+        window->enterModalState(true, juce::ModalCallbackFunction::create([safe, window, slot, renaming](int result) {
+            if (safe == nullptr || result != 1) return;
+            const auto name = window->getTextEditorContents("nome").trim();
+            if (!performanceMemoryNameValid(name.toStdString())) {
+                safe->lastAction_ = uiText(safe->supportLanguage_, "nome inválido (1 a 40 caracteres, uma linha)",
+                                           "invalid name (1 to 40 characters, one line)",
+                                           "nom invalide (1 à 40 caractères, une ligne)",
+                                           "nombre inválido (1 a 40 caracteres, una línea)");
+                safe->repaint();
+                return;
+            }
+            auto memory = renaming && safe->memories_[slot] ? *safe->memories_[slot] : safe->captureMemory(name);
+            memory.name = name.toStdString();
+            safe->changeMemory(slot, memory, renaming
+                ? uiText(safe->supportLanguage_, "memória renomeada", "memory renamed", "mémoire renommée",
+                         "memoria renombrada")
+                : uiText(safe->supportLanguage_, "sessão guardada", "session stored", "session gardée",
+                         "sesión guardada"));
+        }), true);
+    }
+
+    // Toda mudança num lugar passa por aqui: grava (ou apaga) o arquivo e
+    // guarda o conteúdo anterior para o DESFAZER.
+    void changeMemory(std::size_t slot, const std::optional<PerformanceMemory>& replacement, const juce::String& done) {
+        if (slot >= memories_.size()) return;
+        const auto file = memoryFile(slot);
+        const bool ok = replacement ? writeMemoryFile(file, *replacement) : (!file.existsAsFile() || file.deleteFile());
+        if (!ok) {
+            lastAction_ = uiText(supportLanguage_, "a memória não pôde ser gravada em ", "memory could not be written to ",
+                                 "la mémoire n’a pas pu être écrite dans ", "la memoria no pudo escribirse en ")
+                + file.getFullPathName();
+            repaint();
+            return;
+        }
+        memoryUndo_ = MemoryUndo{slot, memories_[slot]};
+        memories_[slot] = replacement;
+        lastAction_ = juce::String(static_cast<int>(slot + 1U)) + " · " + done
+            + (replacement ? " · " + juce::String::fromUTF8(replacement->name.c_str()) : juce::String{});
+        repaint();
+    }
+    void undoMemoryChange() {
+        if (!memoryUndo_) return;
+        const auto undo = *memoryUndo_;
+        changeMemory(undo.slot, undo.before, uiText(supportLanguage_, "memória restaurada", "memory restored",
+                                                    "mémoire restaurée", "memoria restaurada"));
+        memoryUndo_.reset();
+    }
+
+    // Lembrar: o território e a cena entram ao vivo (como uma seed nova); o
+    // estado do performer é reaplicado logo depois, quando o motor já trocou
+    // de território.
+    void recallMemory(std::size_t slot) {
+        if (slot >= memories_.size() || !memories_[slot]) return;
+        const auto memory = *memories_[slot];
+        PerformanceSessionDocument document{};
+        if (!parseSessionDocument(memory.document, document).ok()
+            || !controller_.queueTerritory(document, memory.sceneId)) {
+            lastAction_ = uiText(supportLanguage_, "memória não enfileirada", "memory not queued",
+                                 "mémoire non mise en file", "memoria no encolada");
+            repaint();
+            return;
+        }
+        adoptDocument(document, memory.sceneId);
+        lastRecalledMemory_ = memory.name;
+        seedEditor_.setText(juce::String(document.territory.seed), false);
+        juce::Component::SafePointer<PerformanceHostComponent> safe(this);
+        juce::Timer::callAfterDelay(300, [safe, memory, slot] {
+            if (safe != nullptr) safe->applyMemoryPerformer(memory, slot);
+        });
+    }
+    void applyMemoryPerformer(const PerformanceMemory& memory, std::size_t slot) {
+        std::size_t refused = 0U;
+        for (std::size_t index = 0U; index < 8U; ++index) {
+            const auto actorId = static_cast<std::uint16_t>(index + 1U);
+            const auto star = static_cast<PerformanceModuleBody>(memory.starSwap[index]);
+            if (star != PerformanceModuleBody::Count) {
+                if (controller_.setActorStar(actorId, star)) starSwaps_[index] = star;
+                else ++refused;
+            }
+            if (memory.pinned[index]) {
+                if (controller_.setActorPinned(actorId, true)) starPinned_[index] = true;
+                else ++refused;
+            }
+            setStemGainControl(index, memory.stemGain[index]);
+            if (memory.stemMuted[index] != stemMuted_[index]) toggleStemMute(index);
+            for (std::size_t control = 0U; control < 3U; ++control) {
+                if (!setModuleControl(index, control, memory.moduleControls[index][control])) continue;
+                moduleControlSliders_[index][control].setValue(memory.moduleControls[index][control],
+                                                               juce::dontSendNotification);
+            }
+            setActorSeedVariationControl(index, memory.seedVariation[index]);
+        }
+        if (memory.solo >= 0 && static_cast<std::size_t>(memory.solo) != soloStemIndex_)
+            toggleStemSolo(static_cast<std::size_t>(memory.solo));
+        masterSlider_.setValue(memory.masterDb, juce::sendNotificationSync);
+        if (controller_.skyWeb() != memory.skyWeb) controller_.setSkyWeb(memory.skyWeb);
+        if (controller_.mixerVariation() != memory.mixerVariation) controller_.setMixerVariation(memory.mixerVariation);
+        refreshMixerVariationButton();
+        std::array<PerformanceMotionFamily, 8> bodies{};
+        for (std::size_t index = 0U; index < 8U; ++index)
+            bodies[index] = static_cast<PerformanceMotionFamily>(memory.bodyFamily[index]);
+        constellationGraph_.restoreMotion(static_cast<PerformanceMotionFamily>(memory.collectiveFamily), bodies,
+                                          static_cast<PerformanceConstellationMotion>(memory.constellationMotion));
+        constellationGraph_.setPinnedNodes(starPinned_);
+        refreshCohortIdentity(identitySeed_);
+        refreshStemMixVisual();
+        lastAction_ = uiText(supportLanguage_, "MEMÓRIA ", "MEMORY ", "MÉMOIRE ", "MEMORIA ")
+            + juce::String(static_cast<int>(slot + 1U)) + " · " + juce::String::fromUTF8(memory.name.c_str())
+            + (refused > 0U ? uiText(supportLanguage_, " · comandos recusados: ", " · refused commands: ",
+                                     " · commandes refusées : ", " · comandos rechazados: ") + juce::String(static_cast<int>(refused))
+                            : juce::String{});
+        repaint();
+    }
+
+    // Exportar e importar: um arquivo .asterismus (texto, só parâmetros —
+    // nunca áudio). Importar só guarda no lugar; para tocar, LEMBRAR.
+    void chooseMemoryFile(std::size_t slot, bool exporting) {
+        if (memoryChooser_ || slot >= memories_.size() || (exporting && !memories_[slot])) return;
+        memoryChooser_ = std::make_unique<juce::FileChooser>(
+            exporting ? uiText(supportLanguage_, "Exportar a memória", "Export the memory", "Exporter la mémoire",
+                               "Exportar la memoria")
+                      : uiText(supportLanguage_, "Importar uma memória", "Import a memory", "Importer une mémoire",
+                               "Importar una memoria"),
+            juce::File::getSpecialLocation(juce::File::userDocumentsDirectory), "*.asterismus");
+        const auto flags = juce::FileBrowserComponent::canSelectFiles
+            | (exporting ? juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::warnAboutOverwriting
+                         : juce::FileBrowserComponent::openMode);
+        juce::Component::SafePointer<PerformanceHostComponent> safe(this);
+        memoryChooser_->launchAsync(flags, [safe, slot, exporting](const juce::FileChooser& chooser) {
+            if (safe == nullptr) return;
+            const auto file = chooser.getResult();
+            safe->memoryChooser_.reset();
+            if (file == juce::File{}) return;
+            if (exporting) {
+                const auto target = file.hasFileExtension(".asterismus") ? file : file.withFileExtension(".asterismus");
+                safe->lastAction_ = writeMemoryFile(target, *safe->memories_[slot])
+                    ? uiText(safe->supportLanguage_, "memória exportada · ", "memory exported · ",
+                             "mémoire exportée · ", "memoria exportada · ") + target.getFileName()
+                    : uiText(safe->supportLanguage_, "exportação falhou", "export failed", "échec de l’export",
+                             "la exportación falló");
+                safe->repaint();
+                return;
+            }
+            const auto memory = readMemoryFile(file);
+            if (!memory) {
+                safe->lastAction_ = uiText(safe->supportLanguage_, "arquivo de memória inválido", "invalid memory file",
+                                           "fichier de mémoire invalide", "archivo de memoria inválido");
+                safe->repaint();
+                return;
+            }
+            safe->changeMemory(slot, memory, uiText(safe->supportLanguage_, "memória importada", "memory imported",
+                                                    "mémoire importée", "memoria importada"));
+        });
+    }
+
+    // O estado da cena que o performer tem nas mãos (BPM, macros, presenças,
+    // relações): usado por CAPTURAR e pela MEMÓRIA.
+    void fillSceneFromPerformance(PerformanceScene& scene) const {
+        scene.session.autonomy = macroValues_[0U];
+        scene.session.intervention = macroValues_[1U];
+        scene.session.density = macroValues_[2U];
+        scene.session.tension = macroValues_[3U];
+        scene.session.memory = macroValues_[4U];
+        scene.session.risk = macroValues_[5U];
+        scene.session.space = macroValues_[6U];
+        scene.session.depth = macroValues_[7U];
+        scene.session.tempoBpm = tempoSlider_.getValue();
+        scene.session.populationPhenomenon = constellationGraph_.populationPhenomenon();
+        scene.session.populationPhenomenonIntensity = constellationGraph_.populationPhenomenonIntensity();
+        scene.session.populationPhenomenonEnabled = constellationGraph_.populationPhenomenonEnabled();
+        for (std::size_t actorIndex = 0; actorIndex < scene.constellation.actorCount; ++actorIndex) {
+            auto& actor = scene.constellation.actors[actorIndex];
+            if (actor.actorId >= 1U && actor.actorId <= actorSliders_.size())
+                actor.presence = actorSliders_[actor.actorId - 1U].getValue();
+        }
+        const auto cables = constellationGraph_.relationDrawing();
+        static constexpr std::array<std::uint16_t, 16> sources{1U, 2U, 1U, 1U, 2U, 3U, 1U, 5U, 6U, 7U, 1U, 2U, 2U, 3U, 4U, 5U};
+        static constexpr std::array<std::uint16_t, 16> destinations{2U, 3U, 3U, 4U, 4U, 4U, 5U, 6U, 7U, 8U, 6U, 5U, 6U, 7U, 8U, 7U};
+        for (std::size_t relationIndex = 0; relationIndex < scene.constellation.relationCount; ++relationIndex) {
+            auto& relation = scene.constellation.relations[relationIndex];
+            for (std::size_t cableIndex = 0U; cableIndex < cables.size(); ++cableIndex) {
+                if (relation.sourceActorId == sources[cableIndex]
+                    && relation.destinationActorId == destinations[cableIndex]) {
+                    relation.intensity = cables[cableIndex];
+                    relation.phenomenon = constellationGraph_.relationPhenomenonAt(cableIndex);
+                    relation.phenomenonEnabled
+                        = constellationGraph_.relationPhenomenonEnabledAt(cableIndex);
+                    break;
+                }
+            }
+        }
+    }
+
     void captureScene(std::uint16_t sceneId) {
         for (std::size_t index = 0; index < startupDocument_.sceneCount; ++index) {
             auto& scene = startupDocument_.scenes[index];
             if (scene.id != sceneId) continue;
             const auto previousScene = scene;
             const auto wasDirty = sceneDirty_;
-            scene.session.autonomy = macroValues_[0U];
-            scene.session.intervention = macroValues_[1U];
-            scene.session.density = macroValues_[2U];
-            scene.session.tension = macroValues_[3U];
-            scene.session.memory = macroValues_[4U];
-            scene.session.risk = macroValues_[5U];
-            scene.session.space = macroValues_[6U];
-            scene.session.depth = macroValues_[7U];
-            scene.session.tempoBpm = tempoSlider_.getValue();
-            scene.session.populationPhenomenon = constellationGraph_.populationPhenomenon();
-            scene.session.populationPhenomenonIntensity = constellationGraph_.populationPhenomenonIntensity();
-            scene.session.populationPhenomenonEnabled = constellationGraph_.populationPhenomenonEnabled();
-            for (std::size_t actorIndex = 0; actorIndex < scene.constellation.actorCount; ++actorIndex) {
-                auto& actor = scene.constellation.actors[actorIndex];
-                if (actor.actorId >= 1U && actor.actorId <= actorSliders_.size())
-                    actor.presence = actorSliders_[actor.actorId - 1U].getValue();
-            }
-            const auto cables = constellationGraph_.relationDrawing();
-            static constexpr std::array<std::uint16_t, 16> sources{1U, 2U, 1U, 1U, 2U, 3U, 1U, 5U, 6U, 7U, 1U, 2U, 2U, 3U, 4U, 5U};
-            static constexpr std::array<std::uint16_t, 16> destinations{2U, 3U, 3U, 4U, 4U, 4U, 5U, 6U, 7U, 8U, 6U, 5U, 6U, 7U, 8U, 7U};
-            for (std::size_t relationIndex = 0; relationIndex < scene.constellation.relationCount; ++relationIndex) {
-                auto& relation = scene.constellation.relations[relationIndex];
-                for (std::size_t cableIndex = 0U; cableIndex < cables.size(); ++cableIndex) {
-                    if (relation.sourceActorId == sources[cableIndex]
-                        && relation.destinationActorId == destinations[cableIndex]) {
-                        relation.intensity = cables[cableIndex];
-                        relation.phenomenon = constellationGraph_.relationPhenomenonAt(cableIndex);
-                        relation.phenomenonEnabled
-                            = constellationGraph_.relationPhenomenonEnabledAt(cableIndex);
-                        break;
-                    }
-                }
-            }
+            fillSceneFromPerformance(scene);
             if (controller_.captureScene(scene)) {
                 lastCapturedScene_ = previousScene;
                 hasUndoCapture_ = true;
@@ -4435,7 +5083,7 @@ private:
         if (!requested && recorder_.recording()) stopClosePending_ = true;
         playingRequested_ = requested;
         codaRequested_ = false;
-        lastAction_ = playingRequested_ ? "PLAY" : "STOP";
+        lastAction_ = playingRequested_ ? (openedTake ? "PLAY  ·  " + lastAction_ : juce::String("PLAY")) : juce::String("STOP");
         transportButton_.setButtonText(playingRequested_ ? "STOP" : "PLAY");
         transportButton_.setColour(juce::TextButton::buttonColourId,
                                    playingRequested_ ? juce::Colour(0xff813d34) : juce::Colour(0xff285348));
@@ -4478,12 +5126,16 @@ private:
                                  "DÉMARRER requiert un périphérique audio prêt", "INICIAR requiere un dispositivo de audio listo");
             return false;
         }
-        const auto directory = juce::File::getSpecialLocation(juce::File::userMusicDirectory)
+        const auto directory = album_.active() ? albumDirectory_
+            : juce::File::getSpecialLocation(juce::File::userMusicDirectory)
             // a pasta de dados mantém o nome antigo depois da troca para
             // Asterismus (2026-10-27), como o Studio manteve "Rasgo Synth":
             // as tomadas já gravadas continuam no mesmo lugar
             .getChildFile("Rasgo Synth Performance").getChildFile("recordings");
-        const auto take = directory.getChildFile("RASGO_PERFORMANCE_"
+        // Com um álbum, a tomada vai à pasta dele com o número da faixa.
+        const auto take = directory.getChildFile((album_.active()
+                ? "FAIXA_" + juce::String(static_cast<int>(album_.current())).paddedLeft('0', 2) + "_"
+                : juce::String("RASGO_PERFORMANCE_"))
             + juce::Time::getCurrentTime().formatted("%Y-%m-%d_%H-%M-%S") + ".wav");
         if (!recorder_.start(take, rate)) {
             lastAction_ = uiText(supportLanguage_, "REC não pôde abrir o arquivo", "REC could not open the file",
@@ -4491,10 +5143,16 @@ private:
             return false;
         }
         stemRecorder_.start(take, rate, moduleDisplayNames_);
+        // Onde está gravando (2/11): na linha de status e na dica do REC.
+        lastAction_ = uiText(supportLanguage_, "GRAVANDO em ", "RECORDING to ", "ENREGISTREMENT dans ", "GRABANDO en ")
+            + take.getFullPathName();
+        recordButton_.setTooltip(uiText(supportLanguage_, "Gravando em: ", "Recording to: ", "Enregistrement dans : ",
+                                        "Grabando en: ") + take.getFullPathName());
         takeSeed_ = controller_.document() != nullptr ? controller_.document()->territory.seed : 0U;
         takeStartedAt_ = juce::Time::getCurrentTime().toISO8601(true);
         takeSampleRate_ = rate;
         takeCodaGesture_ = "";
+        takePercurso_ = percurso_;
         notePerformerActivity();
         stopClosePending_ = false;
         takeTrace_.clear();
@@ -4643,6 +5301,25 @@ private:
             + "  \"relations\": " + relationsJson + ",\n"
             + "  \"trace\": [" + traceJson + "]\n}\n";
         const bool manifestWritten = manifest.replaceWithText(manifestText);
+        if (album_.active() && take.getParentDirectory() == albumDirectory_) {
+            // O registro de faixas (album.json): a tomada entra com a faixa, a
+            // seed, o andamento, a memória lembrada, a duração e a loudness.
+            const auto telemetry = controller_.readTelemetry();
+            PerformanceAlbumTake entry;
+            entry.track = album_.current();
+            entry.seed = takeSeed_;
+            entry.bpm = tempoSlider_.getValue();
+            entry.file = take.getFileName().toStdString();
+            entry.memory = lastRecalledMemory_;
+            entry.started = takeStartedAt_.toStdString();
+            entry.seconds = seconds;
+            entry.integratedLufs = telemetry.integratedCentiLufs / 100.0;
+            entry.maxTruePeakDbtp = 20.0 * std::log10(std::max(1.0e-6, telemetry.maxTruePeakMicros / 1000000.0));
+            entry.percurso = takePercurso_;
+            album_.addTake(entry);
+            writeAlbumRegister();
+            refreshAlbumButtons();
+        }
         recordButton_.setButtonText("REC/CODA");
         recordButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff6b5035));
         lastAction_ = prefix + utf8(" · ")
@@ -4666,10 +5343,32 @@ private:
                                  "territoire non mis en file", "territorio no encolado");
             return;
         }
-        startupDocument_ = territory;
+        adoptDocument(territory, 1U);
+        lastAction_ = uiText(supportLanguage_, "território ", "territory ", "territoire ", "territorio ")
+            + juce::String(startupDocument_.territory.seed)
+            + uiText(supportLanguage_, " enfileirado · transição ao vivo", " queued · live transition",
+                      " mis en file · transition en direct", " encolado · transición en vivo");
+    }
+
+    // Um documento novo (seed nova ou memória lembrada): a superfície do
+    // performer volta ao começo — mix, mute/solo, controles locais, variação
+    // da seed — e as trocas e fixações de estrela se desfazem (2/11: uma seed
+    // nova é uma peça nova; a memória reaplica as suas depois).
+    void adoptDocument(const PerformanceSessionDocument& document, std::uint16_t sceneId) {
+        startupDocument_ = document;
+        lastRecalledMemory_.clear();
+        percursoSection_ = 255U;
         notePerformerActivity();
+        for (std::size_t index = 0U; index < starSwaps_.size(); ++index) {
+            const auto actorId = static_cast<std::uint16_t>(index + 1U);
+            if (starSwaps_[index] != PerformanceModuleBody::Count) controller_.setActorStar(actorId, PerformanceModuleBody::Count);
+            if (starPinned_[index]) controller_.setActorPinned(actorId, false);
+        }
+        starSwaps_.fill(PerformanceModuleBody::Count);
+        starPinned_.fill(false);
+        constellationGraph_.setPinnedNodes(starPinned_);
         refreshCohortIdentity(startupDocument_.territory.seed);
-        syncControlsFromScene(1U, true);
+        syncControlsFromScene(sceneId, true);
         seedEditor_.setText(juce::String(startupDocument_.territory.seed), false);
         stemGainValues_.fill(1.0);
         for (std::size_t index = 0U; index < stemGainSliders_.size(); ++index)
@@ -4690,10 +5389,6 @@ private:
         hasUndoCapture_ = false;
         undoCaptureButton_.setEnabled(false);
         sceneDirty_ = false;
-        lastAction_ = uiText(supportLanguage_, "território ", "territory ", "territoire ", "territorio ")
-            + juce::String(startupDocument_.territory.seed)
-            + uiText(supportLanguage_, " enfileirado · transição ao vivo", " queued · live transition",
-                      " mis en file · transition en direct", " encolado · transición en vivo");
     }
 
     void appendTakeTrace(const juce::String& event) {
@@ -4976,6 +5671,23 @@ private:
         }
         captureButton_.setButtonText(uiText(l, "CAPTURAR", "CAPTURE", "CAPTURER", "CAPTURAR"));
         undoCaptureButton_.setButtonText(uiText(l, "DESFAZER", "UNDO", "ANNULER", "DESHACER"));
+        memoryButton_.setButtonText(uiText(l, "MEMÓRIA", "MEMORY", "MÉMOIRE", "MEMORIA"));
+        refreshAlbumButtons();
+        percursoButton_.setTooltip(uiText(l,
+            "As cenas seguem a forma do céu: ABERTURA, ESPIRAL (desenvolvimento), RASGO (contraste), BALANÇO (retorno). Gravando, o fim do retorno pede a coda.",
+            "Scenes follow the sky's form: ABERTURA, ESPIRAL (development), RASGO (contrast), BALANÇO (return). While recording, the end of the return asks for the coda.",
+            "Les scènes suivent la forme du ciel : ABERTURA, ESPIRAL (développement), RASGO (contraste), BALANÇO (retour). En enregistrement, la fin du retour demande la coda.",
+            "Las escenas siguen la forma del cielo: ABERTURA, ESPIRAL (desarrollo), RASGO (contraste), BALANÇO (retorno). Grabando, el fin del retorno pide la coda."));
+        albumButton_.setTooltip(uiText(l,
+            "Um álbum: a seed do álbum deriva a seed e o andamento de cada faixa; cada tomada gravada entra no registro (album.json).",
+            "An album: the album seed derives each track's seed and tempo; each recorded take enters the register (album.json).",
+            "Un album : la seed de l’album dérive la seed et le tempo de chaque piste ; chaque prise entre au registre (album.json).",
+            "Un álbum: la seed del álbum deriva la seed y el tempo de cada pista; cada toma grabada entra en el registro (album.json)."));
+        memoryButton_.setTooltip(uiText(l,
+            "Guarda a sessão que você quiser, com nome, e a reabre quando quiser. O app sempre abre algo novo.",
+            "Stores the session you want, with a name, and reopens it when you want. The app always opens something new.",
+            "Garde la session voulue, avec un nom, et la rouvre quand vous voulez. L’app ouvre toujours du neuf.",
+            "Guarda la sesión que quiera, con nombre, y la reabre cuando quiera. La app siempre abre algo nuevo."));
         captureButton_.setTooltip(uiText(l,
             "Guarda BPM, macros, presenças e relações da cena atual.",
             "Stores BPM, macros, presences and relations of the current scene.",
@@ -5368,6 +6080,7 @@ private:
             codaRequested_ = false;
         }
         constellationGraph_.setStemTelemetry(telemetry);
+        followPercurso(telemetry);
         // A VARIAÇÃO no mixer: o fader de mix anda sozinho (decisão do autor,
         // 2/11 — antes, 30/10, era uma barra ao lado). Com a VARIAÇÃO ligada e
         // tocando, o cursor mostra o ganho efetivo do stem: o seu ganho vezes
@@ -5771,6 +6484,21 @@ private:
     std::uint32_t lastTracedNarrativeTurn_ = std::numeric_limits<std::uint32_t>::max();
     juce::TextButton captureButton_;
     juce::TextButton undoCaptureButton_;
+    juce::TextButton memoryButton_;
+    std::array<std::optional<PerformanceMemory>, kPerformanceMemorySlots> memories_{};
+    struct MemoryUndo { std::size_t slot = kPerformanceMemorySlots; std::optional<PerformanceMemory> before; };
+    std::optional<MemoryUndo> memoryUndo_;
+    std::unique_ptr<juce::FileChooser> memoryChooser_;
+    // O ÁLBUM e o PERCURSO (2/11).
+    PerformanceAlbum album_;
+    juce::File albumDirectory_;
+    juce::TextButton albumButton_;
+    juce::TextButton percursoButton_;
+    bool percurso_ = false;
+    std::uint8_t percursoSection_ = 255U;
+    bool takePercurso_ = false;
+    std::atomic<bool> albumMastering_{false};
+    std::string lastRecalledMemory_;
     juce::Label seedLabel_;
     juce::TextEditor seedEditor_;
     juce::TextButton seedButton_;

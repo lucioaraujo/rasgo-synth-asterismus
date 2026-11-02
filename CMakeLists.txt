@@ -325,6 +325,27 @@ if(BUILD_TESTING)
     endif()
     add_test(NAME rasgo_synth_performance_concept_stars_tests COMMAND rasgo_synth_performance_concept_stars_tests)
 
+    add_executable(rasgo_synth_performance_memory_tests tests/test_performance_memory.cpp)
+    target_link_libraries(rasgo_synth_performance_memory_tests PRIVATE rasgo_synth_performance_contracts)
+    if(NOT MSVC)
+        target_compile_options(rasgo_synth_performance_memory_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME rasgo_synth_performance_memory_tests COMMAND rasgo_synth_performance_memory_tests)
+
+    add_executable(rasgo_synth_performance_album_tests tests/test_performance_album.cpp)
+    target_link_libraries(rasgo_synth_performance_album_tests PRIVATE rasgo_synth_performance_contracts)
+    if(NOT MSVC)
+        target_compile_options(rasgo_synth_performance_album_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME rasgo_synth_performance_album_tests COMMAND rasgo_synth_performance_album_tests)
+
+    add_executable(rasgo_synth_performance_album_master_tests tests/test_performance_album_master.cpp)
+    target_link_libraries(rasgo_synth_performance_album_master_tests PRIVATE rasgo_synth_performance_contracts)
+    if(NOT MSVC)
+        target_compile_options(rasgo_synth_performance_album_master_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME rasgo_synth_performance_album_master_tests COMMAND rasgo_synth_performance_album_master_tests)
+
     add_executable(rasgo_synth_performance_session_document_tests
         tests/test_performance_session_document.cpp)
     target_link_libraries(rasgo_synth_performance_session_document_tests
