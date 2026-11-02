@@ -3633,6 +3633,10 @@ private:
         case PerformanceModuleBody::Footnote: return "FOOTNOTE";
         case PerformanceModuleBody::Bluff: return "BLUFF";
         case PerformanceModuleBody::Spectral: return "SPECTRAL";
+        case PerformanceModuleBody::Sieve: return "SIEVE";
+        case PerformanceModuleBody::Polymeter: return "POLYMETER";
+        case PerformanceModuleBody::Hocket: return "HOCKET";
+        case PerformanceModuleBody::Rupture: return "RUPTURE";
         default: return utf8("MÓDULO");
         }
     }
@@ -3815,10 +3819,12 @@ private:
         menu.addSectionHeader(uiText(supportLanguage_, "TROCAR A ESTRELA DO CORPO ", "SWAP THE STAR OF BODY ",
                                      "CHANGER L’ÉTOILE DU CORPS ", "CAMBIAR LA ESTRELLA DEL CUERPO ")
                               + juce::String(static_cast<int>(node + 1U)));
-        static constexpr std::array<PerformanceStarFunction, 4> functions{{
+        static constexpr std::array<PerformanceStarFunction, 5> functions{{
             PerformanceStarFunction::Tone, PerformanceStarFunction::Texture,
-            PerformanceStarFunction::Voice, PerformanceStarFunction::Pulse}};
-        static constexpr std::array<const char*, 4> functionNames{{"TOM", "TEXTURA", "VOZ", "PULSO"}};
+            PerformanceStarFunction::Voice, PerformanceStarFunction::Pulse, PerformanceStarFunction::Control}};
+        // CONTROLE (2/11): estrelas que não soam — filtram os ataques das outras.
+        static constexpr std::array<const char*, 5> functionNames{{"TOM", "TEXTURA", "VOZ", "PULSO",
+                                                                  "CONTROLE · NÃO SOA, FILTRA AS OUTRAS"}};
         const auto shown = displayedAsterism(identitySeed_);
         for (std::size_t group = 0U; group < functions.size(); ++group) {
             menu.addSeparator();

@@ -18,6 +18,8 @@ enum class PerformanceModuleBody : std::uint8_t {
     DejaVu, Atropelo, Galo, ModalResonator, Tuba,
     // Estrelas da biblioteca acrescentadas depois (30/10), sempre no fim:
     Footnote, Bluff, Spectral,
+    // Estrelas de controle (2/11): não soam, mudam como as outras tocam.
+    Sieve, Polymeter, Hocket, Rupture,
     Count
 };
 

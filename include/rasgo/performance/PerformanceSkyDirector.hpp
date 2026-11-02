@@ -1077,6 +1077,7 @@ private:
         case PerformanceStarFunction::Tone: factor = 1.0; break;
         case PerformanceStarFunction::Voice: factor = 0.8; break;
         case PerformanceStarFunction::Texture: factor = 0.65; break;
+        case PerformanceStarFunction::Control: factor = 0.5; break;
         }
         return (0.25 + std::clamp(body.presence, 0.0, 1.0)) * factor;
     }

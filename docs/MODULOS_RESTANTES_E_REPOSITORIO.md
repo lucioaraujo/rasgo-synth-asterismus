@@ -33,7 +33,7 @@ Ordem proposta (uma por vez, com teste, medição de custo e escuta):
 1. **Tuba** (voz pronta, local) e **Modal Resonator como estrela** (feitos);
 2. **Footnote** e **Bluff Signal** (feitos em 30/10);
 3. **Spectral Object** (adaptação para tempo real — feito em 30/10);
-4. as estrelas de controle (grupo C);
+4. as estrelas de controle (grupo C — feitas em 2/11);
 5. as reescritas do grupo B, começando por **Harmonaig** e **Bloom**.
 
 ## 3.1 Feito em 30/10
@@ -79,6 +79,28 @@ Ordem proposta (uma por vez, com teste, medição de custo e escuta):
   ressonador, um corpo (se outro corpo já o toca, o item diz qual). A faixa
   da BIBLIOTECA agora diz o que o clique faz. Teste: Tuba no corpo 5 e Modal
   no corpo 1, os dois soam.
+- **Estrelas de controle** (2/11, grupo C): Sieve, Polymeter, Hocket e
+  Rupture entram no céu (22 tocáveis) numa função nova, **CONTROLE**: não
+  soam (o corpo fica com o stem mudo) e, acesas, filtram os **ataques** das
+  outras estrelas — todo ataque passa por `PerformanceSky::controlGate`. As
+  de som contínuo seguem soando, menos na Ruptura.
+  - **SIEVE** — peneira de Xenakis (A, 0) ∪ (B, R) sobre a contagem de
+    ataques de cada estrela. MÓDULO A 2–7, MÓDULO B 3–11, RESÍDUO.
+  - **POLYMETER** — cada estrela num Euclides próprio de k ataques em n
+    passos, n diferente por estrela. CICLO 3–9, PULSOS, ESPALHA.
+  - **HOCKET** — um ataque por instante, e quem atacou há pouco espera a vez
+    (GRUPO 2–4); PACIÊNCIA = quantas vezes cede antes de atacar mesmo assim;
+    ALCANCE = a parte dos ataques sob a regra.
+  - **RUPTURE** — de PERÍODO em PERÍODO (4–16 batidas), com CHANCE, o céu se
+    cala por DURAÇÃO (1–4 batidas): corte em ~3 ms, volta em ~20 ms. A estrela
+    marca o ataque no corte.
+  Teste: Footnote e Atropelo no mesmo relógio — sem controle atacam juntos;
+  a Peneira afina sem calar; o Polímetro dá contagens diferentes; o Hoquetus
+  nunca deixa os dois atacarem no mesmo instante; a Ruptura corta.
+  Escolha minha, para a escuta do autor: o alcance é **o céu todo** (não só os
+  vizinhos na Constelação) e o parâmetro vale com uma amostra de atraso.
+- Os controles das estrelas da biblioteca começavam em zero fora de um corpo
+  (a tabela de padrões tinha 14 entradas); agora seguem o mesmo ciclo.
 - Em todas: a seed segue escolhendo entre as 14; nenhum asterismo muda (hash
   `4230363d713a0000`).
 

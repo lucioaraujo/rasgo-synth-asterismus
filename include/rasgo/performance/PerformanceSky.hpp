@@ -85,7 +85,7 @@ inline constexpr std::array<PerformanceModuleBody, 14> kPerformanceSeedStars{{
 // As estrelas que o céu sabe tocar: as da seed e, depois delas, as estrelas
 // da biblioteca (30/10) — o performer as põe num corpo trocando a estrela
 // dele; a seed não as escolhe (docs/MODULOS_RESTANTES_E_REPOSITORIO.md).
-inline constexpr std::array<PerformanceModuleBody, 18> kPerformanceSkyStars{{
+inline constexpr std::array<PerformanceModuleBody, 22> kPerformanceSkyStars{{
     PerformanceModuleBody::Acid, PerformanceModuleBody::Gendyn,
     PerformanceModuleBody::Percussion, PerformanceModuleBody::FmFlute,
     PerformanceModuleBody::Theremin, PerformanceModuleBody::Scat,
@@ -94,12 +94,14 @@ inline constexpr std::array<PerformanceModuleBody, 18> kPerformanceSkyStars{{
     PerformanceModuleBody::AtariPunk, PerformanceModuleBody::DejaVu,
     PerformanceModuleBody::Atropelo, PerformanceModuleBody::Galo,
     PerformanceModuleBody::Tuba, PerformanceModuleBody::Footnote, PerformanceModuleBody::Bluff,
-    PerformanceModuleBody::Spectral}};
+    PerformanceModuleBody::Spectral, PerformanceModuleBody::Sieve, PerformanceModuleBody::Polymeter,
+    PerformanceModuleBody::Hocket, PerformanceModuleBody::Rupture}};
 
 // A função musical de cada estrela, a mesma do catálogo
 // (PerformanceModuleLibrary): é ela que dá a cada corpo do primeiro
 // asterismo um lugar audível na figura.
-enum class PerformanceStarFunction : std::uint8_t { Tone, Texture, Voice, Pulse };
+// Control (2/11): estrelas que não soam — filtram os ataques das outras.
+enum class PerformanceStarFunction : std::uint8_t { Tone, Texture, Voice, Pulse, Control };
 
 inline constexpr PerformanceStarFunction performanceStarFunction(
     PerformanceModuleBody body) noexcept {
@@ -107,6 +109,10 @@ inline constexpr PerformanceStarFunction performanceStarFunction(
     case PerformanceModuleBody::Gendyn:
     case PerformanceModuleBody::DejaVu:
     case PerformanceModuleBody::Spectral: return PerformanceStarFunction::Texture;
+    case PerformanceModuleBody::Sieve:
+    case PerformanceModuleBody::Polymeter:
+    case PerformanceModuleBody::Hocket:
+    case PerformanceModuleBody::Rupture: return PerformanceStarFunction::Control;
     case PerformanceModuleBody::Scat:
     case PerformanceModuleBody::Choir:
     case PerformanceModuleBody::Atropelo: return PerformanceStarFunction::Voice;
@@ -187,6 +193,10 @@ inline constexpr std::string_view performanceStarLibraryId(PerformanceModuleBody
     case PerformanceModuleBody::Footnote: return "footnote";
     case PerformanceModuleBody::Bluff: return "bluff";
     case PerformanceModuleBody::Spectral: return "spectral";
+    case PerformanceModuleBody::Sieve: return "sieve";
+    case PerformanceModuleBody::Polymeter: return "polymeter";
+    case PerformanceModuleBody::Hocket: return "hocket";
+    case PerformanceModuleBody::Rupture: return "rupture";
     default: return {};
     }
 }
@@ -214,6 +224,10 @@ inline constexpr std::string_view performanceStarRole(PerformanceModuleBody body
     case PerformanceModuleBody::Footnote: return "nota de rodapé inarmônica";
     case PerformanceModuleBody::Bluff: return "sinal, blefe e confiança";
     case PerformanceModuleBody::Spectral: return "objeto espectral: altura é ritmo";
+    case PerformanceModuleBody::Sieve: return "peneira de Xenakis nos ataques do céu";
+    case PerformanceModuleBody::Polymeter: return "cada estrela no seu próprio ciclo";
+    case PerformanceModuleBody::Hocket: return "hoquetus: ninguém ataca duas vezes seguidas";
+    case PerformanceModuleBody::Rupture: return "ruptura: o céu se cala de repente";
     default: return {};
     }
 }
@@ -241,6 +255,10 @@ inline constexpr std::array<const char*, 3> performanceStarControlNames(
     case PerformanceModuleBody::Footnote: return {"ALTURA", "INARMONIA", "DECAIM."};
     case PerformanceModuleBody::Bluff: return {"VERDADE", "JANELA", "ALTURA"};
     case PerformanceModuleBody::Spectral: return {"ALTURA", "INARMONIA", "PERÍODO"};
+    case PerformanceModuleBody::Sieve: return {"MÓDULO A", "MÓDULO B", "RESÍDUO"};
+    case PerformanceModuleBody::Polymeter: return {"CICLO", "PULSOS", "ESPALHA"};
+    case PerformanceModuleBody::Hocket: return {"GRUPO", "PACIÊNCIA", "ALCANCE"};
+    case PerformanceModuleBody::Rupture: return {"PERÍODO", "DURAÇÃO", "CHANCE"};
     default: return {"I", "II", "III"};
     }
 }
@@ -599,6 +617,29 @@ public:
         memoryTick_ = advanceClock(memoryPhase_, tempo * (0.18 + context_.time * 0.62
             + context_.density * 0.24 + 0.11), sky.holding);
         if (memoryTick_) ++memoryStep_;
+        // As estrelas de controle acesas na amostra anterior valem nesta.
+        controlActive_ = controlPending_;
+        ++hocketClock_;
+        controlPending_ = ControlState{};
+        if (controlActive_.rupture) {
+            if (memoryTick_) {
+                if (ruptureBeatsLeft_ > 0U) --ruptureBeatsLeft_;
+                else if (++ruptureBeat_ >= controlActive_.rupturePeriod) {
+                    ruptureBeat_ = 0U;
+                    if (hocketDraw() < controlActive_.ruptureChance) {
+                        ruptureBeatsLeft_ = controlActive_.ruptureLength;
+                        rupturePending_ = true;
+                    }
+                }
+            }
+        } else {
+            ruptureBeatsLeft_ = 0U;
+        }
+        // A Ruptura corta em ~3 ms e volta em ~20 ms.
+        const double ruptureTarget = ruptureBeatsLeft_ > 0U ? 0.0 : 1.0;
+        ruptureGain_ += (ruptureTarget - ruptureGain_)
+            * (ruptureTarget < ruptureGain_ ? 1.0 - std::exp(-1.0 / (0.003 * sampleRate_))
+                                            : 1.0 - std::exp(-1.0 / (0.020 * sampleRate_)));
 #else
         (void) sky;
 #endif
@@ -619,7 +660,9 @@ public:
             const double base = std::max(20.0, frequency);
             if (cuePending_[star]) {
                 cuePending_[star] = false;
-                applyCue(body, shapedControls(star), base, cuePitch_[star], cueStrength_[star]);
+                // Os chamados da trama também passam pelas estrelas de controle.
+                if (controlGate())
+                    applyCue(body, shapedControls(star), base, cuePitch_[star], cueStrength_[star]);
             }
             value = renderPrepared(body, shapedControls(star), std::max(20.0, base * bend_[star]))
                 * (1.0 + accent_[star] * 0.9);
@@ -629,6 +672,9 @@ public:
         if (seedEventPulse_ > 0.00001)
             value = std::tanh(value + seedEventPulse_ * kSeedPulseWeights[star % kSeedPulseWeights.size()]
                                   * (0.72 + seedVariation_ * 0.035));
+#endif
+#if defined(RASGO_PERFORMANCE_SKY_AVAILABLE)
+        if (ruptureGain_ < 1.0) value *= ruptureGain_;
 #endif
         lastOutput_[star] = std::isfinite(value) ? value : 0.0;
         return lastOutput_[star];
@@ -675,8 +721,13 @@ private:
         constexpr StarControls first{{0.52, 0.58, 0.54}};
         constexpr StarControls second{{0.38, 0.34, 0.56}};
         constexpr StarControls third{{0.62, 0.42, 0.48}};
-        return {{first, second, third, first, second, first, second, third,
-                 first, second, third, first, second, third}};
+        // As 14 da seed como sempre; as da biblioteca (2/10–2/11) seguem o
+        // mesmo ciclo — antes ficavam com os três controles em zero.
+        std::array<StarControls, kStarCount> controls{{first, second, third, first, second, first, second, third,
+                                                      first, second, third, first, second, third}};
+        for (std::size_t star = 14U; star < kStarCount; ++star)
+            controls[star] = star % 3U == 0U ? first : star % 3U == 1U ? second : third;
+        return controls;
     }
 
     double sampleRate_ = 48000.0;
@@ -761,7 +812,80 @@ private:
 
     // O tique da estrela corrente: o do seu ciclo próprio quando há contagens,
     // o do relógio compartilhado da sua família quando não.
-    bool starTick(bool shared) const noexcept { return counting_ ? ownTick_[currentStar_] : shared; }
+    // Com uma estrela de controle acesa (2/11), o tique passa pelo filtro dela.
+    bool starTick(bool shared) noexcept {
+        const bool tick = counting_ ? ownTick_[currentStar_] : shared;
+        return tick && controlGate();
+    }
+
+    // As estrelas de controle: cada uma, acesa, filtra os ataques das outras
+    // (as de som contínuo não atacam e seguem soando; a Ruptura cala todas).
+    // Os parâmetros valem já na amostra em que a estrela de controle é
+    // renderizada (para as estrelas renderizadas depois dela) e seguem na
+    // amostra seguinte (para as anteriores): no pior caso, uma amostra de
+    // atraso, só ao acender.
+    struct ControlState {
+        bool sieve = false, polymeter = false, hocket = false, rupture = false;
+        std::uint32_t sieveM1 = 3U, sieveM2 = 5U, sieveR2 = 1U;
+        std::uint32_t polyCycle = 5U, polySpread = 2U;
+        double polyPulses = 0.5;
+        std::uint32_t hocketGroup = 2U, hocketPatience = 2U;
+        double hocketReach = 1.0;
+        std::uint32_t rupturePeriod = 8U, ruptureLength = 2U;
+        double ruptureChance = 0.6;
+    };
+    bool controlGate() noexcept {
+        const auto star = currentStar_;
+        if (performanceStarFunction(kPerformanceSkyStars[star]) == PerformanceStarFunction::Control) return true;
+        const auto& g = controlActive_;
+        if (g.rupture && ruptureBeatsLeft_ > 0U) return false;
+        if (g.sieve && !sieveOnset(sieveStep_[star]++, g.sieveM1, g.sieveM2, g.sieveR2)) return false;
+        if (g.polymeter) {
+            // Polimetria: o mesmo número de ataques k (PULSOS sobre o CICLO)
+            // em ciclos de comprimentos diferentes por estrela (CICLO + o
+            // espalhamento pelo índice) — as estrelas defasam entre si.
+            const auto n = g.polyCycle + (static_cast<std::uint32_t>(star) * g.polySpread) % 5U;
+            const auto k = std::min(n, std::max<std::uint32_t>(1U,
+                static_cast<std::uint32_t>(std::lround(g.polyPulses * g.polyCycle))));
+            const auto step = polyStep_[star]++ % n;
+            if ((step * k) % n >= k) return false;
+        }
+        if (g.hocket && hocketDraw() < g.hocketReach) {
+            // Hoquetus: um ataque por instante — quem chega no mesmo instante
+            // de outra cede — e uma estrela entre as últimas (GRUPO − 1) que
+            // atacaram espera a vez. A PACIÊNCIA é quantas vezes ela cede
+            // antes de atacar mesmo assim (sem isso, uma estrela sozinha
+            // calaria).
+            // No mesmo instante, sempre cede (uma estrela sozinha nunca colide
+            // consigo mesma, então isso não cala ninguém).
+            if (hocketLastClock_ == hocketClock_) return false;
+            bool recent = false;
+            for (std::uint32_t back = 0U; back + 1U < g.hocketGroup; ++back)
+                recent = recent || hocketRecent_[back] == star;
+            if (recent && hocketYield_[star] < g.hocketPatience) {
+                ++hocketYield_[star];
+                return false;
+            }
+            hocketYield_[star] = 0U;
+            hocketLastClock_ = hocketClock_;
+            for (std::size_t back = hocketRecent_.size() - 1U; back > 0U; --back)
+                hocketRecent_[back] = hocketRecent_[back - 1U];
+            hocketRecent_[0] = star;
+        }
+        return true;
+    }
+    double hocketDraw() noexcept {
+        hocketState_ = hocketState_ * 1664525U + 1013904223U;
+        return static_cast<double>(hocketState_ >> 8U) / 16777216.0;
+    }
+    ControlState controlActive_{}, controlPending_{};
+    std::array<std::uint32_t, kStarCount> sieveStep_{}, polyStep_{}, hocketYield_{};
+    std::array<std::size_t, 4> hocketRecent_{{kStarCount, kStarCount, kStarCount, kStarCount}};
+    std::uint32_t hocketState_ = 0x5EEDU;
+    std::uint64_t hocketClock_ = 0U, hocketLastClock_ = ~std::uint64_t{0};
+    std::uint32_t ruptureBeat_ = 0U, ruptureBeatsLeft_ = 0U;
+    double ruptureGain_ = 1.0;
+    bool rupturePending_ = false;
 
     // Ciclos por estrela: pulso denso para quem marca o tempo, ciclos ímpares
     // e esparsos para linhas e vozes, longos e raros para memória.
@@ -1112,6 +1236,53 @@ private:
             return (static_cast<double>(bluffCall_.tick()) * 0.8
                     + static_cast<double>(bluffAnswer_.tick()) * (0.25 + bluff_.responseGain() * 0.75))
                 * holdGain;
+        case PerformanceModuleBody::Sieve:
+            // Peneira (Xenakis, "Sieves", 1990): (A, 0) ∪ (B, R) sobre a
+            // contagem de ataques de cada estrela.
+            controlPending_.sieve = true;
+            controlPending_.sieveM1 = 2U + static_cast<std::uint32_t>(std::lround(control[0] * 5.0));
+            controlPending_.sieveM2 = 3U + static_cast<std::uint32_t>(std::lround(control[1] * 8.0));
+            controlPending_.sieveR2 = static_cast<std::uint32_t>(
+                std::lround(control[2] * static_cast<double>(controlPending_.sieveM2 - 1U)));
+            controlActive_.sieve = true;
+            controlActive_.sieveM1 = controlPending_.sieveM1;
+            controlActive_.sieveM2 = controlPending_.sieveM2;
+            controlActive_.sieveR2 = controlPending_.sieveR2;
+            return 0.0;
+        case PerformanceModuleBody::Polymeter:
+            controlPending_.polymeter = true;
+            controlPending_.polyCycle = 3U + static_cast<std::uint32_t>(std::lround(control[0] * 6.0));
+            controlPending_.polyPulses = 0.2 + control[1] * 0.7;
+            controlPending_.polySpread = static_cast<std::uint32_t>(std::lround(control[2] * 4.0));
+            controlActive_.polymeter = true;
+            controlActive_.polyCycle = controlPending_.polyCycle;
+            controlActive_.polyPulses = controlPending_.polyPulses;
+            controlActive_.polySpread = controlPending_.polySpread;
+            return 0.0;
+        case PerformanceModuleBody::Hocket:
+            controlPending_.hocket = true;
+            controlPending_.hocketGroup = 2U + static_cast<std::uint32_t>(std::lround(control[0] * 2.0));
+            controlPending_.hocketPatience = 1U + static_cast<std::uint32_t>(std::lround(control[1] * 3.0));
+            controlPending_.hocketReach = 0.3 + control[2] * 0.7;
+            controlActive_.hocket = true;
+            controlActive_.hocketGroup = controlPending_.hocketGroup;
+            controlActive_.hocketPatience = controlPending_.hocketPatience;
+            controlActive_.hocketReach = controlPending_.hocketReach;
+            return 0.0;
+        case PerformanceModuleBody::Rupture:
+            controlPending_.rupture = true;
+            controlPending_.rupturePeriod = 4U + static_cast<std::uint32_t>(std::lround(control[0] * 12.0));
+            controlPending_.ruptureLength = 1U + static_cast<std::uint32_t>(std::lround(control[1] * 3.0));
+            controlPending_.ruptureChance = 0.3 + control[2] * 0.7;
+            controlActive_.rupture = true;
+            controlActive_.rupturePeriod = controlPending_.rupturePeriod;
+            controlActive_.ruptureLength = controlPending_.ruptureLength;
+            controlActive_.ruptureChance = controlPending_.ruptureChance;
+            if (rupturePending_) {
+                rupturePending_ = false;
+                markAttack(0.0);
+            }
+            return 0.0;
         case PerformanceModuleBody::Spectral: {
             // Um objeto, três leituras: o parcial p soa em f0·p (esticado pela
             // INARMONIA, até B = 0,004) e pulsa p vezes por período. PERÍODO:

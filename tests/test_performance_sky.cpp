@@ -33,6 +33,10 @@ const char* starName(PerformanceModuleBody body) {
     case PerformanceModuleBody::Footnote: return "Footnote";
     case PerformanceModuleBody::Bluff: return "Bluff";
     case PerformanceModuleBody::Spectral: return "Spectral";
+    case PerformanceModuleBody::Sieve: return "Sieve";
+    case PerformanceModuleBody::Polymeter: return "Polymeter";
+    case PerformanceModuleBody::Hocket: return "Hocket";
+    case PerformanceModuleBody::Rupture: return "Rupture";
     case PerformanceModuleBody::Walsh: return "Walsh";
     case PerformanceModuleBody::HardSync: return "Hard Sync";
     case PerformanceModuleBody::AtariPunk: return "Atari Punk";
@@ -41,6 +45,38 @@ const char* starName(PerformanceModuleBody body) {
     case PerformanceModuleBody::Galo: return "Galo";
     default: return "?";
     }
+}
+
+// Control stars (2/11): attacks of Footnote and Atropelo (both on the memory
+// clock) in 30 s, with an optional control star lit beside them. Returns the
+// two attack counts, the samples where both attacked together and the
+// summed output energy.
+struct ControlRun { std::uint32_t footnote = 0U, atropelo = 0U, together = 0U, controlMarks = 0U; double energy = 0.0; };
+ControlRun runWithControl(PerformanceModuleBody control, std::array<double, 3> values) {
+    PerformanceSky sky;
+    sky.prepare(kRate);
+    sky.setSeed(181U);
+    if (control != PerformanceModuleBody::Count)
+        for (std::size_t index = 0U; index < 3U; ++index)
+            sky.setControl(control, static_cast<PerformanceModuleControl>(index), values[index]);
+    PerformanceSkyContext context;
+    ControlRun run;
+    for (std::size_t sample = 0U; sample < static_cast<std::size_t>(kRate * 30.0); ++sample) {
+        sky.advance(context);
+        if (control != PerformanceModuleBody::Count) {
+            sky.renderStar(control, 220.0);
+            run.controlMarks += sky.attacked(control) ? 1U : 0U;
+        }
+        const double a = sky.renderStar(PerformanceModuleBody::Footnote, 220.0);
+        const double b = sky.renderStar(PerformanceModuleBody::Atropelo, 110.0);
+        run.energy += a * a + b * b;
+        const bool fa = sky.attacked(PerformanceModuleBody::Footnote);
+        const bool fb = sky.attacked(PerformanceModuleBody::Atropelo);
+        run.footnote += fa ? 1U : 0U;
+        run.atropelo += fb ? 1U : 0U;
+        run.together += fa && fb ? 1U : 0U;
+    }
+    return run;
 }
 
 // Renders `target` for `samples` while the stars in `others` are also lit.
@@ -67,7 +103,31 @@ int main() {
     bool ok = expect(PerformanceSky::available(), "the sky needs the four vendored cohorts");
     // 30/10: fifteen stars play — the fourteen the seed chooses and the Tuba,
     // a library star the performer places by swapping a body's star.
-    ok = expect(PerformanceSky::kStarCount == 18U, "eighteen stars play today") && ok;
+    ok = expect(PerformanceSky::kStarCount == 22U, "twenty-two stars play today") && ok;
+    {
+        const auto free = runWithControl(PerformanceModuleBody::Count, {});
+        const auto sieved = runWithControl(PerformanceModuleBody::Sieve, {{0.6, 0.6, 0.3}});
+        const auto poly = runWithControl(PerformanceModuleBody::Polymeter, {{0.5, 0.2, 1.0}});
+        const auto hocket = runWithControl(PerformanceModuleBody::Hocket, {{0.0, 1.0, 1.0}});
+        const auto rupture = runWithControl(PerformanceModuleBody::Rupture, {{0.0, 1.0, 1.0}});
+        std::cout << "control stars (footnote/atropelo/together): free " << free.footnote << '/' << free.atropelo
+                  << '/' << free.together << ", sieve " << sieved.footnote << '/' << sieved.atropelo
+                  << ", polymeter " << poly.footnote << '/' << poly.atropelo << ", hocket " << hocket.footnote
+                  << '/' << hocket.atropelo << '/' << hocket.together << ", rupture " << rupture.footnote << '/'
+                  << rupture.atropelo << " (" << rupture.controlMarks << " ruptures)\n";
+        ok = expect(free.together > 0U, "without control both memory stars attack together") && ok;
+        ok = expect(sieved.footnote + sieved.atropelo < free.footnote + free.atropelo
+                        && sieved.footnote > 0U && sieved.atropelo > 0U,
+                    "the Sieve thins the attacks without silencing them") && ok;
+        ok = expect(poly.footnote != poly.atropelo && poly.footnote > 0U && poly.atropelo > 0U,
+                    "the Polymeter gives each star its own cycle") && ok;
+        ok = expect(hocket.together == 0U && hocket.footnote > 0U && hocket.atropelo > 0U,
+                    "the Hocket never lets two stars attack at once") && ok;
+        ok = expect(rupture.controlMarks > 0U
+                        && rupture.footnote + rupture.atropelo < free.footnote + free.atropelo
+                        && rupture.energy < free.energy,
+                    "the Rupture silences the sky now and then") && ok;
+    }
     // Toda estrela tocável soa, finita; as de ataque marcam ataques (a 17ª
     // caía fora da máscara de 16 bits); renderizar duas vezes na mesma amostra
     // não avança o DSP.
@@ -88,6 +148,10 @@ int main() {
             attacks += sky.attacked(star) ? 1U : 0U;
         }
         const std::string name{starName(star)};
+        if (performanceStarFunction(star) == PerformanceStarFunction::Control) {
+            ok = expect(finite && energy == 0.0, (name + " is a silent control star").c_str()) && ok;
+            continue;
+        }
         ok = expect(finite && energy > 1.0, (name + " sounds, finite").c_str()) && ok;
         ok = expect(stable, (name + " renders once per sample").c_str()) && ok;
         if (star == PerformanceModuleBody::Footnote || star == PerformanceModuleBody::Bluff
@@ -101,9 +165,11 @@ int main() {
     ok = expect(!PerformanceSky::isStar(PerformanceModuleBody::ModalResonator),
                 "Modal is not a star until its adapter moves here") && ok;
 
-    // Every star sounds alone, finite and bounded.
+    // Every star sounds alone, finite and bounded (control stars are silent:
+    // they filter the others' attacks, tested above).
     const auto seconds = static_cast<std::size_t>(kRate * 8.0);
     for (const auto star : kPerformanceSkyStars) {
+        if (performanceStarFunction(star) == PerformanceStarFunction::Control) continue;
         const auto signal = renderStar(181U, star, {}, seconds);
         double peak = 0.0;
         bool finite = true;
@@ -117,12 +183,15 @@ int main() {
         ok = expect(peak <= 1.0, starName(star)) && ok;
     }
 
-    // One module = one stem: a star does not change when others are lit.
+    // One module = one stem: a star does not change when other sounding stars
+    // are lit. Control stars change the others on purpose (2/11), so they are
+    // left out here and tested by their effect above.
     const auto shortRun = static_cast<std::size_t>(kRate * 2.0);
     for (const auto star : kPerformanceSkyStars) {
         std::vector<PerformanceModuleBody> everyoneElse;
         for (const auto other : kPerformanceSkyStars)
-            if (other != star) everyoneElse.push_back(other);
+            if (other != star && performanceStarFunction(other) != PerformanceStarFunction::Control)
+                everyoneElse.push_back(other);
         ok = expect(renderStar(4242U, star, {}, shortRun)
                         == renderStar(4242U, star, everyoneElse, shortRun),
                     starName(star)) && ok;

@@ -70,16 +70,18 @@ inline constexpr std::array<PerformanceLibraryEntry, 29> kPerformanceModuleLibra
      0U, "Studio OrganismStem::BassFallback"},
     {"harmonaig", "Harmonaig", PerformanceModuleFamily::Voice, PerformanceLibraryState::NeedsAudit,
      0U, "Studio OrganismStem::Harmonaig"},
-    {"sieve", "Sieve", PerformanceModuleFamily::Resource, PerformanceLibraryState::NeedsAudit,
+    // Sieve, Polymeter, Hocket, Rupture: estrelas de controle desde 2/11 (não
+    // soam; filtram os ataques das outras — PerformanceSky::controlGate).
+    {"sieve", "Sieve", PerformanceModuleFamily::Resource, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Sieve"},
     {"bloom", "Bloom", PerformanceModuleFamily::Tone, PerformanceLibraryState::NeedsAudit,
      0U, "Studio OrganismStem::Bloom"},
-    {"hocket", "Hocket", PerformanceModuleFamily::Pulse, PerformanceLibraryState::NeedsAudit,
+    {"hocket", "Hocket", PerformanceModuleFamily::Pulse, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Hocket"},
     // Spectral Object: estrela da biblioteca desde 30/10 (PerformanceSpectralObject.hpp).
     {"spectral", "Spectral Object", PerformanceModuleFamily::Texture, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Spectral"},
-    {"polymeter", "Polymeter", PerformanceModuleFamily::Pulse, PerformanceLibraryState::NeedsAudit,
+    {"polymeter", "Polymeter", PerformanceModuleFamily::Pulse, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Polymeter"},
     // Bluff Signal: estrela da biblioteca desde 30/10 (PerformanceBluffSignal.hpp).
     {"bluff", "Bluff Signal", PerformanceModuleFamily::Voice, PerformanceLibraryState::ActiveCohort,
@@ -87,7 +89,7 @@ inline constexpr std::array<PerformanceLibraryEntry, 29> kPerformanceModuleLibra
     // Footnote: estrela da biblioteca desde 30/10 (FootnotePluck vendorado).
     {"footnote", "Footnote", PerformanceModuleFamily::Voice, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Footnote"},
-    {"rupture", "Rupture", PerformanceModuleFamily::Resource, PerformanceLibraryState::NeedsAudit,
+    {"rupture", "Rupture", PerformanceModuleFamily::Resource, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Rupture"},
     {"thermal-static", "Thermal Static", PerformanceModuleFamily::Texture, PerformanceLibraryState::NeedsAudit,
      0U, "Studio OrganismStem::ThermalStatic"},
