@@ -445,6 +445,7 @@ public:
     bool setTerritoryScene(const PerformanceScene& scene,
                            const PerformanceTerritory& territory) noexcept {
         const bool wasPlaying = session_.playing;
+        ecology_.restartSeed();
         if (!setScene(scene, territory)) return false;
         const bool sceneRequestedPlaying = session_.playing;
         session_.playing = wasPlaying;

@@ -43,7 +43,11 @@ public:
 #endif
     }
 
+    // O próximo território recomeça a peça mesmo com a mesma seed (território
+    // novo, faixa recomeçada); chamar uma cena não passa por aqui.
+    void restartSeed() noexcept { seedConfigured_ = false; }
     void reset() noexcept {
+        seedConfigured_ = false;
         voices_ = {};
         tornActorId_ = kInvalidActorId;
         lastFractureBreaks_ = 0;
@@ -253,23 +257,32 @@ public:
                               std::uint32_t seed,
                               const PerformanceGamePlan& gamePlan) noexcept {
         if (!identity.valid()) return;
+        // Chamar uma cena reaplica o território; com a mesma seed, o céu e as
+        // trajetórias seguem de onde estão (2/11: antes toda troca de cena
+        // reiniciava a forma do céu na ABERTURA — o PERCURSO ficava preso
+        // entre abertura e desenvolvimento, e o clique numa cena também
+        // voltava à abertura). Só uma seed nova recomeça a peça.
+        const bool newSeed = !seedConfigured_ || seed != seed_;
+        seedConfigured_ = true;
         territoryIdentity_ = identity;
         seed_ = seed;
         composition_ = compositionProfileForSeed(seed);
         ++seedCacheVersion_;
         motionSeedOffset_ = static_cast<double>(seed % 37U) * 0.17;
-        spatialGame_.configure(seed, gamePlan);
-        seedTrajectory_.configure(seed);
-        collageTrajectory_.configure(seed);
-        sky_.setSeed(seed);
-        director_.setSeed(seed);
-        director_.setTonalCenter(440.0 * seedTonalScale()
-            * std::pow(2.0, (static_cast<double>(seedRootMidi()) - 69.0) / 12.0));
+        if (newSeed) {
+            spatialGame_.configure(seed, gamePlan);
+            seedTrajectory_.configure(seed);
+            collageTrajectory_.configure(seed);
+            sky_.setSeed(seed);
+            director_.setSeed(seed);
+            director_.setTonalCenter(440.0 * seedTonalScale()
+                * std::pow(2.0, (static_cast<double>(seedRootMidi()) - 69.0) / 12.0));
+        }
         director_.setStrategy(gamePlan.strategy);
-        sky_.setSeedEvent(seedTrajectory_.event(0U));
+        if (newSeed) sky_.setSeedEvent(seedTrajectory_.event(0U));
         for (std::size_t index = 0U; index < voiceCount_; ++index)
             voices_[index].star = starForSlot(index);
-        if (fracturePrepared_) {
+        if (fracturePrepared_ && newSeed) {
             fractureParameters_.seed = seed;
             fracture_.setParameters(fractureParameters_);
         }
@@ -1983,6 +1996,7 @@ private:
         PerformanceModuleBody star = PerformanceModuleBody::Count;
     };
     std::array<StarSwap, 8> starSwaps_{};
+    bool seedConfigured_ = false;
     std::array<std::uint16_t, 8> pinnedActors_{{kInvalidActorId, kInvalidActorId, kInvalidActorId, kInvalidActorId,
                                                    kInvalidActorId, kInvalidActorId, kInvalidActorId, kInvalidActorId}};
     PerformanceMotionFamily collectiveFamily_ = PerformanceMotionFamily::Count;

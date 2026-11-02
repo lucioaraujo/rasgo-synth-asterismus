@@ -1826,6 +1826,31 @@ void testPerformerSwapsAStar() {
            "both bodies go back to the seed's stars");
 }
 
+void testSceneRecallKeepsTheSkyForm() {
+    // 2/11: recalling a scene re-applied the territory and reseeded the sky
+    // director, sending the form back to OPENING — the PERCURSO got stuck
+    // between opening and development, and a manual scene click did the
+    // same. With the same seed, a recall must leave the form where it is; a
+    // new territory (even with the same seed) still starts over.
+    const auto document = PerformanceTerritoryFactory::makeForReleasedStems(181U, 8U, true);
+    PerformanceSessionEngine engine;
+    expect(engine.prepare(48000.0, 512U, 2U) && engine.setScene(document.scenes[0], document.territory),
+           "form engine prepares");
+    engine.setSkyInfluence(1.0);
+    expect(engine.setFormPlan({{2U, 40U, 40U, 40U}}), "a short opening is planned");
+    std::array<float, 512> left{}, right{};
+    auto section = [&] { return engine.readTelemetry().skySection; };
+    int blocks = 0;
+    while (section() != 1U && blocks < 94 * 30) { engine.processBlock(left.data(), right.data(), 512U); ++blocks; }
+    expect(section() == 1U, "the form reaches DEVELOPMENT");
+    expect(engine.recallScene(document.scenes[1], document.territory), "another scene is recalled");
+    for (int block = 0; block < 94; ++block) engine.processBlock(left.data(), right.data(), 512U);
+    expect(section() == 1U, "a scene recall keeps the sky's form (no jump back to OPENING)");
+    expect(engine.setTerritoryScene(document.scenes[0], document.territory), "the same territory is installed again");
+    for (int block = 0; block < 8; ++block) engine.processBlock(left.data(), right.data(), 512U);
+    expect(section() == 0U, "a new territory starts the piece over");
+}
+
 void testSkyAnchorsSeparateTheStars() {
     // The engine places actors 4-8 all at (0.50, 0.78) until dragged; the
     // screen draws them apart. Sky anchors give the physics the drawn places
@@ -1938,6 +1963,7 @@ int main() {
     testFractureTearsTheStruckStem();
     testSkyAnchorsSeparateTheStars();
     testPerformerSwapsAStar();
+    testSceneRecallKeepsTheSkyForm();
     testMasterStageReachesAlbumLevelSafely();
     testLoudnessMeterMatchesTheStandard();
     std::cout << "rasgo_synth_performance_engine_tests: OK\n";
