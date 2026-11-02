@@ -21,7 +21,7 @@ enum class PerformanceModuleBody : std::uint8_t {
     // Estrelas de controle (2/11): não soam, mudam como as outras tocam.
     Sieve, Polymeter, Hocket, Rupture,
     // Reescritas a partir do conceito (2/11, grupo B).
-    Harmonaig, Bloom,
+    Harmonaig, Bloom, ThermalStatic, Core, Texture, BassFallback,
     Count
 };
 

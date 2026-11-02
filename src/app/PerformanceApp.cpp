@@ -3639,6 +3639,10 @@ private:
         case PerformanceModuleBody::Rupture: return "RUPTURE";
         case PerformanceModuleBody::Harmonaig: return "HARMONAIG";
         case PerformanceModuleBody::Bloom: return "BLOOM";
+        case PerformanceModuleBody::ThermalStatic: return "THERMAL";
+        case PerformanceModuleBody::Core: return "CORE";
+        case PerformanceModuleBody::Texture: return "TEXTURE";
+        case PerformanceModuleBody::BassFallback: return "BASS";
         default: return utf8("MÓDULO");
         }
     }

@@ -35,7 +35,7 @@ Ordem proposta (uma por vez, com teste, medição de custo e escuta):
 3. **Spectral Object** (adaptação para tempo real — feito em 30/10);
 4. as estrelas de controle (grupo C — feitas em 2/11);
 5. as reescritas do grupo B, começando por **Harmonaig** e **Bloom** (feitos
-   em 2/11; faltam Thermal Static, Core, Texture, Bass Fallback).
+   em 2/11; Thermal Static, Core, Texture e Bass Fallback também, no mesmo dia).
 
 ## 3.1 Feito em 30/10
 
@@ -114,6 +114,26 @@ Ordem proposta (uma por vez, com teste, medição de custo e escuta):
     de nível. Serra com polyBLEP e passa-baixas suave. Controles CAMINHO,
     REGISTRO, DURAÇÃO.
   Teste próprio: `test_performance_harmony_stars.cpp`.
+- **Thermal Static, Core, Texture, Bass Fallback** (2/11, os últimos do
+  grupo B) reescritos a partir do conceito em
+  `PerformanceStudioConceptStars.hpp` (28 tocáveis; **nenhum organismo do
+  Studio ficou só catalogado**). No Studio eram comportamentos do
+  `PieceRenderer` (só lido; nada copiado).
+  - **THERMAL** (Textura): o fim térmico do Studio — "sufocando e perdendo
+    harmônicos, como uma máquina ficando sem energia", às vezes uma "morte
+    abrupta" — vira uma vida que se repete: um zumbido com estática esquenta
+    (CALOR), morre devagar (~3 s) ou de repente (~0,25 s, com a chance de
+    MORTE), esfria 1,5 s e volta. ESTÁTICA: os estalos.
+  - **CORE** (Tom): a voz melódica principal do Studio (o par em FM cruzado);
+    aqui FM cruzado com realimentação, na frase do céu. FM, RAZÃO (razões
+    harmônicas em meios), DECAIM.
+  - **TEXTURE** (Textura): o "clima de ruído" do Studio; ruído branco → rosa
+    (Kellet) → marrom por uma banda ressonante (filtro de variáveis de
+    estado) que anda com a densidade. COR, FOCO, MOVIMENTO.
+  - **BASS** (Tom): o grave "core-sub" do Studio; seno com saturação suave,
+    fraseado na memória do céu, com portamento. REGISTRO (sub, grave,
+    médio-grave), ATAQUE, DURAÇÃO.
+  Teste próprio: `test_performance_concept_stars.cpp`.
 - Os controles das estrelas da biblioteca começavam em zero fora de um corpo
   (a tabela de padrões tinha 14 entradas); agora seguem o mesmo ciclo.
 - Em todas: a seed segue escolhendo entre as 14; nenhum asterismo muda (hash

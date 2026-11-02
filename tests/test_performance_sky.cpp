@@ -39,6 +39,10 @@ const char* starName(PerformanceModuleBody body) {
     case PerformanceModuleBody::Rupture: return "Rupture";
     case PerformanceModuleBody::Harmonaig: return "Harmonaig";
     case PerformanceModuleBody::Bloom: return "Bloom";
+    case PerformanceModuleBody::ThermalStatic: return "Thermal Static";
+    case PerformanceModuleBody::Core: return "Core";
+    case PerformanceModuleBody::Texture: return "Texture";
+    case PerformanceModuleBody::BassFallback: return "Bass Fallback";
     case PerformanceModuleBody::Walsh: return "Walsh";
     case PerformanceModuleBody::HardSync: return "Hard Sync";
     case PerformanceModuleBody::AtariPunk: return "Atari Punk";
@@ -105,7 +109,7 @@ int main() {
     bool ok = expect(PerformanceSky::available(), "the sky needs the four vendored cohorts");
     // 30/10: fifteen stars play — the fourteen the seed chooses and the Tuba,
     // a library star the performer places by swapping a body's star.
-    ok = expect(PerformanceSky::kStarCount == 24U, "twenty-four stars play today") && ok;
+    ok = expect(PerformanceSky::kStarCount == 28U, "twenty-eight stars play today") && ok;
     {
         const auto free = runWithControl(PerformanceModuleBody::Count, {});
         const auto sieved = runWithControl(PerformanceModuleBody::Sieve, {{0.6, 0.6, 0.3}});
@@ -158,7 +162,8 @@ int main() {
         ok = expect(stable, (name + " renders once per sample").c_str()) && ok;
         if (star == PerformanceModuleBody::Footnote || star == PerformanceModuleBody::Bluff
             || star == PerformanceModuleBody::Spectral || star == PerformanceModuleBody::Harmonaig
-            || star == PerformanceModuleBody::Bloom)
+            || star == PerformanceModuleBody::Bloom || star == PerformanceModuleBody::Core
+            || star == PerformanceModuleBody::BassFallback)
             ok = expect(attacks > 2U, (name + " marks its attacks").c_str()) && ok;
     }
     ok = expect(kPerformanceSeedStars.size() == 14U, "the seed still chooses among the fourteen") && ok;

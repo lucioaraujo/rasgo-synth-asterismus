@@ -58,15 +58,18 @@ inline constexpr std::array<PerformanceLibraryEntry, 29> kPerformanceModuleLibra
     // Canonical Studio organism stems not yet adapted to the realtime
     // Performance engine. They are catalogued here so the Field/library can
     // name them honestly and future adapter work has stable provenance.
-    {"core", "Core", PerformanceModuleFamily::Tone, PerformanceLibraryState::NeedsAudit,
+    // Reescrita a partir do conceito desde 2/11 (PerformanceStudioConceptStars.hpp).
+    {"core", "Core", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Core"},
-    {"texture", "Texture", PerformanceModuleFamily::Texture, PerformanceLibraryState::NeedsAudit,
+    // Reescrita a partir do conceito desde 2/11 (PerformanceStudioConceptStars.hpp).
+    {"texture", "Texture", PerformanceModuleFamily::Texture, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Texture"},
     // Tuba: estrela da biblioteca desde 30/10 (o performer a põe num corpo;
     // a seed não a escolhe). Voz local TubaBreathVoice.hpp.
     {"tuba", "Tuba / Breath", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Tuba"},
-    {"bass-fallback", "Bass Fallback", PerformanceModuleFamily::Tone, PerformanceLibraryState::NeedsAudit,
+    // Reescrita a partir do conceito desde 2/11 (PerformanceStudioConceptStars.hpp).
+    {"bass-fallback", "Bass Fallback", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::BassFallback"},
     // Harmonaig e Bloom: reescritas a partir do conceito desde 2/11
     // (PerformanceHarmonyStars.hpp).
@@ -93,7 +96,8 @@ inline constexpr std::array<PerformanceLibraryEntry, 29> kPerformanceModuleLibra
      0U, "Studio OrganismStem::Footnote"},
     {"rupture", "Rupture", PerformanceModuleFamily::Resource, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::Rupture"},
-    {"thermal-static", "Thermal Static", PerformanceModuleFamily::Texture, PerformanceLibraryState::NeedsAudit,
+    // Reescrita a partir do conceito desde 2/11 (PerformanceStudioConceptStars.hpp).
+    {"thermal-static", "Thermal Static", PerformanceModuleFamily::Texture, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::ThermalStatic"},
 }};
 

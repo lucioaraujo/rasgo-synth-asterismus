@@ -66,6 +66,7 @@
 #include "PerformanceBluffSignal.hpp"
 #include "PerformanceSpectralObject.hpp"
 #include "PerformanceHarmonyStars.hpp"
+#include "PerformanceStudioConceptStars.hpp"
 #include <dsp/VosimOscillator.hpp>
 #include <dsp/WalshOscillator.hpp>
 #endif
@@ -86,7 +87,7 @@ inline constexpr std::array<PerformanceModuleBody, 14> kPerformanceSeedStars{{
 // As estrelas que o céu sabe tocar: as da seed e, depois delas, as estrelas
 // da biblioteca (30/10) — o performer as põe num corpo trocando a estrela
 // dele; a seed não as escolhe (docs/MODULOS_RESTANTES_E_REPOSITORIO.md).
-inline constexpr std::array<PerformanceModuleBody, 24> kPerformanceSkyStars{{
+inline constexpr std::array<PerformanceModuleBody, 28> kPerformanceSkyStars{{
     PerformanceModuleBody::Acid, PerformanceModuleBody::Gendyn,
     PerformanceModuleBody::Percussion, PerformanceModuleBody::FmFlute,
     PerformanceModuleBody::Theremin, PerformanceModuleBody::Scat,
@@ -97,7 +98,8 @@ inline constexpr std::array<PerformanceModuleBody, 24> kPerformanceSkyStars{{
     PerformanceModuleBody::Tuba, PerformanceModuleBody::Footnote, PerformanceModuleBody::Bluff,
     PerformanceModuleBody::Spectral, PerformanceModuleBody::Sieve, PerformanceModuleBody::Polymeter,
     PerformanceModuleBody::Hocket, PerformanceModuleBody::Rupture, PerformanceModuleBody::Harmonaig,
-    PerformanceModuleBody::Bloom}};
+    PerformanceModuleBody::Bloom, PerformanceModuleBody::ThermalStatic, PerformanceModuleBody::Core,
+    PerformanceModuleBody::Texture, PerformanceModuleBody::BassFallback}};
 
 // A função musical de cada estrela, a mesma do catálogo
 // (PerformanceModuleLibrary): é ela que dá a cada corpo do primeiro
@@ -110,7 +112,9 @@ inline constexpr PerformanceStarFunction performanceStarFunction(
     switch (body) {
     case PerformanceModuleBody::Gendyn:
     case PerformanceModuleBody::DejaVu:
-    case PerformanceModuleBody::Spectral: return PerformanceStarFunction::Texture;
+    case PerformanceModuleBody::Spectral:
+    case PerformanceModuleBody::ThermalStatic:
+    case PerformanceModuleBody::Texture: return PerformanceStarFunction::Texture;
     case PerformanceModuleBody::Sieve:
     case PerformanceModuleBody::Polymeter:
     case PerformanceModuleBody::Hocket:
@@ -201,6 +205,10 @@ inline constexpr std::string_view performanceStarLibraryId(PerformanceModuleBody
     case PerformanceModuleBody::Rupture: return "rupture";
     case PerformanceModuleBody::Harmonaig: return "harmonaig";
     case PerformanceModuleBody::Bloom: return "bloom";
+    case PerformanceModuleBody::ThermalStatic: return "thermal-static";
+    case PerformanceModuleBody::Core: return "core";
+    case PerformanceModuleBody::Texture: return "texture";
+    case PerformanceModuleBody::BassFallback: return "bass-fallback";
     default: return {};
     }
 }
@@ -234,6 +242,10 @@ inline constexpr std::string_view performanceStarRole(PerformanceModuleBody body
     case PerformanceModuleBody::Rupture: return "ruptura: o céu se cala de repente";
     case PerformanceModuleBody::Harmonaig: return "acorde de quatro vozes que anda em quartas";
     case PerformanceModuleBody::Bloom: return "melodia fractal: tronco e galho";
+    case PerformanceModuleBody::ThermalStatic: return "vida térmica: esquenta, morre, volta";
+    case PerformanceModuleBody::Core: return "voz de FM cruzado na frase do céu";
+    case PerformanceModuleBody::Texture: return "cama de ruído colorido";
+    case PerformanceModuleBody::BassFallback: return "baixo fraseado";
     default: return {};
     }
 }
@@ -267,6 +279,10 @@ inline constexpr std::array<const char*, 3> performanceStarControlNames(
     case PerformanceModuleBody::Rupture: return {"PERÍODO", "DURAÇÃO", "CHANCE"};
     case PerformanceModuleBody::Harmonaig: return {"INVERSÃO", "ABERTURA", "MOVIMENTO"};
     case PerformanceModuleBody::Bloom: return {"CAMINHO", "REGISTRO", "DURAÇÃO"};
+    case PerformanceModuleBody::ThermalStatic: return {"CALOR", "MORTE", "ESTÁTICA"};
+    case PerformanceModuleBody::Core: return {"FM", "RAZÃO", "DECAIM."};
+    case PerformanceModuleBody::Texture: return {"COR", "FOCO", "MOVIMENTO"};
+    case PerformanceModuleBody::BassFallback: return {"REGISTRO", "ATAQUE", "DURAÇÃO"};
     default: return {"I", "II", "III"};
     }
 }
@@ -916,6 +932,8 @@ private:
             case PerformanceModuleBody::Spectral: range = {{{8, 12, 8, 12}}, 0.25, 0.40}; break;
             case PerformanceModuleBody::Harmonaig: range = {{{4, 6, 4, 6}}, 0.25, 0.50}; break;
             case PerformanceModuleBody::Bloom: range = {{{8, 11, 8, 11}}, 0.40, 0.65}; break;
+            case PerformanceModuleBody::Core: range = {{{7, 9, 7, 9}}, 0.40, 0.60}; break;
+            case PerformanceModuleBody::BassFallback: range = {{{8, 12, 8, 12}}, 0.25, 0.45}; break;
             default: range = {{{8, 8, 8, 8}}, 0.25, 0.25}; break;
             }
             counts_[star] = range.minDensity != range.maxDensity;
@@ -1037,6 +1055,12 @@ private:
     // Harmonaig e Bloom (2/11): reescritas em PerformanceHarmonyStars.hpp.
     PerformanceHarmonaigPad harmonaig_{};
     PerformanceBloomMelody bloom_{};
+    // Thermal Static, Core, Texture, Bass Fallback (2/11):
+    // PerformanceStudioConceptStars.hpp.
+    PerformanceThermalStatic thermal_{};
+    PerformanceCoreVoice core_{};
+    PerformanceTextureBed texture_{};
+    PerformanceBassFallback bass_{};
     int harmonaigRoot_ = 0;
     std::uint32_t harmonaigBeat_ = 0U;
     std::size_t spectralSinceBeat_ = 0U, spectralInterval_ = 0U;
@@ -1066,6 +1090,10 @@ private:
         harmonaigRoot_ = 0;
         harmonaigBeat_ = 0U;
         bloom_.prepare(sampleRate_, 0xB100F5U);
+        thermal_.prepare(sampleRate_, 0x7E57A71CU);
+        core_.prepare(sampleRate_);
+        texture_.prepare(sampleRate_, 0x7E87U);
+        bass_.prepare(sampleRate_);
         spectralSinceBeat_ = spectralInterval_ = 0U;
         spectralBeat_ = 0U;
         acid_.setSampleRate(sampleRate_);
@@ -1282,6 +1310,29 @@ private:
             }
             return bloom_.tick() * holdGain;
         }
+        case PerformanceModuleBody::ThermalStatic:
+            // A vida térmica: esquenta (CALOR), morre — devagar ou, com a
+            // chance de MORTE, de repente — esfria e volta. ESTÁTICA: os
+            // estalos, mais densos quanto mais quente.
+            return thermal_.tick(std::clamp(frequency * 0.5, 30.0, 400.0), control[0], control[1], control[2])
+                * holdGain;
+        case PerformanceModuleBody::Core:
+            if (starTick(phraseTick_)) {
+                const double pitch = phrasePitch(frequency);
+                core_.trigger(pitch);
+                markAttack(pitch);
+            }
+            return core_.tick(control[0], control[1], 0.12 + control[2] * 1.5) * holdGain;
+        case PerformanceModuleBody::Texture:
+            return texture_.tick(std::clamp(frequency * 4.0, 120.0, 4000.0), control[0], control[1], control[2],
+                                 c.density) * holdGain;
+        case PerformanceModuleBody::BassFallback:
+            if (starTick(memoryTick_)) {
+                const double pitch = phrasePitch(frequency);
+                bass_.trigger(pitch, control[0], 0.08 + control[2] * 0.9);
+                markAttack(pitch);
+            }
+            return bass_.tick(control[1]) * holdGain;
         case PerformanceModuleBody::Sieve:
             // Peneira (Xenakis, "Sieves", 1990): (A, 0) ∪ (B, R) sobre a
             // contagem de ataques de cada estrela.
@@ -1507,6 +1558,12 @@ private:
             harmonaigRoot_ = (harmonaigRoot_ + 3) % 7;
             harmonaig_.voice(std::clamp(pitch * 0.5, 40.0, 330.0), harmonaigRoot_,
                              static_cast<int>(std::lround(control[0] * 3.0)), control[1]);
+            break;
+        case PerformanceModuleBody::Core:
+            core_.trigger(pitch);
+            break;
+        case PerformanceModuleBody::BassFallback:
+            bass_.trigger(pitch, control[0], 0.08 + control[2] * 0.9);
             break;
         case PerformanceModuleBody::Bloom:
             bloom_.step(std::clamp(pitch, 50.0, 880.0), control[0], std::round(control[1] * 2.0) - 1.0);
