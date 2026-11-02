@@ -286,6 +286,15 @@ public:
         return queued;
     }
 
+    // A forma encaixada numa duração (compassos de abertura, desenvolvimento,
+    // contraste e retorno; todos zero desfazem). Cada número cabe em 16 bits.
+    bool setFormPlan(const std::array<std::uint32_t, 4>& bars) noexcept {
+        for (const auto value : bars) if (value > 0xFFFFU) return false;
+        return loaded_ && ecologyCommands_.push({EcologyCommand::Kind::FormPlan, static_cast<std::uint16_t>(bars[0]),
+                                                 static_cast<std::uint16_t>(bars[1]), static_cast<double>(bars[2]),
+                                                 static_cast<double>(bars[3])});
+    }
+
     // Fixar a estrela de um corpo: a VARIAÇÃO não a apaga.
     bool setActorPinned(std::uint16_t actorId, bool pinned) noexcept {
         return loaded_ && actorId != kInvalidActorId
@@ -458,7 +467,7 @@ private:
     };
 
     struct EcologyCommand {
-        enum class Kind : std::uint8_t { Presence, RelationIntensity, RelationPhenomenon, Position, MotionField, PopulationPhenomenon, ActorMotionField, ActorMotionDirection, SeedCollage, ActorSeedVariation, SkyAnchor, MotionFamily, ConstellationMotion, ActorStar, ActorPin };
+        enum class Kind : std::uint8_t { Presence, RelationIntensity, RelationPhenomenon, Position, MotionField, PopulationPhenomenon, ActorMotionField, ActorMotionDirection, SeedCollage, ActorSeedVariation, SkyAnchor, MotionFamily, ConstellationMotion, ActorStar, ActorPin, FormPlan };
         Kind kind = Kind::Presence;
         std::uint16_t sourceActorId = kInvalidActorId;
         std::uint16_t destinationActorId = kInvalidActorId;
@@ -570,6 +579,10 @@ private:
                         static_cast<std::uint8_t>(command.value)), command.secondaryValue);
             else if (command.kind == EcologyCommand::Kind::Position)
                 engine_.setActorPosition(command.sourceActorId, command.value, command.secondaryValue);
+            else if (command.kind == EcologyCommand::Kind::FormPlan)
+                engine_.setFormPlan({{command.sourceActorId, command.destinationActorId,
+                                      static_cast<std::uint32_t>(command.value),
+                                      static_cast<std::uint32_t>(command.secondaryValue)}});
             else if (command.kind == EcologyCommand::Kind::ActorPin)
                 engine_.setActorPinned(command.sourceActorId, command.value > 0.5);
             else if (command.kind == EcologyCommand::Kind::ActorStar)

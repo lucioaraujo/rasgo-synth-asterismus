@@ -171,6 +171,37 @@ int main() {
                     "reciprocal relations stay bounded") && ok;
     }
 
+    // A form fitted to a duration (2/11, the 1/2/3/5 min device): with a plan
+    // of 2, 4, 3 and 3 bars, the sky passes OPENING → DEVELOPMENT → CONTRAST
+    // → RETURN at exactly those bar lines (120 BPM: one bar = 2 s); clearing
+    // the plan gives the seed's own lengths back.
+    {
+        PerformanceSkyDirector director;
+        director.prepare(kRate);
+        director.setSeed(2026U);
+        director.setMixerVariation(true);
+        director.setFormPlan({{2U, 4U, 3U, 3U}});
+        auto bodies = opening();
+        std::array<double, 4> entered{{0.0, -1.0, -1.0, -1.0}};
+        auto last = director.section();
+        for (std::uint64_t sample = 0U; sample < static_cast<std::uint64_t>(kRate * 30.0); ++sample) {
+            director.advance(bodies, 120.0);
+            const auto now = director.section();
+            if (now != last) {
+                const auto index = static_cast<std::size_t>(now);
+                if (index < entered.size() && entered[index] < 0.0) entered[index] = static_cast<double>(sample) / kRate;
+                last = now;
+            }
+        }
+        std::cout << "form plan 2/4/3/3 bars: development at " << entered[1] << " s, contrast at " << entered[2]
+                  << " s, return at " << entered[3] << " s\n";
+        ok = expect(director.formPlanned() && std::fabs(entered[1] - 4.0) < 0.6 && std::fabs(entered[2] - 12.0) < 0.6
+                        && std::fabs(entered[3] - 18.0) < 0.6,
+                    "the form follows the planned bars") && ok;
+        director.setFormPlan({{0U, 0U, 0U, 0U}});
+        ok = expect(!director.formPlanned(), "clearing the plan gives the seed's lengths back") && ok;
+    }
+
     // A pinned star (2/11) stays lit through the variation and the eclipses,
     // while the others still go out.
     {

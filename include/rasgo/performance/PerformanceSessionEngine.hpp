@@ -292,6 +292,12 @@ public:
         return ecology_.relationPhenomenon(sourceActorId, destinationActorId);
     }
 
+    bool setFormPlan(const std::array<std::uint32_t, 4>& bars) noexcept {
+        if (!prepared_) return false;
+        ecology_.setFormPlan(bars);
+        return true;
+    }
+    bool formPlanned() const noexcept { return ecology_.formPlanned(); }
     bool setActorPinned(std::uint16_t actorId, bool pinned) noexcept {
         return prepared_ && ecology_.setActorPinned(actorId, pinned);
     }

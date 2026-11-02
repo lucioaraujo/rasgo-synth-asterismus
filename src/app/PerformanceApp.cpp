@@ -274,7 +274,7 @@ public:
             "Xenakis), POLYMETER (cada estrela no seu ciclo), HOCKET (um ataque por vez) e RUPTURE (o céu se cala de repente). O MODAL fica "
             "num corpo só.\n\n"
             "9. GRAVAR UMA REALIZAÇÃO\n"
-            "PLAY só toca. REC começa a gravar uma tomada WAV estéreo de 24 bits (e começa a tocar, se estiver parado); gravando, a caixa de transporte e a moldura ficam vermelhas, com o tempo da tomada, e o botão vira CODA: ele pede a coda e fecha o arquivo após a cauda — em âmbar, CODA · FINALIZANDO. O caminho do arquivo aparece na linha de status. "
+            "PLAY só toca. REC começa a gravar uma tomada WAV estéreo de 24 bits (e começa a tocar, se estiver parado); gravando, a caixa de transporte e a moldura ficam vermelhas, com o tempo da tomada, e o botão vira CODA: ele pede a coda e fecha o arquivo após a cauda — em âmbar, CODA · FINALIZANDO. O caminho do arquivo aparece na linha de status. FAIXA · DURAÇÃO (1, 2, 3 ou 5 MIN): um clique já grava, com contagem regressiva; a forma do céu se encaixa na duração — abertura, desenvolvimento, contraste, retorno — com o PERCURSO trocando as cenas, e a coda chega no fim. "
             "Gravando, a peça também termina sozinha quando você deixa o instrumento seguir sem tocar em nada por um tempo (cerca de 100 a 190 tempos), depois de a seed percorrer algumas viradas; o cabeçalho avisa CODA EM BREVE. "
             "STOP é uma interrupção técnica, não a coda. A performance também pode alcançar um epílogo após inatividade.\n\n"
             "REGRA CENTRAL\n"
@@ -360,7 +360,7 @@ private:
                         "6. LISTEN AND ORCHESTRATE\nEach module is a star with its own stem: up to eight bodies in the Field, each on its own channel in the Matter Field. A star at zero presence is unlit and uses no processing; raising its presence lights it. Lit stars relate through the sky’s web — answers, contagion, shadows and hockets — without one star’s sound leaking into another’s channel. Each material serves a role — pulse, trajectory, line, field, rupture, call, memory or trace. Use presence, mix, mute, solo and local controls to reveal or withdraw those roles. MASTER sets final level only.\n\n"
                         "7. THE SKY · WEB, FORM, TIME AND MOTION\nTRAMA switches on the sky's web: every bar the sky chooses pairs in focus (answer, contagion, shadow, hocket, pedal, friction, cadence) and the piece travels a form — OPENING, DEVELOPMENT, CONTRAST, RETURN — shown in the header. Time breathes (TEMPO 1.04×), swing comes from an orbit, each star counts its own cycle and the bar groups as 3+3+2 and the like. In development one star DRIFTS against the pulse; computed moons bring ECLIPSES. In the Constellation the stars move by physics — gravity, springs, pendulums, billiards, magnetism, spin, foam — and leave trails; strong collisions sound. VARIAÇÃO lets the sky light and dim stars in the mixer: the fader moves by itself (orange thumb) and returns to your value when you grab it. With TRAMA off the instrument sounds exactly as before.\n\n"
                         "8. THE LIBRARY · SWAP AND PIN STARS\nThe seed chooses the stars among the sky's 14; the LIBRARY holds 28. Click a star in the Constellation, then the LIBRARY strip: the menu shows the body's star, PIN THIS STAR and the families — TONE, TEXTURE, VOICE, PULSE and CONTROL. Choose another star and the body plays it; BACK TO THE SEED'S STAR undoes it. A pinned star (amber diamond) is not dimmed by VARIATION or by eclipses. CONTROL stars make no sound: lit, they filter the others' attacks — SIEVE (Xenakis's sieve), POLYMETER (each star in its own cycle), HOCKET (one attack at a time) and RUPTURE (the sky falls silent). The MODAL lives in one body only.\n\n"
-                        "9. RECORD A REALISATION\nPLAY only plays. REC starts recording a 24-bit stereo WAV take (and starts playing if stopped); while recording, the transport box and the window frame turn red with the take time, and the button becomes CODA: it requests the coda and closes the file after its tail — amber, CODA · FINISHING. The file path appears in the status line. While recording, the piece also ends by itself when you let the instrument run untouched for a while (about 100 to 190 beats) after the seed has gone through a few turns; the header warns CODA SOON. STOP is a technical interruption, not a coda.\n\n"
+                        "9. RECORD A REALISATION\nPLAY only plays. REC starts recording a 24-bit stereo WAV take (and starts playing if stopped); while recording, the transport box and the window frame turn red with the take time, and the button becomes CODA: it requests the coda and closes the file after its tail — amber, CODA · FINISHING. The file path appears in the status line. TRACK · DURATION (1, 2, 3 or 5 MIN): one click records at once, with a countdown; the sky's form fits the duration — opening, development, contrast, return — with the PATH switching scenes, and the coda arrives at the end. While recording, the piece also ends by itself when you let the instrument run untouched for a while (about 100 to 190 beats) after the seed has gone through a few turns; the header warns CODA SOON. STOP is a technical interruption, not a coda.\n\n"
                         "CENTRAL RULE\nEvery visible form and control must have a clear musical consequence.");
         case SupportLanguage::French:
             return utf8("1. COMMENCER · SEED ET TERRITOIRE\nUne seed ouvre une possibilité musicale : modules, rôles, matière, tempo et narration. Entrez un nombre ou utilisez ALEA. Elle définit aussi les valeurs initiales des modules sans effacer le dessin déjà réalisé dans le Champ.\n\n"
@@ -371,7 +371,7 @@ private:
                         "6. ÉCOUTER ET ORCHESTRER\nChaque module est une étoile avec son propre stem : jusqu’à huit corps dans le Champ, chacun sur son canal du Champ de matières. Une étoile à présence nulle est éteinte et ne consomme pas de calcul ; monter sa présence l’allume. Les étoiles allumées se relient par la trame du ciel — réponses, contagions, ombres et hoquets — sans que le son de l’une fuie dans le canal de l’autre. Chaque matière a une fonction — pulsation, trajectoire, ligne, champ, rupture, appel, mémoire ou trace. Utilisez présence, mix, mute, solo et contrôles locaux pour révéler ou retirer ces fonctions. MASTER ne règle que le niveau final.\n\n"
                         "7. LE CIEL · TRAME, FORME, TEMPS ET MOUVEMENT\nTRAMA allume la trame du ciel : à chaque mesure le ciel choisit des paires en focus (réponse, contagion, ombre, hoquet, pédale, friction, cadence) et la pièce parcourt une forme — OUVERTURE, DÉVELOPPEMENT, CONTRASTE, RETOUR — affichée dans l’en-tête. Le temps respire (TEMPO 1,04×), le swing vient d’une orbite, chaque étoile compte son propre cycle et la mesure se groupe en 3+3+2 et ainsi de suite. Dans le développement une étoile DÉRIVE contre la pulsation ; des lunes calculées amènent des ÉCLIPSES. Dans la Constellation les étoiles bougent par la physique — gravité, ressorts, pendules, billard, magnétisme, effet, mousse — et laissent des traînées ; les chocs forts sonnent. VARIAÇÃO laisse le ciel allumer et éteindre des étoiles dans le mixeur : le fader bouge seul (curseur orange) et revient à votre valeur quand vous le prenez. TRAMA éteinte, l’instrument sonne exactement comme avant.\n\n"
                         "8. LA BIBLIOTHÈQUE · CHANGER ET ÉPINGLER DES ÉTOILES\nLa seed choisit les étoiles parmi les 14 du ciel ; la BIBLIOTHÈQUE en contient 28. Cliquez sur une étoile de la Constellation puis sur la bande BIBLIOTHÈQUE : le menu montre l’étoile du corps, ÉPINGLER CETTE ÉTOILE et les familles — TON, TEXTURE, VOIX, PULSATION et CONTRÔLE. Choisissez une autre étoile et le corps la joue ; RETOUR À L’ÉTOILE DE LA SEED annule. Une étoile épinglée (losange ambre) n’est pas éteinte par la VARIATION ni par les éclipses. Les étoiles de CONTRÔLE ne sonnent pas : allumées, elles filtrent les attaques des autres — SIEVE (le crible de Xenakis), POLYMETER (chaque étoile dans son cycle), HOCKET (une attaque à la fois) et RUPTURE (le ciel se tait d’un coup). Le MODAL vit dans un seul corps.\n\n"
-                        "9. ENREGISTRER\nPLAY joue seulement. REC lance l’enregistrement d’une prise WAV stéréo 24 bits (et lance la lecture si elle est arrêtée) ; en enregistrement, la boîte de transport et le cadre deviennent rouges avec le temps de la prise, et le bouton devient CODA : il demande la coda et ferme le fichier après sa queue — en ambre, CODA · FIN EN COURS. Le chemin du fichier apparaît dans la ligne d’état. En enregistrement, la pièce se termine aussi d’elle-même quand vous laissez l’instrument jouer sans le toucher pendant un moment (environ 100 à 190 temps), après quelques tours de la seed ; l’en-tête annonce CODA PROCHE. STOP est une interruption technique, pas une coda.\n\n"
+                        "9. ENREGISTRER\nPLAY joue seulement. REC lance l’enregistrement d’une prise WAV stéréo 24 bits (et lance la lecture si elle est arrêtée) ; en enregistrement, la boîte de transport et le cadre deviennent rouges avec le temps de la prise, et le bouton devient CODA : il demande la coda et ferme le fichier après sa queue — en ambre, CODA · FIN EN COURS. Le chemin du fichier apparaît dans la ligne d’état. PISTE · DURÉE (1, 2, 3 ou 5 MIN) : un clic enregistre aussitôt, avec un compte à rebours ; la forme du ciel s’ajuste à la durée — ouverture, développement, contraste, retour — avec le PARCOURS qui change les scènes, et la coda arrive à la fin. En enregistrement, la pièce se termine aussi d’elle-même quand vous laissez l’instrument jouer sans le toucher pendant un moment (environ 100 à 190 temps), après quelques tours de la seed ; l’en-tête annonce CODA PROCHE. STOP est une interruption technique, pas une coda.\n\n"
                         "RÈGLE CENTRALE\nToute forme et tout contrôle visibles doivent avoir une conséquence musicale claire.");
         case SupportLanguage::Spanish:
             return utf8("1. COMENZAR · SEED Y TERRITORIO\nUna seed abre una posibilidad musical: módulos, funciones, materia, tempo y narrativa. Escriba un número o use ALEA. También define valores iniciales de los módulos sin borrar el dibujo ya realizado en el Campo.\n\n"
@@ -382,7 +382,7 @@ private:
                         "6. ESCUCHAR Y ORQUESTAR\nCada módulo es una estrella con stem propio: hasta ocho cuerpos en el Campo, cada uno en su canal del Campo de materias. Una estrella con presencia cero queda apagada y no consume procesamiento; subir la presencia la enciende. Las estrellas encendidas se relacionan por la trama del cielo — respuestas, contagios, sombras y hoquetus — sin que el sonido de una se filtre en el canal de otra. Cada materia cumple una función — pulso, trayectoria, línea, campo, ruptura, llamada, memoria o vestigio. Use presencia, mix, mute, solo y controles locales para revelar o retirar esas funciones. MASTER define solo el nivel final.\n\n"
                         "7. EL CIELO · TRAMA, FORMA, TIEMPO Y MOVIMIENTO\nTRAMA enciende la trama del cielo: en cada compás el cielo elige pares en foco (respuesta, contagio, sombra, hoquetus, pedal, fricción, cadencia) y la pieza recorre una forma — APERTURA, DESARROLLO, CONTRASTE, RETORNO — mostrada en la cabecera. El tiempo respira (TEMPO 1,04×), el swing viene de una órbita, cada estrella cuenta su propio ciclo y el compás se agrupa en 3+3+2 y similares. En el desarrollo una estrella DERIVA contra el pulso; lunas calculadas traen ECLIPSES. En la Constelación las estrellas se mueven por física — gravedad, resortes, péndulos, billar, magnetismo, efecto, espuma — y dejan estelas; los choques fuertes suenan. VARIAÇÃO deja que el cielo encienda y apague estrellas en el mezclador: el fader se mueve solo (cursor naranja) y vuelve a su valor cuando usted lo toma. Con la TRAMA apagada, el instrumento suena exactamente como antes.\n\n"
                         "8. LA BIBLIOTECA · CAMBIAR Y FIJAR ESTRELLAS\nLa seed elige las estrellas entre las 14 del cielo; la BIBLIOTECA tiene 28. Haga clic en una estrella de la Constelación y luego en la franja BIBLIOTECA: el menú muestra la estrella del cuerpo, FIJAR ESTA ESTRELLA y las familias — TONO, TEXTURA, VOZ, PULSO y CONTROL. Elija otra estrella y el cuerpo la toca; VOLVER A LA ESTRELLA DE LA SEED lo deshace. Una estrella fijada (rombo ámbar) no se apaga con la VARIACIÓN ni con los eclipses. Las estrellas de CONTROL no suenan: encendidas, filtran los ataques de las otras — SIEVE (la criba de Xenakis), POLYMETER (cada estrella en su ciclo), HOCKET (un ataque a la vez) y RUPTURE (el cielo calla de golpe). El MODAL vive en un solo cuerpo.\n\n"
-                        "9. GRABAR UNA REALIZACIÓN\nPLAY solo toca. REC empieza a grabar una toma WAV estéreo de 24 bits (y empieza a tocar si está detenido); grabando, la caja de transporte y el marco se ponen rojos con el tiempo de la toma, y el botón pasa a CODA: solicita la coda y cierra el archivo tras la cola — en ámbar, CODA · FINALIZANDO. La ruta del archivo aparece en la línea de estado. Grabando, la pieza también termina sola cuando deja que el instrumento siga sin tocar nada durante un tiempo (unos 100 a 190 tiempos), tras algunas vueltas de la seed; la cabecera avisa CODA PRÓXIMA. STOP es una interrupción técnica, no una coda.\n\n"
+                        "9. GRABAR UNA REALIZACIÓN\nPLAY solo toca. REC empieza a grabar una toma WAV estéreo de 24 bits (y empieza a tocar si está detenido); grabando, la caja de transporte y el marco se ponen rojos con el tiempo de la toma, y el botón pasa a CODA: solicita la coda y cierra el archivo tras la cola — en ámbar, CODA · FINALIZANDO. La ruta del archivo aparece en la línea de estado. PISTA · DURACIÓN (1, 2, 3 o 5 MIN): un clic graba enseguida, con cuenta regresiva; la forma del cielo se ajusta a la duración — apertura, desarrollo, contraste, retorno — con el RECORRIDO cambiando las escenas, y la coda llega al final. Grabando, la pieza también termina sola cuando deja que el instrumento siga sin tocar nada durante un tiempo (unos 100 a 190 tiempos), tras algunas vueltas de la seed; la cabecera avisa CODA PRÓXIMA. STOP es una interrupción técnica, no una coda.\n\n"
                         "REGLA CENTRAL\nToda forma y control visible debe tener una consecuencia musical clara.");
         default: return {};
         }
@@ -2327,8 +2327,11 @@ public:
         const float pulse = 0.55f + 0.45f * static_cast<float>(std::sin(now * (finishing ? 9.0 : 4.0)));
         const auto takeSeconds = recording && takeSampleRate_ > 0.0
             ? static_cast<int>(static_cast<double>(recorder_.acceptedSamples()) / takeSampleRate_) : 0;
-        const auto clock = juce::String(takeSeconds / 60).paddedLeft('0', 2) + ":"
-            + juce::String(takeSeconds % 60).paddedLeft('0', 2);
+        // Com duração, o relógio conta o que falta (como no Antitotem).
+        const auto shown = takeTargetSeconds_ > 0.0
+            ? std::max(0, static_cast<int>(std::ceil(takeTargetSeconds_)) - takeSeconds) : takeSeconds;
+        const auto clock = (takeTargetSeconds_ > 0.0 ? juce::String("-") : juce::String{})
+            + juce::String(shown / 60).paddedLeft('0', 2) + ":" + juce::String(shown % 60).paddedLeft('0', 2);
         const auto alarm = finishing ? juce::Colour(0xfff0b860) : juce::Colour(0xffe0503c);
         if (recording) {
             graphics.setColour(alarm.withAlpha(0.35f + 0.5f * pulse));
@@ -2339,6 +2342,19 @@ public:
         graphics.fillRoundedRectangle(recordingBox.toFloat(), 5.0f);
         graphics.setColour(!recording ? juce::Colour(0xff8b5a36) : alarm.withAlpha(0.5f + 0.5f * pulse));
         graphics.drawRoundedRectangle(recordingBox.toFloat(), 5.0f, recording ? 2.0f : 1.0f);
+        {
+            const auto durationBox = juce::Rectangle<int>(getWidth() - 444, 56, 208, 50);
+            graphics.setColour(juce::Colour(0xff2c2521));
+            graphics.fillRoundedRectangle(durationBox.toFloat(), 5.0f);
+            graphics.setColour(takeTargetSeconds_ > 0.0 && recording ? alarm.withAlpha(0.5f + 0.5f * pulse)
+                                                                     : juce::Colour(0xff8b5a36));
+            graphics.drawRoundedRectangle(durationBox.toFloat(), 5.0f, takeTargetSeconds_ > 0.0 && recording ? 2.0f : 1.0f);
+            graphics.setColour(juce::Colour(0xffd8b48c));
+            graphics.setFont(branding::mono(9.0f, juce::Font::bold));
+            graphics.drawText(uiText(supportLanguage_, "FAIXA · DURAÇÃO", "TRACK · DURATION", "PISTE · DURÉE",
+                                     "PISTA · DURACIÓN"),
+                              durationBox.reduced(8, 0).removeFromTop(13), juce::Justification::centredLeft);
+        }
         auto titleRow = recordingBox.reduced(8, 0).removeFromTop(13);
         if (recording) {
             const auto dot = titleRow.removeFromLeft(12).toFloat().withSizeKeepingCentre(8.0f, 8.0f);
@@ -2429,6 +2445,13 @@ public:
         setBounds(aboutButton_, headerLayout.about);
         setBounds(languageButton_, headerLayout.language);
         setBounds(recordButton_, headerLayout.record);
+        {
+            // FAIXA · 1/2/3/5 MIN, à esquerda da caixa de transporte (a linha de
+            // status termina antes, em largura − 444).
+            auto row = juce::Rectangle<int>(getWidth() - 440, 74, 200, 28);
+            const auto width = row.getWidth() / static_cast<int>(durationButtons_.size());
+            for (auto& button : durationButtons_) button.setBounds(row.removeFromLeft(width).reduced(2, 0));
+        }
         setBounds(transportButton_, headerLayout.transport);
         // The header status line ends before the first operating band. Keep a
         // compact reserve here; the former 96 px left an unnecessary dead
@@ -3124,6 +3147,15 @@ private:
         albumButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff3f5a4a));
         albumButton_.setColour(juce::TextButton::textColourOffId, juce::Colour(0xfff2e7d5));
         albumButton_.onClick = [this] { showAlbumMenu(); };
+        for (std::size_t index = 0U; index < durationButtons_.size(); ++index) {
+            auto& button = durationButtons_[index];
+            button.setButtonText(juce::String(static_cast<int>(kTakeDurations[index] / 60.0)) + " MIN");
+            button.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff3f5a4a));
+            button.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffb95b46));
+            button.setColour(juce::TextButton::textColourOffId, juce::Colour(0xfff2e7d5));
+            button.onClick = [this, index] { startTimedTake(kTakeDurations[index]); };
+            addAndMakeVisible(button);
+        }
         addAndMakeVisible(albumButton_);
         percursoButton_.setColour(juce::TextButton::textColourOffId, juce::Colour(0xfff2e7d5));
         percursoButton_.onClick = [this] { setPercurso(!percurso_); };
@@ -4287,7 +4319,7 @@ private:
         percursoSection_ = section;
         recallScene(static_cast<std::uint16_t>(section + 1U));
         appendTakeTrace("percurso:" + juce::String(static_cast<int>(section)));
-        if (returnEnded && recorder_.recording())
+        if (returnEnded && recorder_.recording() && takeTargetSeconds_ <= 0.0)
             requestMorceauCoda("coda:percurso", uiText(supportLanguage_, "PERCURSO · o retorno acabou · CODA",
                                                        "PATH · the return ended · CODA", "PARCOURS · le retour est fini · CODA",
                                                        "RECORRIDO · el retorno terminó · CODA"));
@@ -5086,6 +5118,53 @@ private:
                                    playingRequested_ ? juce::Colour(0xff813d34) : juce::Colour(0xff285348));
     }
 
+    // Uma faixa de 1/2/3/5 min (como no Antitotem: um clique arma e grava, com
+    // contagem regressiva). A forma do céu se encaixa na duração — abertura
+    // 15 %, desenvolvimento 35 %, contraste 25 %, retorno 25 % dos compassos
+    // até a coda, como o arco do Studio se ajusta à duração pedida — e o
+    // PERCURSO troca as cenas com ela. A coda vem 5,2 s antes do alvo.
+    void startTimedTake(double seconds) {
+        if (recorder_.recording()) {
+            lastAction_ = uiText(supportLanguage_, "já está gravando · CODA ou STOP antes de outra faixa",
+                                 "already recording · CODA or STOP before another track",
+                                 "enregistrement en cours · CODA ou STOP avant une autre piste",
+                                 "ya está grabando · CODA o STOP antes de otra pista");
+            repaint();
+            return;
+        }
+        const double bpm = std::max(20.0, tempoSlider_.getValue());
+        const double bars = std::max(4.0, (seconds - kCodaLeadSeconds) * bpm / 240.0);
+        std::array<std::uint32_t, 4> plan{{
+            static_cast<std::uint32_t>(std::max(1.0, std::round(bars * 0.15))),
+            static_cast<std::uint32_t>(std::max(1.0, std::round(bars * 0.35))),
+            static_cast<std::uint32_t>(std::max(1.0, std::round(bars * 0.25))), 0U}};
+        plan[3] = static_cast<std::uint32_t>(std::max(1.0, bars - plan[0] - plan[1] - plan[2]));
+        if (!controller_.setFormPlan(plan)) {
+            lastAction_ = uiText(supportLanguage_, "a forma não entrou na fila", "form not queued", "forme non mise en file",
+                                 "forma no encolada");
+            repaint();
+            return;
+        }
+        takeTargetSeconds_ = seconds;
+        if (!percurso_) setPercurso(true);
+        percursoSection_ = 255U;
+        takeStartedWithPlay_ = !playingRequested_;
+        if (!beginRecording()) {
+            controller_.setFormPlan({{0U, 0U, 0U, 0U}});
+            takeTargetSeconds_ = 0.0;
+            return;
+        }
+        for (std::size_t index = 0U; index < durationButtons_.size(); ++index)
+            durationButtons_[index].setToggleState(kTakeDurations[index] == seconds, juce::dontSendNotification);
+        appendTakeTrace("duracao:" + juce::String(seconds, 0) + "s:compassos:" + juce::String(static_cast<int>(plan[0])) + "/"
+                        + juce::String(static_cast<int>(plan[1])) + "/" + juce::String(static_cast<int>(plan[2])) + "/"
+                        + juce::String(static_cast<int>(plan[3])));
+        if (!playingRequested_) togglePlaying(true);
+        lastAction_ = uiText(supportLanguage_, "FAIXA de ", "TRACK of ", "PISTE de ", "PISTA de ")
+            + juce::String(static_cast<int>(seconds / 60.0)) + " min  ·  " + lastAction_;
+        repaint();
+    }
+
     void toggleRecording() {
         if (recorder_.recording()) {
             if (!playingRequested_) {
@@ -5282,6 +5361,7 @@ private:
             + "  \"channels\": 2,\n"
             + "  \"acceptedSamples\": " + juce::String(static_cast<juce::int64>(acceptedSamples)) + ",\n"
             + "  \"durationSeconds\": " + juce::String(seconds, 6) + ",\n"
+            + "  \"targetSeconds\": " + (takeTargetSeconds_ > 0.0 ? juce::String(takeTargetSeconds_, 0) : juce::String("null")) + ",\n"
             + "  \"droppedBlocks\": " + juce::String(droppedBlocks) + ",\n"
             + "  \"asterism\": " + asterismJson + ",\n"
             + "  \"mixerVariation\": " + (controller_.mixerVariation() ? "true" : "false") + ",\n"
@@ -5329,6 +5409,12 @@ private:
         }
         recordButton_.setButtonText("REC");
         recordButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff6b5035));
+        if (takeTargetSeconds_ > 0.0) {
+            // A faixa acabou: a forma volta aos compassos da seed.
+            controller_.setFormPlan({{0U, 0U, 0U, 0U}});
+            takeTargetSeconds_ = 0.0;
+            for (auto& button : durationButtons_) button.setToggleState(false, juce::dontSendNotification);
+        }
         lastAction_ = prefix + utf8(" · ")
             + juce::String(rate > 0.0 ? static_cast<double>(acceptedSamples) / rate : 0.0, 1)
             + utf8(" s · ") + take.getFileName()
@@ -5680,6 +5766,14 @@ private:
         undoCaptureButton_.setButtonText(uiText(l, "DESFAZER", "UNDO", "ANNULER", "DESHACER"));
         memoryButton_.setButtonText(uiText(l, "MEMÓRIA", "MEMORY", "MÉMOIRE", "MEMORIA"));
         refreshAlbumButtons();
+        for (std::size_t index = 0U; index < durationButtons_.size(); ++index)
+            durationButtons_[index].setTooltip(uiText(l, "Grava uma faixa de ", "Records a track of ",
+                                                      "Enregistre une piste de ", "Graba una pista de ")
+                + juce::String(static_cast<int>(kTakeDurations[index] / 60.0))
+                + uiText(l, " min: o REC começa já; a forma do céu se encaixa na duração (abertura, desenvolvimento, contraste, retorno) e a coda chega no fim.",
+                         " min: REC starts at once; the sky's form fits the duration (opening, development, contrast, return) and the coda arrives at the end.",
+                         " min : REC démarre aussitôt ; la forme du ciel s’ajuste à la durée et la coda arrive à la fin.",
+                         " min: REC empieza ya; la forma del cielo se ajusta a la duración y la coda llega al final."));
         percursoButton_.setTooltip(uiText(l,
             "As cenas seguem a forma do céu: ABERTURA, ESPIRAL (desenvolvimento), RASGO (contraste), BALANÇO (retorno). Gravando, o fim do retorno pede a coda.",
             "Scenes follow the sky's form: ABERTURA, ESPIRAL (development), RASGO (contrast), BALANÇO (return). While recording, the end of the return asks for the coda.",
@@ -6088,6 +6182,13 @@ private:
         }
         constellationGraph_.setStemTelemetry(telemetry);
         followPercurso(telemetry);
+        // A faixa com duração: a coda chega 5,2 s antes do alvo (coda 4 s +
+        // cauda 1,2 s), e o arquivo fecha em torno do tempo escolhido.
+        if (takeTargetSeconds_ > 0.0 && recorder_.recording() && !codaRequested_ && takeSampleRate_ > 0.0
+            && static_cast<double>(recorder_.acceptedSamples()) / takeSampleRate_ >= takeTargetSeconds_ - kCodaLeadSeconds)
+            requestMorceauCoda("coda:duracao", uiText(supportLanguage_, "FAIXA · o tempo chegou · CODA",
+                                                      "TRACK · time is up · CODA", "PISTE · le temps est écoulé · CODA",
+                                                      "PISTA · se acabó el tiempo · CODA"));
         // A VARIAÇÃO no mixer: o fader de mix anda sozinho (decisão do autor,
         // 2/11 — antes, 30/10, era uma barra ao lado). Com a VARIAÇÃO ligada e
         // tocando, o cursor mostra o ganho efetivo do stem: o seu ganho vezes
@@ -6505,6 +6606,12 @@ private:
     std::uint8_t percursoSection_ = 255U;
     bool takePercurso_ = false;
     bool takeStartedWithPlay_ = true;
+    // A FAIXA com duração (2/11): 1/2/3/5 min, como no Antitotem; 0 = sem
+    // limite (o REC de sempre).
+    static constexpr std::array<double, 4> kTakeDurations{{60.0, 120.0, 180.0, 300.0}};
+    static constexpr double kCodaLeadSeconds = 5.2;  // coda 4 s + cauda 1,2 s
+    std::array<juce::TextButton, 4> durationButtons_;
+    double takeTargetSeconds_ = 0.0;
     std::atomic<bool> albumMastering_{false};
     std::string lastRecalledMemory_;
     juce::Label seedLabel_;

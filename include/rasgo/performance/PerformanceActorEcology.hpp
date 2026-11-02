@@ -516,6 +516,8 @@ public:
         return actorId != kInvalidActorId
             && std::find(pinnedActors_.begin(), pinnedActors_.end(), actorId) != pinnedActors_.end();
     }
+    void setFormPlan(const std::array<std::uint32_t, 4>& bars) noexcept { director_.setFormPlan(bars); }
+    bool formPlanned() const noexcept { return director_.formPlanned(); }
     // O giro e a viagem da constelação inteira (30/10).
     bool setConstellationMotion(PerformanceConstellationMotion motion) noexcept {
         if (static_cast<std::uint8_t>(motion) >= static_cast<std::uint8_t>(PerformanceConstellationMotion::Count))

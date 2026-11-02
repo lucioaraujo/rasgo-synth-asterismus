@@ -360,6 +360,20 @@ public:
     void setBodyFamily(std::size_t slot, PerformanceMotionFamily family) noexcept {
         if (slot < kBodies) bodyFamily_[slot] = family;
     }
+    // A forma encaixada numa duração (2/11, o dispositivo de 1/2/3/5 min):
+    // as quatro primeiras seções — abertura, desenvolvimento, contraste,
+    // retorno — com os compassos dados, e a forma recomeça na abertura. Todos
+    // zero desfazem o plano (a forma volta aos 8–20 compassos da seed). Como
+    // no Studio, a forma da peça se ajusta à duração pedida.
+    void setFormPlan(const std::array<std::uint32_t, 4>& bars) noexcept {
+        formPlanned_ = bars[0] + bars[1] + bars[2] + bars[3] > 0U;
+        formPlan_ = bars;
+        if (!formPlanned_) return;
+        section_ = Section::Opening;
+        sectionOrdinal_ = 0U;
+        sectionBarsLeft_ = std::max<std::uint32_t>(1U, formPlan_[0]);
+    }
+    bool formPlanned() const noexcept { return formPlanned_; }
     // Uma estrela fixada pelo performer (2/11) fica acesa: a VARIAÇÃO e os
     // eclipses não a apagam.
     void setPinned(std::size_t slot, bool pinned) noexcept {
@@ -789,6 +803,8 @@ private:
     std::uint64_t lunation_ = 0U;
     std::size_t eclipseSun_ = kBodies;
     std::array<bool, kBodies> pinned_{};
+    std::array<std::uint32_t, 4> formPlan_{};
+    bool formPlanned_ = false;
     std::uint32_t eclipseBeatsLeft_ = 0U;
     std::uint32_t eclipseCount_ = 0U;
     std::array<std::uint64_t, kBodies> onsets_{};
@@ -891,6 +907,7 @@ private:
     std::array<bool, kBodies> openingLit_{};
 
     std::uint32_t sectionLength(std::uint32_t ordinal) const noexcept {
+        if (formPlanned_ && ordinal < formPlan_.size()) return std::max<std::uint32_t>(1U, formPlan_[ordinal]);
         return 8U + mix(seed_ ^ (ordinal * 0x632be5abU)) % 13U;
     }
 

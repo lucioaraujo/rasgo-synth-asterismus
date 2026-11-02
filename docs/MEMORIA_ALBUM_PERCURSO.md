@@ -74,7 +74,34 @@ qualquer momento; o PERCURSO só chama a cena quando a seção muda.
 seed, BPM, arquivo, memória lembrada, início, duração, loudness integrada,
 true peak máximo, se foi com PERCURSO).
 
-## 6. Falta
+## 6. Gravação (2/11, decisões do autor)
+
+- "A gravação começa quando o usuário define fazer a gravação": **PLAY só
+  toca**; **REC** abre a tomada (e começa a tocar, se parado); gravando, o
+  botão vira **CODA**. Antes, todo PLAY abria uma tomada. Verificado no app
+  mudo e isolado: com autoplay, nenhuma tomada criada.
+- Prefixo das tomadas: `RASGO_ASTERISMUS_` (antes `RASGO_PERFORMANCE_`; a
+  pasta e o identificador do formato no manifesto mantêm o nome antigo).
+- **Destaque**: gravando, moldura e caixa de transporte vermelhas, ponto
+  pulsando, tempo da tomada; coda pedida ou próxima, âmbar, quadrado
+  pulsando mais rápido, "CODA · FINALIZANDO" / "CODA EM BREVE". O caminho do
+  arquivo na linha de status e na dica do REC.
+- **FAIXA · DURAÇÃO** (1 / 2 / 3 / 5 MIN; pedido: "um dispositivo como no
+  Antitotem, de no máximo 5 minutos; como no Studio, um ciclo, um percurso
+  até o fim da gravação"). Do Antitotem (`src/app/Main.cpp`, commit
+  `645e5ad`, só lido): quatro botões explícitos, um clique arma e grava, com
+  contagem regressiva, só o escolhido aceso, a duração é um alvo e não um
+  corte. Do Studio: o arco da peça se ajusta à duração. Aqui: a forma do céu
+  recebe um **plano de compassos** (`PerformanceSkyDirector::setFormPlan`) —
+  abertura 15 %, desenvolvimento 35 %, contraste 25 %, retorno 25 % dos
+  compassos até a coda, no TEMPO da faixa — e o PERCURSO troca as cenas com
+  ela; a coda é pedida 5,2 s antes do alvo (coda 4 s + cauda 1,2 s), e o
+  arquivo fecha em torno do tempo escolhido. Ao fechar, o plano se desfaz.
+  Teste no diretor: com 2/4/3/3 compassos a 120 BPM, desenvolvimento em
+  4,1 s, contraste em 11,9 s, retorno em 17,7 s (o tempo elástico adianta um
+  pouco). O manifesto da tomada traz `targetSeconds`.
+
+## 7. Falta
 
 - Masterização de álbum offline (igualar o nível entre as faixas, como o
   Studio) — a parte 4 do pedido.
