@@ -267,7 +267,7 @@ public:
             "pêndulos, bilhar, magnetismo, efeito, espuma — e deixam rastros; choques fortes soam. Cada estrela soa no estéreo onde está na Constelação (o grave fica no centro); ESPAÇO abre esse campo. VARIAÇÃO deixa o céu acender e apagar estrelas "
             "no mixer: o fader anda sozinho (cursor laranja) e volta ao seu valor quando você o pega. Com a TRAMA desligada, o instrumento soa exatamente como antes.\n\n"
             "8. A BIBLIOTECA · TROCAR E FIXAR ESTRELAS\n"
-            "A seed escolhe as estrelas entre as 14 do céu; a BIBLIOTECA tem 28. Clique numa estrela da Constelação e depois na faixa da "
+            "A seed escolhe as estrelas entre todas as 28 do céu (no máximo uma de CONTROLE por céu); a BIBLIOTECA as reúne por família. Clique numa estrela da Constelação e depois na faixa da "
             "BIBLIOTECA: o menu mostra a estrela do corpo, FIXAR ESTA ESTRELA e as famílias — TOM, TEXTURA, VOZ, PULSO e CONTROLE. Escolha "
             "outra estrela e o corpo passa a tocá-la; VOLTAR À ESTRELA DA SEED desfaz. Ou arraste da faixa da BIBLIOTECA e solte sobre uma estrela: o mesmo menu abre para ela, também com os 8 lugares cheios. Uma estrela fixada (losango âmbar) não é apagada pela "
             "VARIAÇÃO nem pelos eclipses. As estrelas de CONTROLE não soam: acesas, filtram os ataques das outras — SIEVE (a peneira de "
@@ -359,7 +359,7 @@ private:
                         "5. SCENES AND GESTURES\nNASCENTE, ESPIRAL, RASGO and BALANÇO transform the material without interrupting a performance already in PLAY. CAPTURAR stores a scene; DESFAZER returns to the previous capture. HOLD, OPEN, TEAR, REPAIR, STUTTER and DISPLACE (shifts the stem's pulse and phase; the tempo stays) act on existing material.\n\n"
                         "6. LISTEN AND ORCHESTRATE\nEach module is a star with its own stem: up to eight bodies in the Field, each on its own channel in the Matter Field. A star at zero presence is unlit and uses no processing; raising its presence lights it. Lit stars relate through the sky’s web — answers, contagion, shadows and hockets — without one star’s sound leaking into another’s channel. Each material serves a role — pulse, trajectory, line, field, rupture, call, memory or trace. Use presence, mix, mute, solo and local controls to reveal or withdraw those roles. MASTER sets final level only.\n\n"
                         "7. THE SKY · WEB, FORM, TIME AND MOTION\nTRAMA switches on the sky's web: every bar the sky chooses pairs in focus (answer, contagion, shadow, hocket, pedal, friction, cadence) and the piece travels a form — OPENING, DEVELOPMENT, CONTRAST, RETURN — shown in the header. Time breathes (TEMPO 1.04×), swing comes from an orbit, each star counts its own cycle and the bar groups as 3+3+2 and the like. In development one star DRIFTS against the pulse; computed moons bring ECLIPSES. In the Constellation the stars move by physics — gravity, springs, pendulums, billiards, magnetism, spin, foam — and leave trails; strong collisions sound. Each star sounds in the stereo field where it is in the Constellation (the bass stays centred); ESPAÇO opens that field. VARIAÇÃO lets the sky light and dim stars in the mixer: the fader moves by itself (orange thumb) and returns to your value when you grab it. With TRAMA off the instrument sounds exactly as before.\n\n"
-                        "8. THE LIBRARY · SWAP AND PIN STARS\nThe seed chooses the stars among the sky's 14; the LIBRARY holds 28. Click a star in the Constellation, then the LIBRARY strip: the menu shows the body's star, PIN THIS STAR and the families — TONE, TEXTURE, VOICE, PULSE and CONTROL. Choose another star and the body plays it; BACK TO THE SEED'S STAR undoes it. Or drag from the LIBRARY strip and drop onto a star: the same menu opens for it, even with all 8 places full. A pinned star (amber diamond) is not dimmed by VARIATION or by eclipses. CONTROL stars make no sound: lit, they filter the others' attacks — SIEVE (Xenakis's sieve), POLYMETER (each star in its own cycle), HOCKET (one attack at a time) and RUPTURE (the sky falls silent). The MODAL lives in one body only.\n\n"
+                        "8. THE LIBRARY · SWAP AND PIN STARS\nThe seed chooses the stars among all 28 of the sky (at most one CONTROL star per sky); the LIBRARY groups them by family. Click a star in the Constellation, then the LIBRARY strip: the menu shows the body's star, PIN THIS STAR and the families — TONE, TEXTURE, VOICE, PULSE and CONTROL. Choose another star and the body plays it; BACK TO THE SEED'S STAR undoes it. Or drag from the LIBRARY strip and drop onto a star: the same menu opens for it, even with all 8 places full. A pinned star (amber diamond) is not dimmed by VARIATION or by eclipses. CONTROL stars make no sound: lit, they filter the others' attacks — SIEVE (Xenakis's sieve), POLYMETER (each star in its own cycle), HOCKET (one attack at a time) and RUPTURE (the sky falls silent). The MODAL lives in one body only.\n\n"
                         "9. RECORD A REALISATION\nPLAY only plays. REC starts recording a 24-bit stereo WAV take (and starts playing if stopped); while recording, the transport box and the window frame turn red with the take time, and the button becomes CODA: it requests the coda and closes the file after its tail — amber, CODA · FINISHING. The file path appears in the status line. TRACK · DURATION (1, 2, 3 or 5 MIN): one click records at once, with a countdown; the sky's form fits the duration — opening, development, contrast, return — with the PATH switching scenes, and the coda arrives at the end. While recording, the piece also ends by itself when you let the instrument run untouched for a while (about 100 to 190 beats) after the seed has gone through a few turns; the header warns CODA SOON. STOP is a technical interruption, not a coda.\n\n"
                         "CENTRAL RULE\nEvery visible form and control must have a clear musical consequence.");
         case SupportLanguage::French:
@@ -370,7 +370,7 @@ private:
                         "5. SCÈNES ET GESTES\nNASCENTE, ESPIRAL, RASGO et BALANÇO transforment la matière sans interrompre une performance déjà en PLAY. CAPTURAR mémorise une scène ; DESFAZER revient à la capture précédente. HOLD, OUVRIR, DÉCHIRER, RÉPARER, STUTTER et DÉCALER (décale la pulsation et la phase du stem ; le tempo ne change pas) agissent sur la matière existante.\n\n"
                         "6. ÉCOUTER ET ORCHESTRER\nChaque module est une étoile avec son propre stem : jusqu’à huit corps dans le Champ, chacun sur son canal du Champ de matières. Une étoile à présence nulle est éteinte et ne consomme pas de calcul ; monter sa présence l’allume. Les étoiles allumées se relient par la trame du ciel — réponses, contagions, ombres et hoquets — sans que le son de l’une fuie dans le canal de l’autre. Chaque matière a une fonction — pulsation, trajectoire, ligne, champ, rupture, appel, mémoire ou trace. Utilisez présence, mix, mute, solo et contrôles locaux pour révéler ou retirer ces fonctions. MASTER ne règle que le niveau final.\n\n"
                         "7. LE CIEL · TRAME, FORME, TEMPS ET MOUVEMENT\nTRAMA allume la trame du ciel : à chaque mesure le ciel choisit des paires en focus (réponse, contagion, ombre, hoquet, pédale, friction, cadence) et la pièce parcourt une forme — OUVERTURE, DÉVELOPPEMENT, CONTRASTE, RETOUR — affichée dans l’en-tête. Le temps respire (TEMPO 1,04×), le swing vient d’une orbite, chaque étoile compte son propre cycle et la mesure se groupe en 3+3+2 et ainsi de suite. Dans le développement une étoile DÉRIVE contre la pulsation ; des lunes calculées amènent des ÉCLIPSES. Dans la Constellation les étoiles bougent par la physique — gravité, ressorts, pendules, billard, magnétisme, effet, mousse — et laissent des traînées ; les chocs forts sonnent. Chaque étoile sonne dans la stéréo là où elle est dans la Constellation (le grave reste au centre) ; ESPAÇO ouvre ce champ. VARIAÇÃO laisse le ciel allumer et éteindre des étoiles dans le mixeur : le fader bouge seul (curseur orange) et revient à votre valeur quand vous le prenez. TRAMA éteinte, l’instrument sonne exactement comme avant.\n\n"
-                        "8. LA BIBLIOTHÈQUE · CHANGER ET ÉPINGLER DES ÉTOILES\nLa seed choisit les étoiles parmi les 14 du ciel ; la BIBLIOTHÈQUE en contient 28. Cliquez sur une étoile de la Constellation puis sur la bande BIBLIOTHÈQUE : le menu montre l’étoile du corps, ÉPINGLER CETTE ÉTOILE et les familles — TON, TEXTURE, VOIX, PULSATION et CONTRÔLE. Choisissez une autre étoile et le corps la joue ; RETOUR À L’ÉTOILE DE LA SEED annule. Ou glissez depuis la bande de la BIBLIOTHÈQUE et déposez sur une étoile : le même menu s’ouvre pour elle, même avec les 8 places occupées. Une étoile épinglée (losange ambre) n’est pas éteinte par la VARIATION ni par les éclipses. Les étoiles de CONTRÔLE ne sonnent pas : allumées, elles filtrent les attaques des autres — SIEVE (le crible de Xenakis), POLYMETER (chaque étoile dans son cycle), HOCKET (une attaque à la fois) et RUPTURE (le ciel se tait d’un coup). Le MODAL vit dans un seul corps.\n\n"
+                        "8. LA BIBLIOTHÈQUE · CHANGER ET ÉPINGLER DES ÉTOILES\nLa seed choisit les étoiles parmi les 28 du ciel (au plus une de CONTRÔLE par ciel) ; la BIBLIOTHÈQUE les range par famille. Cliquez sur une étoile de la Constellation puis sur la bande BIBLIOTHÈQUE : le menu montre l’étoile du corps, ÉPINGLER CETTE ÉTOILE et les familles — TON, TEXTURE, VOIX, PULSATION et CONTRÔLE. Choisissez une autre étoile et le corps la joue ; RETOUR À L’ÉTOILE DE LA SEED annule. Ou glissez depuis la bande de la BIBLIOTHÈQUE et déposez sur une étoile : le même menu s’ouvre pour elle, même avec les 8 places occupées. Une étoile épinglée (losange ambre) n’est pas éteinte par la VARIATION ni par les éclipses. Les étoiles de CONTRÔLE ne sonnent pas : allumées, elles filtrent les attaques des autres — SIEVE (le crible de Xenakis), POLYMETER (chaque étoile dans son cycle), HOCKET (une attaque à la fois) et RUPTURE (le ciel se tait d’un coup). Le MODAL vit dans un seul corps.\n\n"
                         "9. ENREGISTRER\nPLAY joue seulement. REC lance l’enregistrement d’une prise WAV stéréo 24 bits (et lance la lecture si elle est arrêtée) ; en enregistrement, la boîte de transport et le cadre deviennent rouges avec le temps de la prise, et le bouton devient CODA : il demande la coda et ferme le fichier après sa queue — en ambre, CODA · FIN EN COURS. Le chemin du fichier apparaît dans la ligne d’état. PISTE · DURÉE (1, 2, 3 ou 5 MIN) : un clic enregistre aussitôt, avec un compte à rebours ; la forme du ciel s’ajuste à la durée — ouverture, développement, contraste, retour — avec le PARCOURS qui change les scènes, et la coda arrive à la fin. En enregistrement, la pièce se termine aussi d’elle-même quand vous laissez l’instrument jouer sans le toucher pendant un moment (environ 100 à 190 temps), après quelques tours de la seed ; l’en-tête annonce CODA PROCHE. STOP est une interruption technique, pas une coda.\n\n"
                         "RÈGLE CENTRALE\nToute forme et tout contrôle visibles doivent avoir une conséquence musicale claire.");
         case SupportLanguage::Spanish:
@@ -381,7 +381,7 @@ private:
                         "5. ESCENAS Y GESTOS\nNASCENTE, ESPIRAL, RASGO y BALANÇO transforman el material sin interrumpir una performance ya en PLAY. CAPTURAR guarda una escena y DESFAZER vuelve a la captura anterior. HOLD, ABRIR, RASGAR, REPARAR, STUTTER y DESPLAZAR (desplaza el pulso y la fase del stem; el tempo no cambia) actúan sobre el material existente.\n\n"
                         "6. ESCUCHAR Y ORQUESTAR\nCada módulo es una estrella con stem propio: hasta ocho cuerpos en el Campo, cada uno en su canal del Campo de materias. Una estrella con presencia cero queda apagada y no consume procesamiento; subir la presencia la enciende. Las estrellas encendidas se relacionan por la trama del cielo — respuestas, contagios, sombras y hoquetus — sin que el sonido de una se filtre en el canal de otra. Cada materia cumple una función — pulso, trayectoria, línea, campo, ruptura, llamada, memoria o vestigio. Use presencia, mix, mute, solo y controles locales para revelar o retirar esas funciones. MASTER define solo el nivel final.\n\n"
                         "7. EL CIELO · TRAMA, FORMA, TIEMPO Y MOVIMIENTO\nTRAMA enciende la trama del cielo: en cada compás el cielo elige pares en foco (respuesta, contagio, sombra, hoquetus, pedal, fricción, cadencia) y la pieza recorre una forma — APERTURA, DESARROLLO, CONTRASTE, RETORNO — mostrada en la cabecera. El tiempo respira (TEMPO 1,04×), el swing viene de una órbita, cada estrella cuenta su propio ciclo y el compás se agrupa en 3+3+2 y similares. En el desarrollo una estrella DERIVA contra el pulso; lunas calculadas traen ECLIPSES. En la Constelación las estrellas se mueven por física — gravedad, resortes, péndulos, billar, magnetismo, efecto, espuma — y dejan estelas; los choques fuertes suenan. Cada estrella suena en el estéreo donde está en la Constelación (el grave queda en el centro); ESPAÇO abre ese campo. VARIAÇÃO deja que el cielo encienda y apague estrellas en el mezclador: el fader se mueve solo (cursor naranja) y vuelve a su valor cuando usted lo toma. Con la TRAMA apagada, el instrumento suena exactamente como antes.\n\n"
-                        "8. LA BIBLIOTECA · CAMBIAR Y FIJAR ESTRELLAS\nLa seed elige las estrellas entre las 14 del cielo; la BIBLIOTECA tiene 28. Haga clic en una estrella de la Constelación y luego en la franja BIBLIOTECA: el menú muestra la estrella del cuerpo, FIJAR ESTA ESTRELLA y las familias — TONO, TEXTURA, VOZ, PULSO y CONTROL. Elija otra estrella y el cuerpo la toca; VOLVER A LA ESTRELLA DE LA SEED lo deshace. O arrastre desde la franja de la BIBLIOTECA y suelte sobre una estrella: el mismo menú se abre para ella, también con los 8 lugares llenos. Una estrella fijada (rombo ámbar) no se apaga con la VARIACIÓN ni con los eclipses. Las estrellas de CONTROL no suenan: encendidas, filtran los ataques de las otras — SIEVE (la criba de Xenakis), POLYMETER (cada estrella en su ciclo), HOCKET (un ataque a la vez) y RUPTURE (el cielo calla de golpe). El MODAL vive en un solo cuerpo.\n\n"
+                        "8. LA BIBLIOTECA · CAMBIAR Y FIJAR ESTRELLAS\nLa seed elige las estrellas entre las 28 del cielo (como máximo una de CONTROL por cielo); la BIBLIOTECA las reúne por familia. Haga clic en una estrella de la Constelación y luego en la franja BIBLIOTECA: el menú muestra la estrella del cuerpo, FIJAR ESTA ESTRELLA y las familias — TONO, TEXTURA, VOZ, PULSO y CONTROL. Elija otra estrella y el cuerpo la toca; VOLVER A LA ESTRELLA DE LA SEED lo deshace. O arrastre desde la franja de la BIBLIOTECA y suelte sobre una estrella: el mismo menú se abre para ella, también con los 8 lugares llenos. Una estrella fijada (rombo ámbar) no se apaga con la VARIACIÓN ni con los eclipses. Las estrellas de CONTROL no suenan: encendidas, filtran los ataques de las otras — SIEVE (la criba de Xenakis), POLYMETER (cada estrella en su ciclo), HOCKET (un ataque a la vez) y RUPTURE (el cielo calla de golpe). El MODAL vive en un solo cuerpo.\n\n"
                         "9. GRABAR UNA REALIZACIÓN\nPLAY solo toca. REC empieza a grabar una toma WAV estéreo de 24 bits (y empieza a tocar si está detenido); grabando, la caja de transporte y el marco se ponen rojos con el tiempo de la toma, y el botón pasa a CODA: solicita la coda y cierra el archivo tras la cola — en ámbar, CODA · FINALIZANDO. La ruta del archivo aparece en la línea de estado. PISTA · DURACIÓN (1, 2, 3 o 5 MIN): un clic graba enseguida, con cuenta regresiva; la forma del cielo se ajusta a la duración — apertura, desarrollo, contraste, retorno — con el RECORRIDO cambiando las escenas, y la coda llega al final. Grabando, la pieza también termina sola cuando deja que el instrumento siga sin tocar nada durante un tiempo (unos 100 a 190 tiempos), tras algunas vueltas de la seed; la cabecera avisa CODA PRÓXIMA. STOP es una interrupción técnica, no una coda.\n\n"
                         "REGLA CENTRAL\nToda forma y control visible debe tener una consecuencia musical clara.");
         default: return {};
@@ -1370,36 +1370,25 @@ public:
         graphics.setColour(juce::Colour(0xffb9cfc3));
         graphics.setFont(interfaceFont(8.0f));
         auto libraryTextBounds = libraryBounds;
-        std::size_t adapted = 0U;
-        std::size_t candidates = 0U;
-        std::size_t studioAudit = 0U;
-        for (const auto& entry : kPerformanceModuleLibrary) {
-            adapted += entry.state == PerformanceLibraryState::ActiveCohort;
-            candidates += entry.state == PerformanceLibraryState::RealtimeCandidate;
-            studioAudit += entry.state == PerformanceLibraryState::NeedsAudit
-                && entry.source.find("Studio OrganismStem::") == 0U;
-        }
+        // Só o que se faz aqui (3/11, auditoria): as contagens de bastidor
+        // (em auditoria, candidato realtime) foram para a janela SOBRE.
         const auto libraryLineOne = uiText(language_, "BIBLIOTECA · ", "LIBRARY · ",
             "BIBLIOTHÈQUE · ", "BIBLIOTECA · ")
-            + juce::String(static_cast<int>(kPerformanceModuleLibrary.size()))
-            + uiText(language_, " MÓDULOS · ", " MODULES · ", " MODULES · ", " MÓDULOS · ")
-            + juce::String(static_cast<int>(adapted))
+            + juce::String(static_cast<int>(kPerformanceSkyStars.size()))
+            + uiText(language_, " ESTRELAS", " STARS", " ÉTOILES", " ESTRELLAS")
             + (selectedNode_ < nodes_.size()
-                   ? uiText(language_, " ADAPTADOS · CLIQUE PARA TROCAR A ESTRELA DO CORPO ",
-                            " ADAPTED · CLICK TO SWAP THE STAR OF BODY ",
-                            " ADAPTÉS · CLIQUEZ POUR CHANGER L’ÉTOILE DU CORPS ",
-                            " ADAPTADOS · HAGA CLIC PARA CAMBIAR LA ESTRELLA DEL CUERPO ")
+                   ? uiText(language_, " · CLIQUE PARA TROCAR A ESTRELA DO CORPO ",
+                            " · CLICK TO SWAP THE STAR OF BODY ",
+                            " · CLIQUEZ POUR CHANGER L’ÉTOILE DU CORPS ",
+                            " · HAGA CLIC PARA CAMBIAR LA ESTRELLA DEL CUERPO ")
                          + juce::String(static_cast<int>(selectedNode_ + 1U))
-                   : uiText(language_, " ADAPTADOS · ESCOLHA UMA ESTRELA E CLIQUE AQUI PARA TROCAR",
-                            " ADAPTED · PICK A STAR, THEN CLICK HERE TO SWAP",
-                            " ADAPTÉS · CHOISISSEZ UNE ÉTOILE PUIS CLIQUEZ ICI POUR LA CHANGER",
-                            " ADAPTADOS · ELIJA UNA ESTRELLA Y HAGA CLIC AQUÍ PARA CAMBIARLA"));
-        const auto libraryLineTwo = uiText(language_, "STUDIO: ", "STUDIO: ", "STUDIO : ", "STUDIO: ")
-            + juce::String(static_cast<int>(studioAudit))
-            + uiText(language_, " EM AUDITORIA · ", " UNDER AUDIT · ", " EN AUDIT · ", " EN AUDITORÍA · ")
-            + juce::String(static_cast<int>(candidates))
-            + uiText(language_, " CANDIDATO REALTIME · um stem por estrela", " REALTIME CANDIDATE · one stem per star",
-                " CANDIDAT TEMPS RÉEL · un stem par étoile", " CANDIDATO REALTIME · un stem por estrella");
+                   : uiText(language_, " · ESCOLHA UMA ESTRELA E CLIQUE AQUI PARA TROCAR",
+                            " · PICK A STAR, THEN CLICK HERE TO SWAP",
+                            " · CHOISISSEZ UNE ÉTOILE PUIS CLIQUEZ ICI POUR LA CHANGER",
+                            " · ELIJA UNA ESTRELLA Y HAGA CLIC AQUÍ PARA CAMBIARLA"));
+        const auto libraryLineTwo = uiText(language_, "OU ARRASTE DAQUI E SOLTE SOBRE UMA ESTRELA",
+            "OR DRAG FROM HERE AND DROP ONTO A STAR", "OU GLISSEZ D’ICI ET DÉPOSEZ SUR UNE ÉTOILE",
+            "O ARRASTRE DESDE AQUÍ Y SUELTE SOBRE UNA ESTRELLA");
         graphics.setFont(interfaceFont(8.0f));
         graphics.drawFittedText(libraryLineOne, libraryTextBounds.toNearestInt().withHeight(17),
                                 juce::Justification::centredLeft, 1);
@@ -4070,8 +4059,8 @@ private:
             for (std::size_t index = 0U; index < kPerformanceSkyStars.size(); ++index) {
                 const auto star = kPerformanceSkyStars[index];
                 if (performanceStarFunction(star) != functions[group]) continue;
-                const bool library = std::find(kPerformanceSeedStars.begin(), kPerformanceSeedStars.end(), star)
-                    == kPerformanceSeedStars.end();
+                // Desde 3/11 a seed escolhe entre todas: não há mais "· biblioteca".
+                constexpr bool library = false;
                 family.addItem(static_cast<int>(index) + 1, moduleDisplayName(star)
                                    + (library ? uiText(supportLanguage_, "  · biblioteca", "  · library",
                                                        "  · bibliothèque", "  · biblioteca") : juce::String{}),
@@ -5537,7 +5526,29 @@ private:
             juce::MessageBoxIconType::NoIcon,
             utf8("RASGO SYNTH · ASTERISMUS · ")
                 + uiText(supportLanguage_, "SOBRE", "ABOUT", "À PROPOS", "ACERCA DE"),
-            aboutCopy(supportLanguage_));
+            aboutCopy(supportLanguage_) + libraryAboutLine());
+    }
+
+    // As contagens da biblioteca que saíram da área de tocar (3/11).
+    juce::String libraryAboutLine() const {
+        std::size_t adapted = 0U, candidates = 0U, audit = 0U;
+        for (const auto& entry : kPerformanceModuleLibrary) {
+            adapted += entry.state == PerformanceLibraryState::ActiveCohort;
+            candidates += entry.state == PerformanceLibraryState::RealtimeCandidate;
+            audit += entry.state == PerformanceLibraryState::NeedsAudit;
+        }
+        const auto n = [](std::size_t value) { return juce::String(static_cast<int>(value)); };
+        return utf8("\n\n") + uiText(supportLanguage_, "Biblioteca: ", "Library: ", "Bibliothèque : ", "Biblioteca: ")
+            + n(kPerformanceModuleLibrary.size())
+            + uiText(supportLanguage_, " módulos — ", " modules — ", " modules — ", " módulos — ") + n(adapted)
+            + uiText(supportLanguage_, " estrelas tocáveis (a seed escolhe entre todas), ",
+                     " playable stars (the seed chooses among all), ",
+                     " étoiles jouables (la seed choisit parmi toutes), ",
+                     " estrellas tocables (la seed elige entre todas), ")
+            + n(candidates)
+            + uiText(supportLanguage_, " com adaptador próprio (Modal), ", " with its own adapter (Modal), ",
+                     " avec son propre adaptateur (Modal), ", " con adaptador propio (Modal), ")
+            + n(audit) + uiText(supportLanguage_, " em auditoria.", " under audit.", " en audit.", " en auditoría.");
     }
 
     void showTutorial() {

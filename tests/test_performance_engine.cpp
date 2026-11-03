@@ -145,11 +145,20 @@ void testLiveStemMixer() {
     // A live constellation enters through event envelopes. Let that declared
     // body become present before verifying that SOLO isolates it; an empty
     // constellation is intentionally silent (there is no safety carrier).
-    for (int block = 0; block < 48; ++block) solo.processBlock(left.data(), right.data(), 64U);
-    for (int block = 0; block < 128; ++block) solo.processBlock(left.data(), right.data(), 64U);
-    const auto soloTelemetry = solo.readTelemetry();
-    expect(soloTelemetry.stemPeakMicros[0] < 100U && soloTelemetry.stemPeakMicros[1] < 100U
-           && soloTelemetry.stemPeakMicros[2] > 1000U && solo.soloActorId() == 13U,
+    // Desde 3/11 a seed escolhe entre todas as estrelas: o corpo 3 pode ser
+    // uma estrela de ataques raros (o Bluff, na seed 181). Por isso o solo é
+    // conferido ao longo de até 3 s: o solado soa em algum momento, os
+    // outros nunca, depois que o solo assentou.
+    for (int block = 0; block < 176; ++block) solo.processBlock(left.data(), right.data(), 64U);
+    std::uint32_t othersPeak = 0U;
+    std::uint32_t soloPeak = 0U;
+    for (int block = 0; block < 2250; ++block) {
+        solo.processBlock(left.data(), right.data(), 64U);
+        const auto live = solo.readTelemetry();
+        othersPeak = std::max({othersPeak, live.stemPeakMicros[0], live.stemPeakMicros[1]});
+        soloPeak = std::max(soloPeak, live.stemPeakMicros[2]);
+    }
+    expect(othersPeak < 100U && soloPeak > 1000U && solo.soloActorId() == 13U,
            "solo isolates one stem through the same realtime mixer path");
     expect(solo.setStemSolo(13U, false) && solo.soloActorId() == kInvalidActorId,
            "solo release restores the full live stem set without a session reload");
@@ -329,11 +338,21 @@ void testEcologyAndSceneMorph() {
     for (int pass = 0; pass < 24; ++pass) engine.processBlock(left.data(), right.data(), 64U);
     expect(std::any_of(left.begin(), left.end(), [](float sample) { return std::fabs(sample) > 1.0e-5F; }),
            "three-actor ecology is audible");
-    const auto stemTelemetry = engine.readTelemetry();
+    // Desde 3/11 a seed escolhe entre todas as estrelas: uma delas pode ser de
+    // ataques raros (o Bluff no corpo 3 da seed 181). O pico de cada stem é
+    // conferido ao longo de até 3 s, não num instante só.
+    auto stemTelemetry = engine.readTelemetry();
+    std::array<std::uint32_t, 3> stemPeaks{};
+    for (int pass = 0; pass < 2250; ++pass) {
+        for (std::size_t stem = 0U; stem < stemPeaks.size(); ++stem)
+            stemPeaks[stem] = std::max(stemPeaks[stem], stemTelemetry.stemPeakMicros[stem]);
+        if (stemPeaks[0] > 0U && stemPeaks[1] > 0U && stemPeaks[2] > 0U) break;
+        engine.processBlock(left.data(), right.data(), 64U);
+        stemTelemetry = engine.readTelemetry();
+    }
     expect(stemTelemetry.stemCount == 3U && stemTelemetry.stemActorIds[0] == 11U
            && stemTelemetry.stemActorIds[1] == 12U && stemTelemetry.stemActorIds[2] == 13U
-           && stemTelemetry.stemPeakMicros[0] > 0U && stemTelemetry.stemPeakMicros[1] > 0U
-           && stemTelemetry.stemPeakMicros[2] > 0U,
+           && stemPeaks[0] > 0U && stemPeaks[1] > 0U && stemPeaks[2] > 0U,
            "engine publishes realtime-safe peak telemetry for each actor stem");
 
     expect(engine.beginSceneMorph(source, target, territory, 0.04), "scene morph starts inside one territory");
@@ -396,7 +415,9 @@ double macroDifference(PerformanceMacro macro) {
            "macro comparison values enter both engines");
     std::array<float, 64> lowLeft{}, lowRight{}, highLeft{}, highRight{};
     double difference = 0.0;
-    for (int block = 0; block < 96; ++block) {
+    // 1 s (era 0,13 s): com a seed escolhendo entre todas as estrelas (3/11),
+    // a AUTONOMIA da seed 181 só se ouve depois do primeiro décimo de segundo.
+    for (int block = 0; block < 750; ++block) {
         low.processBlock(lowLeft.data(), lowRight.data(), 64U);
         high.processBlock(highLeft.data(), highRight.data(), 64U);
         for (std::size_t sample = 0; sample < lowLeft.size(); ++sample) {

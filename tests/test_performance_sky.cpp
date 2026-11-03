@@ -166,10 +166,21 @@ int main() {
             || star == PerformanceModuleBody::BassFallback)
             ok = expect(attacks > 2U, (name + " marks its attacks").c_str()) && ok;
     }
-    ok = expect(kPerformanceSeedStars.size() == 14U, "the seed still chooses among the fourteen") && ok;
-    for (std::uint32_t seed : {181U, 31415U, 2876238397U})
-        for (const auto body : performanceInitialAsterism(seed))
-            ok = expect(body != PerformanceModuleBody::Tuba, "the seed never chooses a library star") && ok;
+    // Desde 3/11 a seed escolhe entre todas as estrelas do céu; no máximo uma
+    // estrela de controle (não soa) por céu.
+    {
+        bool library = false;
+        for (std::uint32_t seed = 1U; seed <= 400U; ++seed) {
+            std::size_t controls = 0U;
+            for (const auto body : performanceInitialAsterism(seed)) {
+                controls += body != PerformanceModuleBody::ModalResonator
+                    && performanceStarFunction(body) == PerformanceStarFunction::Control;
+                library = library || body == PerformanceModuleBody::Tuba || body == PerformanceModuleBody::Harmonaig;
+            }
+            ok = expect(controls <= 1U, "at most one control star in a sky") && ok;
+        }
+        ok = expect(library, "the seed now also chooses the library stars") && ok;
+    }
     ok = expect(!PerformanceSky::isStar(PerformanceModuleBody::ModalResonator),
                 "Modal is not a star until its adapter moves here") && ok;
 
@@ -242,7 +253,7 @@ int main() {
     // many seeds every star appears and stars from different former families
     // meet in the same asterism.
     {
-        std::array<int, 16> appearances{};
+        std::array<int, static_cast<std::size_t>(PerformanceModuleBody::Count)> appearances{};
         bool crossFamily = false;
         for (std::uint32_t seed = 1U; seed <= 4000U; ++seed) {
             const auto asterism = performanceInitialAsterism(seed);
@@ -270,9 +281,9 @@ int main() {
             }
             crossFamily = crossFamily || (theremin && atari);
         }
-        // Every star the seed can choose appears in some asterism (library
-        // stars, like the Tuba, are placed by the performer, never by seeds).
-        for (const auto star : kPerformanceSeedStars)
+        // Every star of the sky appears in some asterism (since 3/11 the seed
+        // chooses among all of them).
+        for (const auto star : kPerformanceSkyStars)
             ok = expect(appearances[static_cast<std::size_t>(star)] > 0, starName(star)) && ok;
         ok = expect(crossFamily, "stars of different former families meet") && ok;
         ok = expect(performanceInitialAsterism(181U) == performanceInitialAsterism(181U),

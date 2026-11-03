@@ -144,3 +144,23 @@ rótulo TEMPO / BPM mostra "→ 124" quando a trama faz o tempo respirar.
 **Não conferido na tela** (sem tela virtual na máquina; abrir na tela do
 autor arriscaria roubar o foco do teclado): conferência do autor.
 
+### 9.1 O que restava (3/11, noite)
+
+- **Feito:** a faixa da BIBLIOTECA mostra só o que se faz ali ("28
+  ESTRELAS · ESCOLHA UMA ESTRELA E CLIQUE AQUI…" / "OU ARRASTE DAQUI E SOLTE
+  SOBRE UMA ESTRELA"); as contagens de bastidor (módulos, em auditoria,
+  candidato) foram para a janela SOBRE.
+- **Proposta A — trilho ORIGEM ⇄ VARIAÇÃO** (hoje verde-escuro sobre
+  verde-escuro, quase invisível): (A1, recomendada) o trecho de 0 até o valor
+  em âmbar (a cor da VARIAÇÃO no mixer), o resto num verde médio com contorno
+  fino, trilho de ~6 px; (A2, opcional) três marcas finas sob o trilho em
+  0 · 0,5 · 1.
+- **Proposta B — o Eixo de Forças mostra o céu** (hoje só os dois pontos):
+  (B1, recomendada) um anel fino em volta de cada ponto — o raio respira com
+  a energia do movimento das estrelas, a cor vai do azul ao âmbar com a
+  tensão harmônica do céu; nenhum texto novo, só com a trama; (B2) um rastro
+  de ~2 s quando o próprio céu move os pontos; (B3) uma faixa discreta no
+  fundo com a seção da forma.
+
+Ambas aguardam o autor.
+

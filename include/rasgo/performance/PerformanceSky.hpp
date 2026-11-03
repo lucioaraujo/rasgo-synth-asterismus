@@ -73,8 +73,10 @@
 
 namespace rasgo::performance {
 
-// As estrelas que a seed escolhe para o asterismo, na ordem do catálogo
-// (a lista não muda: mudá-la mudaria o asterismo de toda seed).
+// As 14 estrelas que a seed escolhia até 3/11/2026 (histórico: as tomadas
+// gravadas antes disso nasceram desta lista). Desde 3/11 a seed escolhe
+// entre todas as estrelas do céu (kPerformanceSkyStars) — decisão do autor:
+// "é um instrumento generativo que oferta um bom leque de variações".
 inline constexpr std::array<PerformanceModuleBody, 14> kPerformanceSeedStars{{
     PerformanceModuleBody::Acid, PerformanceModuleBody::Gendyn,
     PerformanceModuleBody::Percussion, PerformanceModuleBody::FmFlute,
@@ -84,9 +86,9 @@ inline constexpr std::array<PerformanceModuleBody, 14> kPerformanceSeedStars{{
     PerformanceModuleBody::AtariPunk, PerformanceModuleBody::DejaVu,
     PerformanceModuleBody::Atropelo, PerformanceModuleBody::Galo}};
 
-// As estrelas que o céu sabe tocar: as da seed e, depois delas, as estrelas
-// da biblioteca (30/10) — o performer as põe num corpo trocando a estrela
-// dele; a seed não as escolhe (docs/MODULOS_RESTANTES_E_REPOSITORIO.md).
+// As estrelas que o céu sabe tocar — e, desde 3/11/2026, as que a seed
+// escolhe: as 14 primeiras e as da biblioteca (30/10 a 2/11). A ordem não
+// muda: mudá-la mudaria o asterismo de toda seed.
 inline constexpr std::array<PerformanceModuleBody, 28> kPerformanceSkyStars{{
     PerformanceModuleBody::Acid, PerformanceModuleBody::Gendyn,
     PerformanceModuleBody::Percussion, PerformanceModuleBody::FmFlute,
@@ -131,16 +133,17 @@ inline constexpr PerformanceStarFunction performanceStarFunction(
 
 // O primeiro asterismo que a seed propõe para os oito corpos do Campo
 // (2026-10-28, passo 3: "a seed escolhe corpos, não coortes"). A seed
-// embaralha as 14 estrelas do céu; a figura de abertura pede, nos papéis do
+// embaralha as 28 estrelas do céu (até 3/11, só as 14 primeiras); a figura de abertura pede, nos papéis do
 // Campo, um chão tonal (corpo 1), uma matéria de atrito — textura ou voz —
 // (corpo 2) e um pulso (corpo 3); o corpo 4 e os corpos 6..8 recebem as
 // estrelas seguintes da ordem da seed. Qualquer estrela pode encontrar
 // qualquer outra: não há mais famílias fechadas (seed % 5). O corpo 5 é o
 // Modal, que ainda toca pelo ModalMatterAdapter. Nenhuma estrela acende duas
-// vezes.
+// vezes. No máximo uma estrela de CONTROLE por céu (elas não soam: duas ou
+// três deixariam o céu ralo) — a única regra acrescentada em 3/11.
 inline constexpr std::array<PerformanceModuleBody, 8> performanceInitialAsterism(
     std::uint32_t seed) noexcept {
-    std::array<PerformanceModuleBody, kPerformanceSeedStars.size()> order = kPerformanceSeedStars;
+    std::array<PerformanceModuleBody, kPerformanceSkyStars.size()> order = kPerformanceSkyStars;
     std::uint32_t state = seed ^ 0x2545f491U;
     for (std::size_t index = order.size() - 1U; index > 0U; --index) {
         state ^= state << 13U;
@@ -151,17 +154,25 @@ inline constexpr std::array<PerformanceModuleBody, 8> performanceInitialAsterism
         order[index] = order[other];
         order[other] = held;
     }
-    std::array<bool, kPerformanceSeedStars.size()> used{};
-    const auto take = [&order, &used](auto accepts) {
+    std::array<bool, kPerformanceSkyStars.size()> used{};
+    bool controlTaken = false;
+    const auto take = [&order, &used, &controlTaken](auto accepts) {
+        const auto admit = [&controlTaken](PerformanceModuleBody star) {
+            return !controlTaken || performanceStarFunction(star) != PerformanceStarFunction::Control;
+        };
+        const auto mark = [&controlTaken](PerformanceModuleBody star) {
+            controlTaken = controlTaken || performanceStarFunction(star) == PerformanceStarFunction::Control;
+            return star;
+        };
         for (std::size_t index = 0U; index < order.size(); ++index) {
-            if (used[index] || !accepts(performanceStarFunction(order[index]))) continue;
+            if (used[index] || !admit(order[index]) || !accepts(performanceStarFunction(order[index]))) continue;
             used[index] = true;
-            return order[index];
+            return mark(order[index]);
         }
         for (std::size_t index = 0U; index < order.size(); ++index) {
-            if (used[index]) continue;
+            if (used[index] || !admit(order[index])) continue;
             used[index] = true;
-            return order[index];
+            return mark(order[index]);
         }
         return PerformanceModuleBody::Count;
     };

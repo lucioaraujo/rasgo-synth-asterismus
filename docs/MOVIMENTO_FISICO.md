@@ -106,10 +106,19 @@ com a TRAMA ligada, cada estrela soa onde a Constelação a mostra
 - o retorno do Modal fica no centro; o stem gravado por estrela segue mono.
 
 Sem a trama (ou em saída mono) o estéreo é o de antes, **idêntico** (hash de
-20 s × 3 seeds igual ao do commit anterior). Medido com a trama, 60 s, seeds
-181/9001/42, ESPAÇO 0,7: correlação 0,97, lado/meio 0,12–0,17 (antes
-0,07–0,08), equilíbrio em janelas de 0,5 s entre −5 e +5 dB (antes +1 a +2
-fixo), picos iguais. Teste: `tests/test_performance_sky_pan.cpp`.
+20 s × 3 seeds igual ao do commit anterior, conferido com o DSP real das
+estrelas). Medido com a trama, 60 s, seeds 181/9001/42, ESPAÇO 0,7, DSP real
+(céu das 14): correlação 0,97–0,98 (antes 0,999), lado/meio 0,13–0,20 (antes
+0,08), picos iguais (0,80). O equilíbrio **pende para a esquerda**: 1–3 dB
+na média, janelas de 0,5 s entre −6 e +2 dB (antes pendia 1,3 dB para a
+direita, fixo) — as estrelas passam mais tempo à esquerda do centro;
+**para a escuta do autor** (centrar o lugar médio seria uma correção
+possível). Com o céu das 28 (3/11): correlação 0,97–0,99, janelas entre −6 e
++6 dB. Teste: `tests/test_performance_sky_pan.cpp`.
+
+Correção de 3/11: a primeira medida registrada aqui (correlação 0,97,
+equilíbrio de −5 a +5 dB) foi feita numa sonda compilada sem os defines do
+DSP das estrelas; os números acima a substituem.
 
 Achado: o "grão" do token do MUTATE (bits 16–23) só acelerava a fase
 estéreo antiga; com a trama ele não soa mais (a "inclinação", bits 8–15,

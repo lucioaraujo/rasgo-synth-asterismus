@@ -21,6 +21,16 @@ o asterismo entre as 14 estrelas; a capacidade baixa se a máquina pedir.
 
 ## 3. Inserir sem mudar as seeds existentes
 
+> **Decisão do autor, 3/11/2026:** "no cabeçalho, a seed pode escolher entre
+> todas as estrelas — é um instrumento generativo que oferta um bom leque de
+> variações". Desde então `performanceInitialAsterism` embaralha as 28
+> estrelas do céu (`kPerformanceSkyStars`); o Modal segue no corpo 5; a única
+> regra nova: **no máximo uma estrela de CONTROLE por céu** (elas não soam).
+> Consequência aceita: **toda seed mudou de céu** — uma tomada gravada antes
+> de 3/11 não se reproduz pela mesma seed (a lista antiga,
+> `kPerformanceSeedStars`, fica no código como histórico). A proposta abaixo
+> (só o performer insere as novas) ficou como histórico.
+
 Hoje a seed escolhe o asterismo entre as 14 estrelas. Se as novas entrarem
 nessa lista, **toda seed muda de asterismo** (a sua peça de ontem viraria
 outra). Proposta: as estrelas novas entram como **estrelas da biblioteca** —
@@ -209,4 +219,4 @@ tags e pelo botão; ainda não rodou.
 
 - a primeira execução da CI (custo) e a versão da prévia;
 - ícone (proposta em `packaging/icon/proposta/`);
-- se as estrelas novas entram na escolha da seed já na v0.2.0 ou depois.
+- ~~se as estrelas novas entram na escolha da seed~~ — decidido em 3/11: entram (§3).

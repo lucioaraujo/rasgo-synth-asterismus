@@ -163,7 +163,9 @@ void runGaloOneMinuteSimulation() {
     constexpr std::uint32_t sampleRate = 48000U;
     constexpr std::uint32_t blockSize = 256U;
     constexpr std::uint64_t simulatedSamples = 60ULL * sampleRate;
-    const auto document = PerformanceTerritoryFactory::makeWithOptionalModule(200U, true);
+    // A seed 41 põe o Galo no corpo 4 (desde 3/11 a seed escolhe entre todas
+    // as estrelas; antes era a 200).
+    const auto document = PerformanceTerritoryFactory::makeWithOptionalModule(41U, true);
     expect(document.valid(), "Galo stress document is valid");
     PerformanceSessionEngine engine;
     expect(engine.prepare(static_cast<double>(sampleRate), blockSize, 2U)
@@ -177,10 +179,15 @@ void runGaloOneMinuteSimulation() {
     std::array<float, blockSize> right{};
     const auto allocationsBefore = allocations.load(std::memory_order_relaxed);
     double largestSample = 0.0;
+    // O pico do stem 4 é o maior dos últimos ~5 s (uma estrela pode estar
+    // numa pausa da frase no instante final; ler um bloco só era frágil).
+    std::uint32_t galoPeak = 0U;
     for (std::uint64_t sample = 0U; sample < simulatedSamples; sample += blockSize) {
         engine.processBlock(left.data(), right.data(), blockSize);
         largestSample = std::max(largestSample,
             std::fabs(static_cast<double>(left[(sample / blockSize) % blockSize])));
+        if (sample + 5ULL * sampleRate >= simulatedSamples)
+            galoPeak = std::max(galoPeak, engine.readTelemetry().stemPeakMicros[3]);
     }
     const auto allocationsAfter = allocations.load(std::memory_order_relaxed);
     const auto telemetry = engine.readTelemetry();
@@ -190,7 +197,7 @@ void runGaloOneMinuteSimulation() {
            "Galo one-minute output stays finite and audible");
     expect(telemetry.valid() && telemetry.xrunCount == 0U
                && telemetry.activeActorCount == 4U && telemetry.stemCount == 4U
-               && telemetry.stemActorIds[3] == 4U && telemetry.stemPeakMicros[3] > 100U,
+               && telemetry.stemActorIds[3] == 4U && galoPeak > 100U,
            "Galo one-minute stem telemetry remains audible and stable");
     std::cout << "Galo one-minute simulated session: stable, allocations in processBlock: 0\n";
 }
