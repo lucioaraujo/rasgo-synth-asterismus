@@ -162,5 +162,9 @@ autor arriscaria roubar o foco do teclado): conferência do autor.
   de ~2 s quando o próprio céu move os pontos; (B3) uma faixa discreta no
   fundo com a seção da forma.
 
-Ambas aguardam o autor.
+Decisão do autor (3/11): **A1 + A2 e B1** — aplicadas no mesmo dia
+(`VariationTrackLookAndFeel` no slider ORIGEM ⇄ VARIAÇÃO;
+`PerformanceField::setSkyState` no Eixo: velocidade média das estrelas
+normalizada por 0,4 campo/s, alisada; tensão do céu na cor). Não conferidas
+na tela — olhar do autor.
 

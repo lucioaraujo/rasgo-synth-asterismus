@@ -495,6 +495,45 @@ std::array<std::array<double, 3>, 8> initialModuleControls(std::uint32_t seed) {
     return controls;
 }
 
+// O trilho ORIGEM ⇄ VARIAÇÃO (3/11, proposta A1 + A2 aprovada pelo autor):
+// o trecho de 0 até o valor em âmbar — a cor da VARIAÇÃO no mixer —, o resto
+// num verde médio com contorno fino, trilho de 6 px; três marcas finas sob
+// ele em 0 · 0,5 · 1. Antes: verde-escuro sobre verde-escuro, quase invisível.
+class VariationTrackLookAndFeel final : public juce::LookAndFeel_V4 {
+public:
+    void drawLinearSlider(juce::Graphics& graphics, int x, int y, int width, int height,
+                          float sliderPos, float minSliderPos, float maxSliderPos,
+                          juce::Slider::SliderStyle style, juce::Slider& slider) override {
+        if (style != juce::Slider::LinearHorizontal) {
+            juce::LookAndFeel_V4::drawLinearSlider(graphics, x, y, width, height, sliderPos,
+                                                   minSliderPos, maxSliderPos, style, slider);
+            return;
+        }
+        constexpr float trackHeight = 6.0f;
+        const auto centreY = static_cast<float>(y) + static_cast<float>(height) * 0.5f;
+        const auto left = static_cast<float>(x);
+        const auto right = static_cast<float>(x + width);
+        const juce::Rectangle<float> track(left, centreY - trackHeight * 0.5f, right - left, trackHeight);
+        graphics.setColour(juce::Colour(0xff2a5a4d));
+        graphics.fillRoundedRectangle(track, 3.0f);
+        graphics.setColour(juce::Colour(0xff8aa99b).withAlpha(0.55f));
+        graphics.drawRoundedRectangle(track, 3.0f, 1.0f);
+        graphics.setColour(juce::Colour(0xffd18a45));
+        graphics.fillRoundedRectangle(track.withRight(juce::jmax(left + trackHeight, sliderPos)), 3.0f);
+        // A2: as marcas 0 · 0,5 · 1, finas, logo abaixo do trilho.
+        graphics.setColour(juce::Colour(0xff8aa99b));
+        for (const float fraction : {0.0f, 0.5f, 1.0f}) {
+            const auto markX = left + (right - left) * fraction;
+            graphics.drawVerticalLine(juce::roundToInt(markX), track.getBottom() + 2.0f, track.getBottom() + 6.0f);
+        }
+        const auto thumb = static_cast<float>(getSliderThumbRadius(slider));
+        graphics.setColour(slider.findColour(juce::Slider::thumbColourId));
+        graphics.fillEllipse(juce::Rectangle<float>(thumb * 2.0f, thumb * 2.0f).withCentre({sliderPos, centreY}));
+        graphics.setColour(juce::Colour(0xfff2e7d5));
+        graphics.drawEllipse(juce::Rectangle<float>(thumb * 2.0f, thumb * 2.0f).withCentre({sliderPos, centreY}), 1.2f);
+    }
+};
+
 class PerformanceField final : public juce::Component,
                                public juce::SettableTooltipClient {
 public:
@@ -541,6 +580,37 @@ public:
         repaint();
     }
 
+    // O Eixo mostra o céu (3/11, proposta B1 aprovada pelo autor): com a
+    // trama, um anel fino em volta de cada ponto — o raio respira com a
+    // energia do movimento das estrelas (velocidade média na Constelação), a
+    // cor vai do azul ao âmbar com a tensão harmônica. Sem texto novo.
+    void setSkyState(const PerformanceTelemetrySnapshot& telemetry, bool web) {
+        const bool visible = web && telemetry.playing && telemetry.skyMotionValid;
+        const auto now = juce::Time::getMillisecondCounterHiRes();
+        double speed = 0.0;
+        if (visible && skyStateMs_ > 0.0 && now > skyStateMs_) {
+            const double seconds = (now - skyStateMs_) / 1000.0;
+            for (std::size_t index = 0U; index < lastSkyX_.size(); ++index) {
+                const double dx = (telemetry.skyPositionX[index] - lastSkyX_[index]) / 65535.0;
+                const double dy = (telemetry.skyPositionY[index] - lastSkyY_[index]) / 65535.0;
+                speed += std::sqrt(dx * dx + dy * dy) / seconds;
+            }
+            speed /= static_cast<double>(lastSkyX_.size());
+        }
+        for (std::size_t index = 0U; index < lastSkyX_.size(); ++index) {
+            lastSkyX_[index] = telemetry.skyPositionX[index];
+            lastSkyY_[index] = telemetry.skyPositionY[index];
+        }
+        skyStateMs_ = now;
+        // A física anda a até 0,9 campo/s; 0,4 já é um céu agitado.
+        const double energyTarget = visible ? juce::jlimit(0.0, 1.0, speed / 0.4) : 0.0;
+        skyEnergy_ += (energyTarget - skyEnergy_) * 0.15;
+        skyTension_ = juce::jlimit(0.0, 1.0, telemetry.skyTensionMicros / 1000000.0);
+        const bool changed = visible != skyRingVisible_ || visible;
+        skyRingVisible_ = visible;
+        if (changed) repaint();
+    }
+
     void paint(juce::Graphics& graphics) override {
         const auto bounds = getLocalBounds().toFloat().reduced(10.0f);
         graphics.setColour(juce::Colour(0xff102d27));
@@ -577,6 +647,14 @@ public:
         graphics.setColour(juce::Colour(0xff5eb6d7));
         graphics.fillEllipse(texturePoint.x - 6.0f, texturePoint.y - 6.0f, 12.0f, 12.0f);
         graphics.drawEllipse(texturePoint.x - 11.0f, texturePoint.y - 11.0f, 22.0f, 22.0f, 1.4f);
+        if (skyRingVisible_) {
+            const auto ring = juce::Colour(0xff5eb6d7).interpolatedWith(juce::Colour(0xffd18a45),
+                                                                         static_cast<float>(skyTension_));
+            graphics.setColour(ring.withAlpha(0.75f));
+            const auto radius = 15.0f + 14.0f * static_cast<float>(skyEnergy_);
+            graphics.drawEllipse(point.x - radius, point.y - radius, radius * 2.0f, radius * 2.0f, 1.0f);
+            graphics.drawEllipse(texturePoint.x - radius, texturePoint.y - radius, radius * 2.0f, radius * 2.0f, 1.0f);
+        }
         if (hasKeyboardFocus(true)) {
             graphics.setColour(juce::Colour(0xffe1aa59));
             graphics.drawRoundedRectangle(bounds.expanded(3.0f), 7.0f, 1.5f);
@@ -657,6 +735,12 @@ private:
     double displayY_ = 0.5;
     double displayTextureX_ = 0.72;
     double displayTextureY_ = 0.72;
+    bool skyRingVisible_ = false;
+    double skyEnergy_ = 0.0;
+    double skyTension_ = 0.0;
+    double skyStateMs_ = 0.0;
+    std::array<std::uint16_t, kPerformanceStemActorCapacity> lastSkyX_{};
+    std::array<std::uint16_t, kPerformanceStemActorCapacity> lastSkyY_{};
     bool draggingTexture_ = false;
     SupportLanguage language_ = SupportLanguage::Portuguese;
 };
@@ -3099,6 +3183,7 @@ private:
         actorSeedVariationLabel_.setJustificationType(juce::Justification::centredLeft);
         actorSeedVariationLabel_.setTooltip(utf8("Varia somente o astro em foco a partir da SEED VIVA; 0 preserva a origem deste corpo."));
         addAndMakeVisible(actorSeedVariationLabel_);
+        actorSeedVariationSlider_.setLookAndFeel(&variationTrackLook_);
         actorSeedVariationSlider_.setSliderStyle(juce::Slider::LinearHorizontal);
         actorSeedVariationSlider_.setTextBoxStyle(juce::Slider::TextBoxRight, false, 68, 20);
         actorSeedVariationSlider_.setRange(0.0, 1.0, 0.01);
@@ -6171,6 +6256,7 @@ private:
             codaRequested_ = false;
         }
         constellationGraph_.setStemTelemetry(telemetry);
+        performanceField_.setSkyState(telemetry, controller_.skyWeb());
         followPercurso(telemetry);
         // A faixa com duração: a coda chega 5,2 s antes do alvo (coda 4 s +
         // cauda 1,2 s), e o arquivo fecha em torno do tempo escolhido.
@@ -6615,6 +6701,7 @@ private:
     juce::TextEditor seedEditor_;
     juce::TextButton seedButton_;
     juce::Label actorSeedVariationLabel_;
+    VariationTrackLookAndFeel variationTrackLook_;  // antes do slider: vive mais que ele
     juce::Slider actorSeedVariationSlider_;
     juce::Label tempoLabel_;
     juce::TextEditor tempoEditor_;
