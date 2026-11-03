@@ -67,3 +67,15 @@ esta cópia de DSP autoral não redefine o regime de distribuição do host.
 | `src/dsp/FootnotePluck.hpp` | `RASGO_SYNTH_STUDIO/rasgo-synth-core/src/dsp/FootnotePluck.hpp` (monorepo `rasgo-instruments`) | `cfe1698` | `c5f61313f5a122a437a4560a5e793ed4904f108dd5b3c572d14efc455976148b` | 2026-10-30 — Footnote como estrela da biblioteca; cópia byte a byte, sem transformação (depende do `Oscillator.hpp` já vendorado, idêntico ao do Studio) |
 | (lógica, adaptada fora do vendor) `include/rasgo/performance/PerformanceBluffSignal.hpp` | `RASGO_SYNTH_STUDIO/rasgo-synth-core/src/sequencer/BluffSignal.hpp` | `cfe1698` | `892832f4743a87f96bc7df990805b7e4daae99f4599adbc0316640b087682d9a` (fonte) | 2026-10-30 — Bluff Signal como estrela; adaptado: xorshift no lugar de `std::mt19937`, janela em batidas, reorganização depois da traição (ver o cabeçalho do arquivo) |
 | (adaptado fora do vendor) `include/rasgo/performance/PerformanceSpectralObject.hpp` | `RASGO_SYNTH_STUDIO/rasgo-synth-core/src/dsp/SpectralObject.hpp` | `cfe1698` | `29b0f542cdbc232d4b942d87a47aaea254cabebaa4c20c5a418eb373eccfd233` (fonte) | 2026-10-30 — Spectral Object como estrela; adaptado para tempo real: sem `<random>`, `<sstream>`, `std::string`, `std::vector`; reafinação só quando muda; período-base medido nas batidas da estrela; parciais acima de 0,45·fs calados. Usa `Envelope.hpp` e `Oscillator.hpp` já vendorados (idênticos ao Studio) |
+
+## Avisos de terceiros do snapshot (2026-11-04)
+
+`CREDITS.md` (desta pasta) aponta para `THIRD_PARTY_NOTICES.md`, que não
+tinha vindo na cópia de 11/10 — link quebrado, pendência de publicação
+anotada desde então. Trazido agora do mesmo commit, sem nenhuma alteração:
+`RASGO_SYNTH/THIRD_PARTY_NOTICES.md` em `8fc69f5` (repositório RASGO),
+sha256 `d5a6d23ad1d73dc948802b46fc9d6e3af41ad64b8d07ffd677d1d95848e85e46`.
+Conferido também que `CREDITS.md` e `LICENSE` desta pasta são idênticos aos
+do commit. O arquivo cita um `DEPENDENCIES.md` que é o do Studio na origem
+(não copiado): as dependências do Asterismus estão em `DEPENDENCIES.md` e
+`THIRD_PARTY_NOTICES.md` na raiz do projeto.
