@@ -2582,6 +2582,8 @@ public:
             auto row = juce::Rectangle<int>(getWidth() - 440, 74, 200, 28);
             const auto width = row.getWidth() / static_cast<int>(durationButtons_.size());
             for (auto& button : durationButtons_) button.setBounds(row.removeFromLeft(width).reduced(2, 0));
+            // ▶ OUVIR na linha de título da caixa FAIXA · DURAÇÃO, à direita.
+            listenButton_.setBounds(getWidth() - 318, 57, 74, 15);
         }
         setBounds(transportButton_, headerLayout.transport);
         // The header status line ends before the first operating band. Keep a
@@ -3297,6 +3299,11 @@ private:
             addAndMakeVisible(button);
         }
         addAndMakeVisible(albumButton_);
+        listenButton_.setButtonText(uiText(supportLanguage_, "▶ OUVIR", "▶ LISTEN", "▶ ÉCOUTER", "▶ ESCUCHAR"));
+        listenButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff3f5a4a));
+        listenButton_.setColour(juce::TextButton::textColourOffId, juce::Colour(0xfff2e7d5));
+        listenButton_.onClick = [this] { listenToLastTake(); };
+        addChildComponent(listenButton_);  // aparece quando uma tomada fecha
         percursoButton_.setColour(juce::TextButton::textColourOffId, juce::Colour(0xfff2e7d5));
         percursoButton_.onClick = [this] { setPercurso(!percurso_); };
         addAndMakeVisible(percursoButton_);
@@ -4694,7 +4701,7 @@ private:
         menu.addSectionHeader(uiText(supportLanguage_, "MEMÓRIA · o app sempre abre algo novo",
                                      "MEMORY · the app always opens something new",
                                      "MÉMOIRE · l’app ouvre toujours du neuf", "MEMORIA · la app siempre abre algo nuevo"));
-        juce::PopupMenu store, recall, rename, erase, exporting, importing;
+        juce::PopupMenu store, recall, rename, erase;
         bool any = false;
         for (std::size_t slot = 0U; slot < memories_.size(); ++slot) {
             const auto id = static_cast<int>(slot);
@@ -4705,9 +4712,7 @@ private:
                 recall.addItem(200 + id, memoryLabel(slot));
                 rename.addItem(300 + id, memoryLabel(slot));
                 erase.addItem(400 + id, memoryLabel(slot));
-                exporting.addItem(500 + id, memoryLabel(slot));
             }
-            importing.addItem(600 + id, memoryLabel(slot));
         }
         menu.addSubMenu(uiText(supportLanguage_, "GUARDAR ESTA SESSÃO EM", "STORE THIS SESSION IN",
                                "GARDER CETTE SESSION DANS", "GUARDAR ESTA SESIÓN EN"), store);
@@ -4719,22 +4724,98 @@ private:
                                  "ANNULER LE DERNIER CHANGEMENT", "DESHACER EL ÚLTIMO CAMBIO"),
                      memoryUndo_.has_value());
         menu.addSeparator();
-        menu.addSubMenu(uiText(supportLanguage_, "EXPORTAR PARA ARQUIVO", "EXPORT TO FILE",
-                               "EXPORTER VERS UN FICHIER", "EXPORTAR A ARCHIVO"), exporting, any);
-        menu.addSubMenu(uiText(supportLanguage_, "IMPORTAR DE ARQUIVO PARA", "IMPORT FROM FILE INTO",
-                               "IMPORTER D’UN FICHIER DANS", "IMPORTAR DE ARCHIVO A"), importing);
+        // SALVAR / ABRIR SESSÃO (4/11, proposta aprovada): no lugar de
+        // EXPORTAR (que pedia um lugar) e IMPORTAR (que só guardava num lugar).
+        // Salvar grava o que está soando agora; abrir já toca. Para pôr uma
+        // sessão aberta num dos 8 lugares: GUARDAR ESTA SESSÃO EM.
+        menu.addItem(800, uiText(supportLanguage_, "SALVAR SESSÃO…", "SAVE SESSION…", "ENREGISTRER LA SESSION…",
+                                 "GUARDAR SESIÓN…"));
+        menu.addItem(801, uiText(supportLanguage_, "ABRIR SESSÃO…", "OPEN SESSION…", "OUVRIR UNE SESSION…",
+                                 "ABRIR SESIÓN…"));
         menu.showMenuAsync(juce::PopupMenu::Options{}.withTargetComponent(&memoryButton_), [this](int result) {
             if (result <= 0) return;
             const auto slot = static_cast<std::size_t>(result % 100);
-            if (result == 700) undoMemoryChange();
+            if (result == 800) chooseSessionFile(true);
+            else if (result == 801) chooseSessionFile(false);
+            else if (result == 700) undoMemoryChange();
             else if (result < 200) askMemoryName(slot, false);
             else if (result < 300) recallMemory(slot);
             else if (result < 400) askMemoryName(slot, true);
             else if (result < 500) changeMemory(slot, std::nullopt,
                                                 uiText(supportLanguage_, "memória apagada", "memory deleted",
                                                        "mémoire effacée", "memoria borrada"));
-            else if (result < 600) chooseMemoryFile(slot, true);
-            else chooseMemoryFile(slot, false);
+        });
+    }
+
+    // A última pasta usada para salvar ou abrir (3/11, pedido do autor:
+    // "sempre parte de Documentos; melhor do último diretório utilizado").
+    // Guardada num arquivo de texto ao lado das memórias, para valer também
+    // na próxima vez que o app abrir; se a pasta sumiu, volta a Documentos.
+    static juce::File lastMemoryFolderFile() {
+        return memoryDirectory().getParentDirectory().getChildFile("ultima_pasta_de_memoria.txt");
+    }
+    static juce::File lastMemoryFolder() {
+        const auto saved = lastMemoryFolderFile().loadFileAsString().trim();
+        if (saved.isNotEmpty() && juce::File::isAbsolutePath(saved)) {
+            const juce::File folder(saved);
+            if (folder.isDirectory()) return folder;
+        }
+        return juce::File::getSpecialLocation(juce::File::userDocumentsDirectory);
+    }
+    static void rememberMemoryFolder(const juce::File& folder) {
+        if (!folder.isDirectory()) return;
+        const auto file = lastMemoryFolderFile();
+        if (file.getParentDirectory().createDirectory()) file.replaceWithText(folder.getFullPathName());
+    }
+
+    // SALVAR SESSÃO grava o estado vivo (o mesmo que GUARDAR, mas num arquivo
+    // .asterismus onde o músico quiser); ABRIR SESSÃO lê e toca — como
+    // LEMBRAR, sem ocupar um dos 8 lugares. O seletor abre na última pasta.
+    void chooseSessionFile(bool saving) {
+        if (memoryChooser_) return;
+        const auto seed = juce::String(startupDocument_.territory.seed);
+        const auto initial = saving
+            ? lastMemoryFolder().getChildFile("sessao seed " + seed + " "
+                  + juce::Time::getCurrentTime().formatted("%Y-%m-%d %H-%M") + ".asterismus")
+            : lastMemoryFolder();
+        memoryChooser_ = std::make_unique<juce::FileChooser>(
+            saving ? uiText(supportLanguage_, "Salvar a sessão", "Save the session", "Enregistrer la session",
+                            "Guardar la sesión")
+                   : uiText(supportLanguage_, "Abrir uma sessão", "Open a session", "Ouvrir une session",
+                            "Abrir una sesión"),
+            initial, "*.asterismus");
+        const auto flags = juce::FileBrowserComponent::canSelectFiles
+            | (saving ? juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::warnAboutOverwriting
+                      : juce::FileBrowserComponent::openMode);
+        juce::Component::SafePointer<PerformanceHostComponent> safe(this);
+        memoryChooser_->launchAsync(flags, [safe, saving, seed](const juce::FileChooser& chooser) {
+            if (safe == nullptr) return;
+            const auto file = chooser.getResult();
+            safe->memoryChooser_.reset();
+            if (file == juce::File{}) return;
+            rememberMemoryFolder(file.getParentDirectory());
+            if (saving) {
+                const auto target = file.hasFileExtension(".asterismus") ? file : file.withFileExtension(".asterismus");
+                const auto memory = safe->captureMemory(target.getFileNameWithoutExtension().substring(0, 40));
+                safe->lastAction_ = writeMemoryFile(target, memory)
+                    ? uiText(safe->supportLanguage_, "sessão salva · ", "session saved · ", "session enregistrée · ",
+                             "sesión guardada · ") + target.getFullPathName()
+                    : uiText(safe->supportLanguage_, "a sessão não pôde ser salva em ", "the session could not be saved to ",
+                             "la session n’a pas pu être enregistrée dans ", "la sesión no pudo guardarse en ")
+                          + target.getFullPathName();
+                safe->repaint();
+                return;
+            }
+            const auto memory = readMemoryFile(file);
+            if (!memory) {
+                safe->lastAction_ = uiText(safe->supportLanguage_, "arquivo de sessão inválido · ", "invalid session file · ",
+                                           "fichier de session invalide · ", "archivo de sesión inválido · ")
+                    + file.getFileName();
+                safe->repaint();
+                return;
+            }
+            safe->playMemory(*memory, uiText(safe->supportLanguage_, "SESSÃO ", "SESSION ", "SESSION ", "SESIÓN ")
+                                          + file.getFileName());
         });
     }
 
@@ -4813,7 +4894,13 @@ private:
     // de território.
     void recallMemory(std::size_t slot) {
         if (slot >= memories_.size() || !memories_[slot]) return;
-        const auto memory = *memories_[slot];
+        playMemory(*memories_[slot], uiText(supportLanguage_, "MEMÓRIA ", "MEMORY ", "MÉMOIRE ", "MEMORIA ")
+                                         + juce::String(static_cast<int>(slot + 1U)));
+    }
+
+    // Toca uma memória (de um lugar ou de um arquivo de sessão): o território
+    // entra ao vivo e o estado do performer é reaplicado 300 ms depois.
+    void playMemory(const PerformanceMemory& memory, const juce::String& label) {
         PerformanceSessionDocument document{};
         if (!parseSessionDocument(memory.document, document).ok()
             || !controller_.queueTerritory(document, memory.sceneId)) {
@@ -4826,11 +4913,11 @@ private:
         lastRecalledMemory_ = memory.name;
         seedEditor_.setText(juce::String(document.territory.seed), false);
         juce::Component::SafePointer<PerformanceHostComponent> safe(this);
-        juce::Timer::callAfterDelay(300, [safe, memory, slot] {
-            if (safe != nullptr) safe->applyMemoryPerformer(memory, slot);
+        juce::Timer::callAfterDelay(300, [safe, memory, label] {
+            if (safe != nullptr) safe->applyMemoryPerformer(memory, label);
         });
     }
-    void applyMemoryPerformer(const PerformanceMemory& memory, std::size_t slot) {
+    void applyMemoryPerformer(const PerformanceMemory& memory, const juce::String& label) {
         std::size_t refused = 0U;
         for (std::size_t index = 0U; index < 8U; ++index) {
             const auto actorId = static_cast<std::uint16_t>(index + 1U);
@@ -4866,80 +4953,13 @@ private:
         constellationGraph_.setPinnedNodes(starPinned_);
         refreshCohortIdentity(identitySeed_);
         refreshStemMixVisual();
-        lastAction_ = uiText(supportLanguage_, "MEMÓRIA ", "MEMORY ", "MÉMOIRE ", "MEMORIA ")
-            + juce::String(static_cast<int>(slot + 1U)) + " · " + juce::String::fromUTF8(memory.name.c_str())
+        lastAction_ = label + " · " + juce::String::fromUTF8(memory.name.c_str())
             + (refused > 0U ? uiText(supportLanguage_, " · comandos recusados: ", " · refused commands: ",
                                      " · commandes refusées : ", " · comandos rechazados: ") + juce::String(static_cast<int>(refused))
                             : juce::String{});
         repaint();
     }
 
-    // Exportar e importar: um arquivo .asterismus (texto, só parâmetros —
-    // nunca áudio). Importar só guarda no lugar; para tocar, LEMBRAR.
-    // A última pasta usada para exportar ou importar (3/11, pedido do autor:
-    // "sempre parte de Documentos; melhor do último diretório utilizado").
-    // Guardada num arquivo de texto ao lado das memórias, para valer também
-    // na próxima vez que o app abrir; se a pasta sumiu, volta a Documentos.
-    static juce::File lastMemoryFolderFile() {
-        return memoryDirectory().getParentDirectory().getChildFile("ultima_pasta_de_memoria.txt");
-    }
-    static juce::File lastMemoryFolder() {
-        const auto saved = lastMemoryFolderFile().loadFileAsString().trim();
-        if (saved.isNotEmpty() && juce::File::isAbsolutePath(saved)) {
-            const juce::File folder(saved);
-            if (folder.isDirectory()) return folder;
-        }
-        return juce::File::getSpecialLocation(juce::File::userDocumentsDirectory);
-    }
-    static void rememberMemoryFolder(const juce::File& folder) {
-        if (!folder.isDirectory()) return;
-        const auto file = lastMemoryFolderFile();
-        if (file.getParentDirectory().createDirectory()) file.replaceWithText(folder.getFullPathName());
-    }
-
-    void chooseMemoryFile(std::size_t slot, bool exporting) {
-        if (memoryChooser_ || slot >= memories_.size() || (exporting && !memories_[slot])) return;
-        memoryChooser_ = std::make_unique<juce::FileChooser>(
-            exporting ? uiText(supportLanguage_, "Exportar a memória", "Export the memory", "Exporter la mémoire",
-                               "Exportar la memoria")
-                      : uiText(supportLanguage_, "Importar uma memória", "Import a memory", "Importer une mémoire",
-                               "Importar una memoria"),
-            lastMemoryFolder(), "*.asterismus");
-        const auto flags = juce::FileBrowserComponent::canSelectFiles
-            | (exporting ? juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::warnAboutOverwriting
-                         : juce::FileBrowserComponent::openMode);
-        juce::Component::SafePointer<PerformanceHostComponent> safe(this);
-        memoryChooser_->launchAsync(flags, [safe, slot, exporting](const juce::FileChooser& chooser) {
-            if (safe == nullptr) return;
-            const auto file = chooser.getResult();
-            safe->memoryChooser_.reset();
-            if (file == juce::File{}) return;
-            rememberMemoryFolder(file.getParentDirectory());
-            if (exporting) {
-                const auto target = file.hasFileExtension(".asterismus") ? file : file.withFileExtension(".asterismus");
-                safe->lastAction_ = writeMemoryFile(target, *safe->memories_[slot])
-                    ? uiText(safe->supportLanguage_, "memória exportada · ", "memory exported · ",
-                             "mémoire exportée · ", "memoria exportada · ") + target.getFullPathName()
-                    : uiText(safe->supportLanguage_, "exportação falhou", "export failed", "échec de l’export",
-                             "la exportación falló");
-                safe->repaint();
-                return;
-            }
-            const auto memory = readMemoryFile(file);
-            if (!memory) {
-                safe->lastAction_ = uiText(safe->supportLanguage_, "arquivo de memória inválido", "invalid memory file",
-                                           "fichier de mémoire invalide", "archivo de memoria inválido");
-                safe->repaint();
-                return;
-            }
-            // Dizer de onde veio (3/11): o nome guardado dentro do arquivo pode
-            // ser igual ao que já estava no lugar, e a importação parecia não
-            // ter feito nada.
-            safe->changeMemory(slot, memory, uiText(safe->supportLanguage_, "memória importada de ", "memory imported from ",
-                                                    "mémoire importée depuis ", "memoria importada de ")
-                                                 + file.getFileName());
-        });
-    }
 
     // O estado da cena que o performer tem nas mãos (BPM, macros, presenças,
     // relações): usado por CAPTURAR e pela MEMÓRIA.
@@ -5514,6 +5534,32 @@ private:
             + utf8(" s · ") + take.getFileName()
             + (droppedBlocks > 0U ? utf8(" · fila cheia ") + juce::String(droppedBlocks) : juce::String{})
             + (manifestWritten ? utf8(" · manifesto") : utf8(" · manifesto falhou"));
+        // ▶ OUVIR (4/11, proposta aprovada): a tomada que acabou de fechar,
+        // no player do sistema.
+        if (take.existsAsFile()) {
+            lastTakeFile_ = take;
+            listenButton_.setTooltip(uiText(supportLanguage_, "Abre a última tomada no player do sistema · ",
+                                            "Opens the last take in the system player · ",
+                                            "Ouvre la dernière prise dans le lecteur du système · ",
+                                            "Abre la última toma en el reproductor del sistema · ")
+                                     + take.getFullPathName());
+            listenButton_.setVisible(true);
+        }
+    }
+
+    void listenToLastTake() {
+        if (!lastTakeFile_.existsAsFile()) {
+            listenButton_.setVisible(false);
+            lastAction_ = uiText(supportLanguage_, "a última tomada não está mais lá", "the last take is gone",
+                                 "la dernière prise n’est plus là", "la última toma ya no está");
+            repaint();
+            return;
+        }
+        if (!lastTakeFile_.startAsProcess())
+            lastAction_ = uiText(supportLanguage_, "nenhum player abriu a tomada · ", "no player opened the take · ",
+                                 "aucun lecteur n’a ouvert la prise · ", "ningún reproductor abrió la toma · ")
+                + lastTakeFile_.getFullPathName();
+        repaint();
     }
 
     void queueSeedTerritory() {
@@ -5729,6 +5775,7 @@ private:
     }
 
     void refreshInterfaceLanguage() {
+        listenButton_.setButtonText(uiText(supportLanguage_, "▶ OUVIR", "▶ LISTEN", "▶ ÉCOUTER", "▶ ESCUCHAR"));
         const auto l = supportLanguage_;
         refreshMixerVariationButton();
         performanceField_.setLanguage(l);
@@ -6800,6 +6847,8 @@ private:
     PerformanceAlbum album_;
     juce::File albumDirectory_;
     juce::TextButton albumButton_;
+    juce::TextButton listenButton_;  // ▶ OUVIR a última tomada
+    juce::File lastTakeFile_;
     juce::TextButton percursoButton_;
     bool percurso_ = false;
     std::uint8_t percursoSection_ = 255U;

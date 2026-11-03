@@ -22,7 +22,9 @@ Nada de código foi copiado; os conceitos estão citados nos cabeçalhos.
 `include/rasgo/performance/PerformanceMemory.hpp` (formato) e o botão
 **MEMÓRIA** na linha de cenas. Oito lugares com nome; **GUARDAR ESTA SESSÃO
 EM**, **LEMBRAR**, **RENOMEAR**, **APAGAR**, **DESFAZER A ÚLTIMA MUDANÇA**,
-**EXPORTAR / IMPORTAR** um arquivo `.asterismus` (texto; só parâmetros, nunca
+**SALVAR SESSÃO… / ABRIR SESSÃO…** (desde 4/11; antes EXPORTAR um lugar /
+IMPORTAR para um lugar) um arquivo `.asterismus` — salvar grava o que está
+soando, abrir já toca, sem ocupar um lugar; o seletor abre na última pasta (texto; só parâmetros, nunca
 áudio; até 96 KB; validado campo a campo). Os lugares ficam em
 `<dados do app>/RASGO/Rasgo Synth Asterismus/memorias/memoria-N.asterismus`
 (no Linux, `~/.config/…`); gravação ao lado e troca, para um arquivo pela
