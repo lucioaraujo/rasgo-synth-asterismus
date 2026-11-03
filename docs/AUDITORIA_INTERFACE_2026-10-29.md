@@ -106,3 +106,27 @@ ou de identidade — não aplicada).
 5. Eixo de Forças × 8 macros (redundância).
 6. As 16 células invisíveis.
 7. Linha de estado em duas linhas (música / máquina).
+
+## 9. Estado em 3/11/2026 e recomendações para o que resta
+
+Conferido no código: **1, 2 e 3 já estavam feitos** e a lista de tarefas não
+tinha sido atualizada. Os cabos desenhados entram na trama par a par desde
+29/10 (`bada31b`, `docs/CODIGO_SUBAPROVEITADO_2026-10-29.md` §3.1): a
+intensidade pesa a chance do par entrar em foco (até 2,5×), o fenômeno
+escolhe o ato musical do par e vira uma força física entre os dois. A DANÇA
+virou família de movimento em 30/10. O 4 (nome da cena) foi resolvido hoje
+(NASCENTE).
+
+Recomendações para o que resta — nada aplicado, aguardam o autor:
+
+| # | Item | Recomendação |
+|---|---|---|
+| R1 | Os dois vocabulários na tela | com a trama, o rótulo do cabo mostra também o ato que ele pede ("MATÉRIA ACID → GENDYN · ATRITO"); os nomes dos cabos ficam |
+| R2 | TEMPO SHIFT (é um recorte) | DESLOCAR / DISPLACE / DÉCALER / DESPLAZAR |
+| R3 | "SIL", "AUD", "PREP", "REJ" nas caixas laterais | MUDO, SOA, PRONTO, RECUSADO (e nas outras três línguas) |
+| R4 | Eixo de Forças × 8 macros | manter os dois (o eixo é o gesto, os botões o ajuste fino); o tutorial diz que são os mesmos valores |
+| R5 | As 16 células invisíveis | remover (código morto, atualizado a cada quadro) |
+| R6 | Linha de estado | duas linhas: música (forma, tempo, swing, agrupamento, deriva, eclipse) em cima; máquina (stems, atrasos, CPU, limite) embaixo; nenhum dado novo |
+| R7 | O "grão" do token do MUTATE (não soa mais com a trama) | vira o empurrão físico que ABRIR dá na estrela em foco: o gesto se vê na Constelação e se ouve no pan |
+| R8 | Andamento | o andamento efetivo ao lado do BPM ("120 → 124") |
+
