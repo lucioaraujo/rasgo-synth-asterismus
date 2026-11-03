@@ -1003,6 +1003,7 @@ public:
     // A MEMÓRIA (2/11): ler e restaurar a DANÇA e o CÉU guardados; restaurar
     // avisa o motor pelos mesmos callbacks dos cliques.
     PerformanceMotionFamily collectiveFamily() const noexcept { return collectiveFamily_; }
+    const std::array<PerformanceMotionFamily, 8>& bodyFamilies() const noexcept { return bodyFamilies_; }
     PerformanceMotionFamily bodyFamily(std::size_t index) const noexcept {
         return index < bodyFamilies_.size() ? bodyFamilies_[index] : PerformanceMotionFamily::Count;
     }
@@ -6413,6 +6414,7 @@ private:
     }
 
     void audioDeviceAboutToStart(juce::AudioIODevice* device) override {
+        if (device != nullptr) audioEverStarted_.store(true, std::memory_order_release);
         const auto outputs = device != nullptr
             ? device->getActiveOutputChannels().countNumberOfSetBits() : 0;
         const auto channels = static_cast<std::uint32_t>(juce::jlimit(1, 2, outputs));
@@ -6424,10 +6426,23 @@ private:
             stemPointers_[stem] = stemBuffers_[stem].data();
         }
         controller_.setStemTap(stemPointers_.data(), stemPointers_.size(), blockCapacity);
+        // Numa reabertura, o documento vivo (cena atual, macros, presenças,
+        // relações, BPM), não o de partida.
+        PerformanceSessionDocument restoreDocument{};
+        const bool restoring = audioRestore_.has_value()
+            && parseSessionDocument(audioRestore_->document, restoreDocument).ok();
         ready_.store(device != nullptr
             && controller_.prepare(device->getCurrentSampleRate(),
                                    static_cast<std::uint32_t>(device->getCurrentBufferSizeSamples()), channels)
-            && controller_.loadDocument(startupDocument_), std::memory_order_release);
+            && (restoring ? controller_.loadDocument(restoreDocument, audioRestore_->sceneId)
+                          : controller_.loadDocument(startupDocument_)), std::memory_order_release);
+        if (restoring) {
+            audioRestore_.reset();
+            juce::Component::SafePointer<PerformanceHostComponent> safe(this);
+            juce::MessageManager::callAsync([safe] {
+                if (safe != nullptr) safe->reapplyLiveState();
+            });
+        }
         sampleRate_.store(device != nullptr ? device->getCurrentSampleRate() : 0.0,
                           std::memory_order_release);
         cpuMilliPercent_.store(0U, std::memory_order_release);
@@ -6578,7 +6593,67 @@ private:
     // "travou". Se o dispositivo está aberto e nenhum bloco chega por mais de
     // 400 ms, o app reabre o dispositivo (no máximo uma vez a cada 10 s),
     // registra no diagnóstico e avisa no rodapé.
+    // Depois de uma reabertura do áudio: manda de novo ao motor o que a
+    // interface mostra (o motor recomeçou do zero). Trama, variação e
+    // capacidade vivem no controlador e já sobrevivem.
+    void reapplyLiveState() {
+        if (!ready_.load(std::memory_order_acquire)) return;
+        std::size_t refused = 0U;
+        for (std::size_t index = 0U; index < 8U; ++index) {
+            const auto actorId = static_cast<std::uint16_t>(index + 1U);
+            if (starSwaps_[index] != PerformanceModuleBody::Count)
+                refused += !controller_.setActorStar(actorId, starSwaps_[index]);
+            if (starPinned_[index]) refused += !controller_.setActorPinned(actorId, true);
+            refused += !controller_.setStemGain(actorId, stemGainValues_[index]);
+            if (stemMuted_[index]) refused += !controller_.setStemMuted(actorId, true);
+            for (std::size_t control = 0U; control < 3U; ++control)
+                refused += !controller_.setModuleControl(actorId, static_cast<PerformanceModuleControl>(control),
+                                                         moduleControlValues_[index][control]);
+            refused += !controller_.setActorSeedVariation(actorId, actorSeedVariationValues_[index]);
+        }
+        if (soloStemIndex_ < 8U) refused += !controller_.setStemSolo(static_cast<std::uint16_t>(soloStemIndex_ + 1U), true);
+        refused += !controller_.setOutputTrimDb(masterSlider_.getValue());
+        constellationGraph_.restoreMotion(constellationGraph_.collectiveFamily(), constellationGraph_.bodyFamilies(),
+                                          constellationGraph_.constellationMotion());
+        if (audioRestorePlaying_) refused += !controller_.setPlaying(true);
+        lastAction_ = uiText(supportLanguage_, "ÁUDIO REABERTO · a peça continua de onde estava",
+                             "AUDIO REOPENED · the piece goes on from where it was",
+                             "AUDIO ROUVERT · la pièce continue là où elle était",
+                             "AUDIO REABIERTO · la pieza sigue desde donde estaba")
+            + (refused > 0U ? uiText(supportLanguage_, " · comandos recusados: ", " · refused commands: ",
+                                     " · commandes refusées : ", " · comandos rechazados: ")
+                                  + juce::String(static_cast<int>(refused))
+                            : juce::String{});
+        repaint();
+    }
+
     void watchAudioFlow() {
+        // O dispositivo sumiu (3/11): interface desligada, servidor de som
+        // reiniciado. A cada 5 s, tentar o último dispositivo e, se não
+        // houver, o padrão do sistema; ao voltar, o estado vivo é reaplicado.
+        if (deviceManager_ != nullptr && deviceManager_->getCurrentAudioDevice() == nullptr
+            && audioEverStarted_.load(std::memory_order_acquire)) {
+            const auto now = juce::Time::getMillisecondCounterHiRes();
+            if (now - lastAudioRestartMs_ < 5000.0) return;
+            lastAudioRestartMs_ = now;
+            if (!audioRestore_) {
+                audioRestore_ = captureMemory("dispositivo perdido");
+                audioRestorePlaying_ = playingRequested_;
+            }
+            ++audioRestarts_;
+            if (diagnosticLog_ != nullptr)
+                diagnosticLog_->writeText("dispositivo_perdido," + juce::Time::getCurrentTime().formatted("%H:%M:%S")
+                    + ",tentando reabrir\n", false, false, nullptr);
+            deviceManager_->restartLastAudioDevice();
+            if (deviceManager_->getCurrentAudioDevice() == nullptr)
+                deviceManager_->initialise(0, 2, nullptr, true);
+            if (deviceManager_->getCurrentAudioDevice() == nullptr)
+                lastAction_ = uiText(supportLanguage_, "ÁUDIO PERDIDO · procurando o dispositivo a cada 5 s",
+                                     "AUDIO LOST · looking for the device every 5 s",
+                                     "AUDIO PERDU · recherche du périphérique toutes les 5 s",
+                                     "AUDIO PERDIDO · buscando el dispositivo cada 5 s");
+            return;
+        }
         if (deviceManager_ == nullptr || deviceManager_->getCurrentAudioDevice() == nullptr
             || !ready_.load(std::memory_order_acquire)) return;
         const auto now = juce::Time::getMillisecondCounterHiRes();
@@ -6591,6 +6666,12 @@ private:
                 + juce::String(now, 1) + "," + juce::String((now - last) / 1000.0, 2) + " s sem bloco\n",
                 false, false, nullptr);
         lastCallbackMs_.store(now, std::memory_order_relaxed);
+        // A peça atravessa a reabertura (3/11): o prepare do motor recomeça
+        // tudo e o loadDocument voltava ao documento de partida — cena 1,
+        // trocas, fixações, mix e PLAY perdidos. Guardar o estado vivo como
+        // uma memória e reaplicá-lo depois que o dispositivo volta.
+        audioRestore_ = captureMemory("reabertura");
+        audioRestorePlaying_ = playingRequested_;
         deviceManager_->closeAudioDevice();
         deviceManager_->restartLastAudioDevice();
         lastAction_ = uiText(supportLanguage_, "ÁUDIO REABERTO · o sistema de som parou de chamar o instrumento",
@@ -6640,6 +6721,9 @@ private:
     std::array<float*, kPerformanceStemActorCapacity> stemPointers_{};
     std::atomic<bool> ready_{false};
     std::atomic<bool> deviceStopPending_{false};
+    std::optional<PerformanceMemory> audioRestore_;  // o estado vivo durante uma reabertura
+    bool audioRestorePlaying_ = false;
+    std::atomic<bool> audioEverStarted_{false};  // só procurar de novo um dispositivo que já existiu
     bool audioCallbackRegistered_ = false;
     std::atomic<double> sampleRate_{0.0};
     std::atomic<std::uint32_t> cpuMilliPercent_{0U};

@@ -27,7 +27,7 @@ Legenda: **feito** · **falta** (trabalho técnico) · **decisão** (do autor).
 | Salvar / abrir sessão (o formato existe, sem botões) | **decisão** (onde, e se reabre a última) |
 | Tutorial nos quatro idiomas com o modelo do céu | **feito** (seção 7) |
 | Interface: textos cortados, nomes | **feito** (auditoria 29/10) |
-| Recuperação de falha / áudio que trava | parcial — a guarda reabre o dispositivo (29/10) |
+| Recuperação de falha / áudio que trava | **feito no código (3/11), sem ensaio real**: a guarda reabre o dispositivo quando o callback para (29/10) e, desde 3/11, a peça atravessa a reabertura (documento vivo, cena, trocas, fixações, mix, mute/solo, controles, MASTER, PLAY reaplicados — antes voltava ao documento de partida); se o dispositivo some, procura o último ou o padrão a cada 5 s. A tomada já era protegida contra queda do app (cabeçalho do WAV atualizado a cada 1 s). Uma tomada em curso fecha quando o dispositivo para (não continua sozinha). Falta: ensaiar desligando uma interface de verdade |
 
 ## 3. Empacotamento e distribuição (padrão RASGO)
 
