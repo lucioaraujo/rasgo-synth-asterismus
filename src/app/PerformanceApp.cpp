@@ -251,11 +251,11 @@ public:
             "4. EIXO DE FORÇAS\n"
             "O círculo laranja articula AUTONOMIA, INTERVENÇÃO, MEMÓRIA e RISCO sem pares inversos: ambos podem chegar a zero. O azul articula "
             "DENSIDADE, TENSÃO, ESPAÇO e PROFUNDIDADE. Os dois corpos têm quatro macros próprios, sem arrastar controles um do outro. "
-            "A mudança deve ser audível; os percursos autônomos ainda serão desenvolvidos como composição, não decoração.\n\n"
+            "A mudança deve ser audível; os percursos autônomos ainda serão desenvolvidos como composição, não decoração. Os botões redondos ao lado são os mesmos oito valores: o eixo é o gesto, os botões o ajuste fino.\n\n"
             "5. CENAS E GESTOS\n"
             "NASCENTE, ESPIRAL, RASGO e BALANÇO transformam o material sem interromper uma performance em PLAY. CAPTURAR guarda "
             "um estado de cena; DESFAZER retorna à captura anterior. HOLD suspende, ABRIR abre um desvio, RASGAR introduz ruptura, REPARAR recompõe, "
-            "STUTTER cria recortes e TEMPO SHIFT desloca o tempo. Todos incidem sobre o que já existe.\n\n"
+            "STUTTER cria recortes e DESLOCAR desloca o pulso e a fase do stem (o andamento não muda). Todos incidem sobre o que já existe.\n\n"
             "6. OUVIR E ORQUESTRAR\n"
             "Cada módulo é uma estrela com stem próprio: até oito corpos no Campo, cada um no seu canal do Campo de Matérias. Uma estrela com presença zero fica apagada e não gasta processamento; subir a presença a acende. As estrelas acesas se relacionam pela trama do céu — respostas, contágios, sombras e hoquetus — sem que o som de uma vaze no canal da outra. "
             "Cada matéria cumpre uma função — pulso, trajetória, linha, campo, ruptura, chamada, memória ou vestígio. Use presença, mix, mute, solo e controles locais para revelar ou recolher essas funções. MASTER define somente o nível final.\n\n"
@@ -355,8 +355,8 @@ private:
             return utf8("1. START · SEED AND TERRITORY\nA seed opens a musical possibility: modules, roles, material, tempo and a narrative. Type a number or use ALEA. It also defines initial module values; changing it must not erase the drawing already made in the Field.\n\n"
                         "2. COMPOSE IN THE FIELD\nDrag module circles to establish positions, neighbourhoods and connections. The performer’s drawing is spatial memory and changes only by intentional action.\n\n"
                         "3. READ THE CONSTELLATION\nThe Constellation is orientation, not a preset browser. Distance, connection, movement and depth must produce musical change.\n\n"
-                        "4. AXIS OF FORCES\nThe orange body controls AUTONOMY, INTERVENTION, MEMORY and RISK without inverse pairs: both may be zero. The blue body controls DENSITY, TENSION, SPACE and DEPTH. The two bodies have four independent macros each. Every movement must be audible.\n\n"
-                        "5. SCENES AND GESTURES\nNASCENTE, ESPIRAL, RASGO and BALANÇO transform the material without interrupting a performance already in PLAY. CAPTURAR stores a scene; DESFAZER returns to the previous capture. HOLD, OPEN, TEAR, REPAIR, STUTTER and TEMPO SHIFT act on existing material.\n\n"
+                        "4. AXIS OF FORCES\nThe orange body controls AUTONOMY, INTERVENTION, MEMORY and RISK without inverse pairs: both may be zero. The blue body controls DENSITY, TENSION, SPACE and DEPTH. The two bodies have four independent macros each. Every movement must be audible. The round knobs beside it are the same eight values: the axis is the gesture, the knobs the fine adjustment.\n\n"
+                        "5. SCENES AND GESTURES\nNASCENTE, ESPIRAL, RASGO and BALANÇO transform the material without interrupting a performance already in PLAY. CAPTURAR stores a scene; DESFAZER returns to the previous capture. HOLD, OPEN, TEAR, REPAIR, STUTTER and DISPLACE (shifts the stem's pulse and phase; the tempo stays) act on existing material.\n\n"
                         "6. LISTEN AND ORCHESTRATE\nEach module is a star with its own stem: up to eight bodies in the Field, each on its own channel in the Matter Field. A star at zero presence is unlit and uses no processing; raising its presence lights it. Lit stars relate through the sky’s web — answers, contagion, shadows and hockets — without one star’s sound leaking into another’s channel. Each material serves a role — pulse, trajectory, line, field, rupture, call, memory or trace. Use presence, mix, mute, solo and local controls to reveal or withdraw those roles. MASTER sets final level only.\n\n"
                         "7. THE SKY · WEB, FORM, TIME AND MOTION\nTRAMA switches on the sky's web: every bar the sky chooses pairs in focus (answer, contagion, shadow, hocket, pedal, friction, cadence) and the piece travels a form — OPENING, DEVELOPMENT, CONTRAST, RETURN — shown in the header. Time breathes (TEMPO 1.04×), swing comes from an orbit, each star counts its own cycle and the bar groups as 3+3+2 and the like. In development one star DRIFTS against the pulse; computed moons bring ECLIPSES. In the Constellation the stars move by physics — gravity, springs, pendulums, billiards, magnetism, spin, foam — and leave trails; strong collisions sound. Each star sounds in the stereo field where it is in the Constellation (the bass stays centred); ESPAÇO opens that field. VARIAÇÃO lets the sky light and dim stars in the mixer: the fader moves by itself (orange thumb) and returns to your value when you grab it. With TRAMA off the instrument sounds exactly as before.\n\n"
                         "8. THE LIBRARY · SWAP AND PIN STARS\nThe seed chooses the stars among the sky's 14; the LIBRARY holds 28. Click a star in the Constellation, then the LIBRARY strip: the menu shows the body's star, PIN THIS STAR and the families — TONE, TEXTURE, VOICE, PULSE and CONTROL. Choose another star and the body plays it; BACK TO THE SEED'S STAR undoes it. Or drag from the LIBRARY strip and drop onto a star: the same menu opens for it, even with all 8 places full. A pinned star (amber diamond) is not dimmed by VARIATION or by eclipses. CONTROL stars make no sound: lit, they filter the others' attacks — SIEVE (Xenakis's sieve), POLYMETER (each star in its own cycle), HOCKET (one attack at a time) and RUPTURE (the sky falls silent). The MODAL lives in one body only.\n\n"
@@ -366,8 +366,8 @@ private:
             return utf8("1. COMMENCER · SEED ET TERRITOIRE\nUne seed ouvre une possibilité musicale : modules, rôles, matière, tempo et narration. Entrez un nombre ou utilisez ALEA. Elle définit aussi les valeurs initiales des modules sans effacer le dessin déjà réalisé dans le Champ.\n\n"
                         "2. COMPOSER DANS LE CHAMP\nGlissez les cercles des modules pour établir positions, voisinages et connexions. Le dessin du performeur est une mémoire spatiale et ne change que par une action intentionnelle.\n\n"
                         "3. LIRE LA CONSTELLATION\nLa Constellation est une orientation, pas un navigateur de presets. Distance, connexion, mouvement et profondeur doivent transformer la musique.\n\n"
-                        "4. AXE DES FORCES\nLe corps orange contrôle AUTONOMIE, INTERVENTION, MÉMOIRE et RISQUE sans paire inverse : les deux peuvent être à zéro. Le bleu contrôle DENSITÉ, TENSION, ESPACE et PROFONDEUR. Les deux corps ont chacun quatre macros indépendantes. Tout mouvement doit être audible.\n\n"
-                        "5. SCÈNES ET GESTES\nNASCENTE, ESPIRAL, RASGO et BALANÇO transforment la matière sans interrompre une performance déjà en PLAY. CAPTURAR mémorise une scène ; DESFAZER revient à la capture précédente. HOLD, OUVRIR, DÉCHIRER, RÉPARER, STUTTER et TEMPO SHIFT agissent sur la matière existante.\n\n"
+                        "4. AXE DES FORCES\nLe corps orange contrôle AUTONOMIE, INTERVENTION, MÉMOIRE et RISQUE sans paire inverse : les deux peuvent être à zéro. Le bleu contrôle DENSITÉ, TENSION, ESPACE et PROFONDEUR. Les deux corps ont chacun quatre macros indépendantes. Tout mouvement doit être audible. Les boutons ronds à côté sont les mêmes huit valeurs : l’axe est le geste, les boutons le réglage fin.\n\n"
+                        "5. SCÈNES ET GESTES\nNASCENTE, ESPIRAL, RASGO et BALANÇO transforment la matière sans interrompre une performance déjà en PLAY. CAPTURAR mémorise une scène ; DESFAZER revient à la capture précédente. HOLD, OUVRIR, DÉCHIRER, RÉPARER, STUTTER et DÉCALER (décale la pulsation et la phase du stem ; le tempo ne change pas) agissent sur la matière existante.\n\n"
                         "6. ÉCOUTER ET ORCHESTRER\nChaque module est une étoile avec son propre stem : jusqu’à huit corps dans le Champ, chacun sur son canal du Champ de matières. Une étoile à présence nulle est éteinte et ne consomme pas de calcul ; monter sa présence l’allume. Les étoiles allumées se relient par la trame du ciel — réponses, contagions, ombres et hoquets — sans que le son de l’une fuie dans le canal de l’autre. Chaque matière a une fonction — pulsation, trajectoire, ligne, champ, rupture, appel, mémoire ou trace. Utilisez présence, mix, mute, solo et contrôles locaux pour révéler ou retirer ces fonctions. MASTER ne règle que le niveau final.\n\n"
                         "7. LE CIEL · TRAME, FORME, TEMPS ET MOUVEMENT\nTRAMA allume la trame du ciel : à chaque mesure le ciel choisit des paires en focus (réponse, contagion, ombre, hoquet, pédale, friction, cadence) et la pièce parcourt une forme — OUVERTURE, DÉVELOPPEMENT, CONTRASTE, RETOUR — affichée dans l’en-tête. Le temps respire (TEMPO 1,04×), le swing vient d’une orbite, chaque étoile compte son propre cycle et la mesure se groupe en 3+3+2 et ainsi de suite. Dans le développement une étoile DÉRIVE contre la pulsation ; des lunes calculées amènent des ÉCLIPSES. Dans la Constellation les étoiles bougent par la physique — gravité, ressorts, pendules, billard, magnétisme, effet, mousse — et laissent des traînées ; les chocs forts sonnent. Chaque étoile sonne dans la stéréo là où elle est dans la Constellation (le grave reste au centre) ; ESPAÇO ouvre ce champ. VARIAÇÃO laisse le ciel allumer et éteindre des étoiles dans le mixeur : le fader bouge seul (curseur orange) et revient à votre valeur quand vous le prenez. TRAMA éteinte, l’instrument sonne exactement comme avant.\n\n"
                         "8. LA BIBLIOTHÈQUE · CHANGER ET ÉPINGLER DES ÉTOILES\nLa seed choisit les étoiles parmi les 14 du ciel ; la BIBLIOTHÈQUE en contient 28. Cliquez sur une étoile de la Constellation puis sur la bande BIBLIOTHÈQUE : le menu montre l’étoile du corps, ÉPINGLER CETTE ÉTOILE et les familles — TON, TEXTURE, VOIX, PULSATION et CONTRÔLE. Choisissez une autre étoile et le corps la joue ; RETOUR À L’ÉTOILE DE LA SEED annule. Ou glissez depuis la bande de la BIBLIOTHÈQUE et déposez sur une étoile : le même menu s’ouvre pour elle, même avec les 8 places occupées. Une étoile épinglée (losange ambre) n’est pas éteinte par la VARIATION ni par les éclipses. Les étoiles de CONTRÔLE ne sonnent pas : allumées, elles filtrent les attaques des autres — SIEVE (le crible de Xenakis), POLYMETER (chaque étoile dans son cycle), HOCKET (une attaque à la fois) et RUPTURE (le ciel se tait d’un coup). Le MODAL vit dans un seul corps.\n\n"
@@ -377,8 +377,8 @@ private:
             return utf8("1. COMENZAR · SEED Y TERRITORIO\nUna seed abre una posibilidad musical: módulos, funciones, materia, tempo y narrativa. Escriba un número o use ALEA. También define valores iniciales de los módulos sin borrar el dibujo ya realizado en el Campo.\n\n"
                         "2. COMPONER EN EL CAMPO\nArrastre los círculos de módulos para establecer posiciones, vecindades y conexiones. El dibujo del intérprete es memoria espacial y solo cambia mediante una acción intencional.\n\n"
                         "3. LEER LA CONSTELACIÓN\nLa Constelación es orientación, no un navegador de presets. Distancia, conexión, movimiento y profundidad deben producir cambio musical.\n\n"
-                        "4. EJE DE FUERZAS\nEl cuerpo naranja controla AUTONOMÍA, INTERVENCIÓN, MEMORIA y RIESGO sin pares inversos: ambos pueden llegar a cero. El azul controla DENSIDAD, TENSIÓN, ESPACIO y PROFUNDIDAD. Los dos cuerpos tienen cuatro macros independientes cada uno. Todo movimiento debe ser audible.\n\n"
-                        "5. ESCENAS Y GESTOS\nNASCENTE, ESPIRAL, RASGO y BALANÇO transforman el material sin interrumpir una performance ya en PLAY. CAPTURAR guarda una escena y DESFAZER vuelve a la captura anterior. HOLD, ABRIR, RASGAR, REPARAR, STUTTER y TEMPO SHIFT actúan sobre el material existente.\n\n"
+                        "4. EJE DE FUERZAS\nEl cuerpo naranja controla AUTONOMÍA, INTERVENCIÓN, MEMORIA y RIESGO sin pares inversos: ambos pueden llegar a cero. El azul controla DENSIDAD, TENSIÓN, ESPACIO y PROFUNDIDAD. Los dos cuerpos tienen cuatro macros independientes cada uno. Todo movimiento debe ser audible. Las perillas redondas al lado son los mismos ocho valores: el eje es el gesto, las perillas el ajuste fino.\n\n"
+                        "5. ESCENAS Y GESTOS\nNASCENTE, ESPIRAL, RASGO y BALANÇO transforman el material sin interrumpir una performance ya en PLAY. CAPTURAR guarda una escena y DESFAZER vuelve a la captura anterior. HOLD, ABRIR, RASGAR, REPARAR, STUTTER y DESPLAZAR (desplaza el pulso y la fase del stem; el tempo no cambia) actúan sobre el material existente.\n\n"
                         "6. ESCUCHAR Y ORQUESTAR\nCada módulo es una estrella con stem propio: hasta ocho cuerpos en el Campo, cada uno en su canal del Campo de materias. Una estrella con presencia cero queda apagada y no consume procesamiento; subir la presencia la enciende. Las estrellas encendidas se relacionan por la trama del cielo — respuestas, contagios, sombras y hoquetus — sin que el sonido de una se filtre en el canal de otra. Cada materia cumple una función — pulso, trayectoria, línea, campo, ruptura, llamada, memoria o vestigio. Use presencia, mix, mute, solo y controles locales para revelar o retirar esas funciones. MASTER define solo el nivel final.\n\n"
                         "7. EL CIELO · TRAMA, FORMA, TIEMPO Y MOVIMIENTO\nTRAMA enciende la trama del cielo: en cada compás el cielo elige pares en foco (respuesta, contagio, sombra, hoquetus, pedal, fricción, cadencia) y la pieza recorre una forma — APERTURA, DESARROLLO, CONTRASTE, RETORNO — mostrada en la cabecera. El tiempo respira (TEMPO 1,04×), el swing viene de una órbita, cada estrella cuenta su propio ciclo y el compás se agrupa en 3+3+2 y similares. En el desarrollo una estrella DERIVA contra el pulso; lunas calculadas traen ECLIPSES. En la Constelación las estrellas se mueven por física — gravedad, resortes, péndulos, billar, magnetismo, efecto, espuma — y dejan estelas; los choques fuertes suenan. Cada estrella suena en el estéreo donde está en la Constelación (el grave queda en el centro); ESPAÇO abre ese campo. VARIAÇÃO deja que el cielo encienda y apague estrellas en el mezclador: el fader se mueve solo (cursor naranja) y vuelve a su valor cuando usted lo toma. Con la TRAMA apagada, el instrumento suena exactamente como antes.\n\n"
                         "8. LA BIBLIOTECA · CAMBIAR Y FIJAR ESTRELLAS\nLa seed elige las estrellas entre las 14 del cielo; la BIBLIOTECA tiene 28. Haga clic en una estrella de la Constelación y luego en la franja BIBLIOTECA: el menú muestra la estrella del cuerpo, FIJAR ESTA ESTRELLA y las familias — TONO, TEXTURA, VOZ, PULSO y CONTROL. Elija otra estrella y el cuerpo la toca; VOLVER A LA ESTRELLA DE LA SEED lo deshace. O arrastre desde la franja de la BIBLIOTECA y suelte sobre una estrella: el mismo menú se abre para ella, también con los 8 lugares llenos. Una estrella fijada (rombo ámbar) no se apaga con la VARIACIÓN ni con los eclipses. Las estrellas de CONTROL no suenan: encendidas, filtran los ataques de las otras — SIEVE (la criba de Xenakis), POLYMETER (cada estrella en su ciclo), HOCKET (un ataque a la vez) y RUPTURE (el cielo calla de golpe). El MODAL vive en un solo cuerpo.\n\n"
@@ -1743,10 +1743,11 @@ private:
 
     juce::String readinessLabel(PerformanceStemReadiness readiness) const {
         switch (readiness) {
-        case PerformanceStemReadiness::Prepared: return uiText(language_, "PREP", "PREP", "PRÊT", "PREP");
-        case PerformanceStemReadiness::Silent: return uiText(language_, "SIL", "SIL", "SIL", "SIL");
-        case PerformanceStemReadiness::Audible: return uiText(language_, "AUD", "AUD", "AUD", "AUD");
-        case PerformanceStemReadiness::Rejected: return uiText(language_, "REJ", "REJ", "REJ", "REJ");
+        // Por extenso (3/11, R3): eram PREP / SIL / AUD / REJ.
+        case PerformanceStemReadiness::Prepared: return uiText(language_, "PRONTO", "READY", "PRÊT", "LISTO");
+        case PerformanceStemReadiness::Silent: return uiText(language_, "MUDO", "SILENT", "MUET", "MUDO");
+        case PerformanceStemReadiness::Audible: return uiText(language_, "SOA", "SOUNDS", "SONNE", "SUENA");
+        case PerformanceStemReadiness::Rejected: return uiText(language_, "RECUSADO", "REFUSED", "REFUSÉ", "RECHAZADO");
         default: return "N/RES";
         }
     }
@@ -2247,6 +2248,7 @@ public:
         juce::String status = uiText(supportLanguage_, "HOST AGUARDANDO DISPOSITIVO DE ÁUDIO",
                                      "HOST WAITING FOR AUDIO DEVICE", "HÔTE EN ATTENTE DU PÉRIPHÉRIQUE AUDIO",
                                      "HOST ESPERANDO DISPOSITIVO DE AUDIO");
+        juce::String machine;
         if (ready_.load()) {
             const auto sceneId = controller_.currentSceneId();
             const auto cpuPercent = static_cast<double>(cpuMilliPercent_.load()) / 1000.0;
@@ -2261,15 +2263,6 @@ public:
                     : uiText(supportLanguage_, "STOP · SAÍDA SILENCIOSA", "STOP · SILENT OUTPUT", "STOP · SORTIE SILENCIEUSE", "STOP · SALIDA SILENCIOSA"))
                 + uiText(supportLanguage_, "  ·  CENA ", "  ·  SCENE ", "  ·  SCÈNE ", "  ·  ESCENA ") + juce::String(controller_.currentSceneId())
                 + utf8(" · ") + sceneName(sceneId)
-                + uiText(supportLanguage_, "  ·  CORPOS ", "  ·  BODIES ", "  ·  CORPS ", "  ·  CUERPOS ") + juce::String(telemetry.activeActorCount)
-                + utf8("  ·  STEMS ") + juce::String(audibleOrSilentStems)
-                + (preparedStems > 0U ? utf8(" +") + juce::String(preparedStems) + uiText(supportLanguage_, " PREP", " PREP", " PRÊT", " PREP")
-                                      : juce::String{})
-                + uiText(supportLanguage_, "  ·  LIMITE ", "  ·  LIMIT ", "  ·  LIMITE ", "  ·  LÍMITE ") + juce::String(static_cast<int>(kPerformanceSafeBodyLimit))
-                + uiText(supportLanguage_, "  ·  PERFIL ", "  ·  PROFILE ", "  ·  PROFIL ", "  ·  PERFIL ")
-                + (capacityProfileForCpus(static_cast<std::size_t>(juce::SystemStats::getNumCpus()))
-                       == PerformanceCapacityProfile::Performance
-                   ? "PERFORMANCE" : uiText(supportLanguage_, "COMPATIBILIDADE", "COMPATIBILITY", "COMPATIBILITÉ", "COMPATIBILIDAD"))
                 + (telemetry.wildMicros > 1000U
                    ? utf8("  ·  SELVAGEM ") + juce::String(static_cast<double>(telemetry.wildMicros) / 1000000.0, 2)
                    : juce::String{})
@@ -2279,9 +2272,6 @@ public:
                 + (telemetry.repairMicros > 1000U
                    ? utf8("  ·  REPARO ") + juce::String(static_cast<double>(telemetry.repairMicros) / 1000000.0, 2)
                    : juce::String{})
-                + uiText(supportLanguage_, "  ·  ATRASOS ", "  ·  XRUNS ", "  ·  XRUNS ", "  ·  XRUNS ") + juce::String(telemetry.xrunCount)
-                + (cpuPercent >= 85.0 ? uiText(supportLanguage_, "  ·  SOBRECARGA", "  ·  OVERLOAD", "  ·  SURCHARGE", "  ·  SOBRECARGA")
-                   : cpuPercent >= 60.0 ? uiText(supportLanguage_, "  ·  ATENÇÃO", "  ·  ATTENTION", "  ·  ATTENTION", "  ·  ATENCIÓN") : juce::String{})
                 + (morphing ? utf8("  ·  MORPH") : juce::String{})
                 + (telemetry.eventQueueDepth > 0U
                    ? utf8("  ·  GESTOS ") + juce::String(telemetry.eventQueueDepth) : juce::String{})
@@ -2289,8 +2279,22 @@ public:
                 + (telemetry.panicSafe ? utf8("  ·  SAFE") : juce::String{})
                 + (sceneDirty_ ? utf8("  ·  MOD") : juce::String{})
                 + (recorder_.recording() ? utf8("  ·  REC") : juce::String{});
+            // Duas linhas (3/11, R6): a música em cima; a máquina embaixo.
+            machine = uiText(supportLanguage_, "CORPOS ", "BODIES ", "CORPS ", "CUERPOS ") + juce::String(telemetry.activeActorCount)
+                + utf8("  ·  STEMS ") + juce::String(audibleOrSilentStems)
+                + (preparedStems > 0U ? utf8(" +") + juce::String(preparedStems)
+                                            + uiText(supportLanguage_, " PRONTOS", " READY", " PRÊTS", " LISTOS")
+                                      : juce::String{})
+                + uiText(supportLanguage_, "  ·  LIMITE ", "  ·  LIMIT ", "  ·  LIMITE ", "  ·  LÍMITE ") + juce::String(static_cast<int>(kPerformanceSafeBodyLimit))
+                + uiText(supportLanguage_, "  ·  PERFIL ", "  ·  PROFILE ", "  ·  PROFIL ", "  ·  PERFIL ")
+                + (capacityProfileForCpus(static_cast<std::size_t>(juce::SystemStats::getNumCpus()))
+                       == PerformanceCapacityProfile::Performance
+                   ? "PERFORMANCE" : uiText(supportLanguage_, "COMPATIBILIDADE", "COMPATIBILITY", "COMPATIBILITÉ", "COMPATIBILIDAD"))
+                + uiText(supportLanguage_, "  ·  ATRASOS ", "  ·  XRUNS ", "  ·  XRUNS ", "  ·  XRUNS ") + juce::String(telemetry.xrunCount)
+                + (cpuPercent >= 85.0 ? uiText(supportLanguage_, "  ·  SOBRECARGA", "  ·  OVERLOAD", "  ·  SURCHARGE", "  ·  SOBRECARGA")
+                   : cpuPercent >= 60.0 ? uiText(supportLanguage_, "  ·  ATENÇÃO", "  ·  ATTENTION", "  ·  ATTENTION", "  ·  ATENCIÓN") : juce::String{});
 #if defined(RASGO_PERFORMANCE_WITH_MODAL_CORE)
-            status += utf8("  ·  MODAL v1");
+            machine += utf8("  ·  MODAL v1");
             if (telemetry.playing) {
                 static constexpr std::array<const char*, 4> sectionsPt{{"ABERTURA", "DESENVOLVIMENTO", "CONTRASTE", "RETORNO"}};
                 static constexpr std::array<const char*, 4> sectionsEn{{"OPENING", "DEVELOPMENT", "CONTRAST", "RETURN"}};
@@ -2330,7 +2334,7 @@ public:
 #endif
             // CPU é o último item variável do cabeçalho: leitura rápida do
             // orçamento do callback sem deixar estados posteriores truncados.
-            status += utf8("  ·  CPU ") + juce::String(cpuPercent, 1) + "%";
+            machine += utf8("  ·  CPU ") + juce::String(cpuPercent, 1) + "%";
         }
         const auto cpuPercent = static_cast<double>(cpuMilliPercent_.load()) / 1000.0;
         // Status is a persistent reading, not an alert lamp. Changing the
@@ -2338,8 +2342,15 @@ public:
         // during normal realtime fluctuations; warnings remain explicit in
         // the text (ATENÇÃO, SOBRECARGA, SAFE).
         graphics.setColour(juce::Colour(0xffe7e3d5));
-        graphics.drawFittedText(status, bounds.reduced(34).withTrimmedTop(66).withTrimmedRight(410),
-                                juce::Justification::topLeft, 2);
+        auto statusArea = bounds.reduced(34).withTrimmedTop(66).withTrimmedRight(410);
+        auto musicLine = statusArea.removeFromTop(18);
+        graphics.drawFittedText(status, musicLine, juce::Justification::topLeft, 1);
+        if (machine.isNotEmpty()) {
+            graphics.setColour(juce::Colour(0xff9fbfb3));
+            graphics.setFont(branding::mono(12.0f));
+            graphics.drawFittedText(machine, statusArea.removeFromTop(16), juce::Justification::topLeft, 1);
+            graphics.setFont(branding::mono(14.0f));
+        }
         const auto meter = juce::Rectangle<float>(static_cast<float>(peakLeft), 40.0f,
                                                   static_cast<float>(juce::jmax(64, peakRight - peakLeft)), 12.0f);
         const auto peak = static_cast<float>(telemetry.outputPeakMicros) / 1000000.0f;
@@ -2426,11 +2437,6 @@ public:
                             "AXIS OF FORCES · AUTONOMY / INTERVENTION · MEMORY / RUPTURE",
                             "AXE DES FORCES · AUTONOMIE / INTERVENTION · MÉMOIRE / RUPTURE",
                             "EJE DE FUERZAS · AUTONOMÍA / INTERVENCIÓN · MEMORIA / RUPTURA"));
-        if (!cellArea_.isEmpty())
-            drawZone(graphics, cellArea_, uiText(supportLanguage_, "16 CÉLULAS · MÓDULOS / CONEXÕES / SEED",
-                                                  "16 CELLS · MODULES / CONNECTIONS / SEED",
-                                                  "16 CELLULES · MODULES / CONNEXIONS / SEED",
-                                                  "16 CÉLULAS · MÓDULOS / CONEXIONES / SEED"));
         if (!constellationArea_.isEmpty())
             drawZone(graphics, constellationArea_, uiText(supportLanguage_, "CAMPO DE MATÉRIAS · ", "MATERIAL FIELD · ",
                                                            "CHAMP DES MATIÈRES · ", "CAMPO DE MATERIAS · ") + moduleRosterText());
@@ -2467,7 +2473,7 @@ public:
         // The title and slider share one compact, exclusive 28 px header
         // target. TEMPO/BPM stays readable without stealing width from ALEA.
         tempoLabel_.setBounds(headerLayout.tempo.x, headerLayout.tempo.y,
-                              92, 10);
+                              juce::jmin(130, juce::jmax(92, headerLayout.tempo.width)), 10);
         tempoLabel_.setVisible(true);
         tempoSlider_.setBounds(headerLayout.tempo.x, headerLayout.tempo.y + 11,
                                headerLayout.tempo.width, 17);
@@ -2564,7 +2570,6 @@ public:
         tempoEditor_.setVisible(false);
         captureButton_.setVisible(singleSurface);
         undoCaptureButton_.setVisible(singleSurface);
-        for (auto& button : cellButtons_) button.setVisible(false);
         performanceField_.setVisible(singleSurface);
         for (auto& component : macroLabels_) component.setVisible(singleSurface);
         for (auto& component : macroSliders_) component.setVisible(singleSurface);
@@ -2619,7 +2624,6 @@ public:
         // panels return when the window has enough vertical room.
         const bool compactField = getWidth() < 1280 || getHeight() < 720;
         if (compactField) {
-            for (auto& button : cellButtons_) button.setVisible(false);
             for (auto& component : macroLabels_) component.setVisible(false);
             for (auto& component : macroSliders_) component.setVisible(false);
             for (auto& component : relationLabels_) component.setVisible(false);
@@ -2638,7 +2642,6 @@ public:
 
             fieldArea_ = lower.removeFromLeft(lower.getWidth() * 58 / 100).reduced(0, 4);
             layoutField(fieldArea_);
-            cellArea_ = {};
             macroArea_ = {};
             relationArea_ = {};
             constellationArea_ = lower.reduced(0, 4);
@@ -2720,7 +2723,6 @@ public:
         // dynamic and audible behaviour, never remain static decoration.
         fieldArea_ = actionArea.removeFromTop(actionArea.getHeight() * 58 / 100).reduced(0, 4);
         layoutField(fieldArea_);
-        cellArea_ = {};
         // Seven equal columns made the principal musical controls too small.
         // FOCO privileges two broad rows of knobs; Mesa keeps the stems and
         // graph balanced while using the same readable two-row grammar.
@@ -2932,8 +2934,20 @@ private:
         gestureButtons_[1].setButtonText(uiText(supportLanguage_, "ABRIR · ", "OPEN · ", "OUVRIR · ", "ABRIR · ") + target);
         gestureButtons_[2].setButtonText(uiText(supportLanguage_, "RASGAR · ", "TEAR · ", "DÉCHIRER · ", "RASGAR · ") + target);
         gestureButtons_[3].setButtonText(uiText(supportLanguage_, "REPARAR · ", "REPAIR · ", "RÉPARER · ", "REPARAR · ") + target);
+        // TEMPO SHIFT virou DESLOCAR (3/11, R2): é um recorte que desloca o
+        // pulso e a fase do stem; o andamento não muda.
+        gestureButtons_[5].setButtonText(uiText(supportLanguage_, "DESLOCAR", "DISPLACE", "DÉCALER", "DESPLAZAR"));
+        gestureButtons_[5].setTooltip(uiText(supportLanguage_,
+            "D · desloca por um momento o pulso e a fase de ", "D · briefly displaces the pulse and phase of ",
+            "D · décale un moment la pulsation et la phase de ", "D · desplaza un momento el pulso y la fase de ")
+            + target + uiText(supportLanguage_, "; o andamento não muda.", "; the tempo stays.",
+                              " ; le tempo ne change pas.", "; el tempo no cambia."));
         gestureButtons_[1].setTooltip(uiText(supportLanguage_, "W · abre uma variação SELVAGEM em ",
-            "W · opens a WILD variation on ", "W · ouvre une variation SAUVAGE sur ", "W · abre una variación SALVAJE en ") + target);
+            "W · opens a WILD variation on ", "W · ouvre une variation SAUVAGE sur ", "W · abre una variación SALVAJE en ") + target
+            + uiText(supportLanguage_, "; com a TRAMA, também a empurra na Constelação.",
+                     "; with the WEB, it also pushes it in the Constellation.",
+                     " ; avec la TRAME, la pousse aussi dans la Constellation.",
+                     "; con la TRAMA, también la empuja en la Constelación."));
         gestureButtons_[2].setTooltip(uiText(supportLanguage_, "E · deposita uma cicatriz em ",
             "E · places a scar on ", "E · dépose une cicatrice sur ", "E · deja una cicatriz en ") + target);
         gestureButtons_[3].setTooltip(uiText(supportLanguage_, "R · recompõe ",
@@ -3761,33 +3775,6 @@ private:
             repaint();
         };
         addAndMakeVisible(constellationGraph_);
-        for (std::size_t index = 0; index < cellButtons_.size(); ++index) {
-            auto& button = cellButtons_[index];
-            static constexpr std::array<const char*, 16> cellLabels{
-                "SEED → 1", "SEED → 2", "SEED → 3", "SEED → 4",
-                "LIGA 1–2", "LIGA 2–3", "LIGA 1–3", "LIGA 1–4",
-                "CORPO 1", "CORPO 2", "CORPO 3", "CORPO 4",
-                "SEED · ABRE", "SEED · RASGA", "SEED · REPARA", "SEED · PAUSA"};
-            button.setButtonText(utf8(cellLabels[index]));
-            button.setColour(juce::TextButton::buttonColourId,
-                             index >= 12U ? juce::Colour(0xff564033) : juce::Colour(0xff285348));
-            button.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffe7e3d5));
-            static constexpr std::array<const char*, 16> cellHints{
-                "Acontecimento da seed dirigido ao módulo 1.", "Acontecimento da seed dirigido ao módulo 2.",
-                "Acontecimento da seed dirigido ao módulo 3.", "Acontecimento da seed dirigido ao módulo 4.",
-                "Alterna a conexão entre os módulos 1 e 2.", "Alterna a conexão entre os módulos 2 e 3.",
-                "Alterna a conexão entre os módulos 1 e 3.", "Alterna a conexão entre o módulo 1 e a reserva 4.",
-                "Alterna o controle primário do módulo 1.", "Alterna o controle primário do módulo 2.",
-                "Alterna o controle primário do módulo 3.", "Alterna o controle primário do módulo 4.",
-                "Abertura coletiva com variação derivada da seed.",
-                "Rasgo coletivo temporário; a posição do campo permanece.",
-                "Reparo coletivo; reduz a cicatriz sem alterar posições.",
-                "Pausa/concentração dos relógios; clique novamente para liberar."};
-            button.setTooltip(utf8(cellHints[index]));
-            button.onClick = [this, index] { triggerCell(index); };
-            addAndMakeVisible(button);
-        }
-        refreshMacroCellVisuals();
         refreshHoldVisual();
         refreshSafetyVisual();
         refreshCohortIdentity(startupDocument_.territory.seed);
@@ -3916,6 +3903,44 @@ private:
         return name;
     }
 
+    // As pontas de cada um dos 16 cabos fixos (corpo de saída → de chegada).
+    static constexpr std::array<std::pair<std::size_t, std::size_t>, 16> kRelationEnds{{
+        {0U, 1U}, {1U, 2U}, {0U, 2U}, {0U, 3U}, {1U, 3U},
+        {2U, 3U}, {0U, 4U}, {4U, 5U}, {5U, 6U}, {6U, 7U},
+        {0U, 6U}, {1U, 4U}, {1U, 6U}, {2U, 5U}, {3U, 7U}, {4U, 6U}}};
+
+    // Com a trama (3/11, R1), o rótulo do cabo diz também o ato que ele pede
+    // ao diretor: o do fenômeno ligado, senão o ato natural do par — o mesmo
+    // cálculo do diretor. No foco, o ato pode variar (seção, estratégia).
+    juce::String cableActSuffix(std::size_t index) const {
+        return cableActSuffix(index, displayedAsterism(identitySeed_));
+    }
+
+    juce::String cableActSuffix(std::size_t index, const std::array<PerformanceModuleBody, 8>& stars) const {
+        if (!controller_.skyWeb() || index >= kRelationEnds.size()) return {};
+        const auto [a, b] = kRelationEnds[index];
+        if (a >= stars.size() || b >= stars.size()) return {};
+        if (stars[a] == PerformanceModuleBody::Count || stars[b] == PerformanceModuleBody::Count) return {};
+        const auto natural = PerformanceSkyDirector::naturalKind(identitySeed_, a, b, stars[a], stars[b]);
+        const auto kind = constellationGraph_.relationPhenomenonEnabledAt(index)
+            ? PerformanceSkyDirector::phenomenonKind(
+                  static_cast<std::uint8_t>(constellationGraph_.relationPhenomenonAt(index)), natural)
+            : natural;
+        const auto name = constellationGraph_.skyActName(kind);
+        return name.isEmpty() ? juce::String{} : utf8(" · ") + name;
+    }
+
+    // Chamado pelo timer: só reescreve o rótulo que mudou (trama, troca de
+    // estrela, fenômeno, seed).
+    void refreshCableActs() {
+        const auto stars = displayedAsterism(identitySeed_);
+        for (std::size_t index = 0U; index < relationLabels_.size(); ++index) {
+            const auto text = relationDisplayNames_[index] + cableActSuffix(index, stars);
+            if (relationLabels_[index].getText() != text)
+                relationLabels_[index].setText(text, juce::dontSendNotification);
+        }
+    }
+
     void refreshRelationInterfaceText() {
         static constexpr std::array<const char*, 16> prefixes{
             "MATÉRIA", "TEMPO", "ESPAÇO", "ÓRBITA", "CONTÁGIO", "VESTÍGIO",
@@ -3939,15 +3964,13 @@ private:
             if (name == "RETORNO") return uiText(supportLanguage_, "RETORNO", "RETURN", "RETOUR", "RETORNO");
             return name;
         };
-        const std::array<std::pair<std::size_t, std::size_t>, 16> ends{{
-            {0U, 1U}, {1U, 2U}, {0U, 2U}, {0U, 3U}, {1U, 3U},
-            {2U, 3U}, {0U, 4U}, {4U, 5U}, {5U, 6U}, {6U, 7U},
-            {0U, 6U}, {1U, 4U}, {1U, 6U}, {2U, 5U}, {3U, 7U}, {4U, 6U}}};
+        const auto& ends = kRelationEnds;
         for (std::size_t index = 0U; index < relationDisplayNames_.size(); ++index)
             relationDisplayNames_[index] = prefix(index) + " " + moduleDisplayNames_[ends[index].first]
                 + " → " + moduleDisplayNames_[ends[index].second];
         for (std::size_t index = 0U; index < relationLabels_.size(); ++index) {
-            relationLabels_[index].setText(relationDisplayNames_[index], juce::dontSendNotification);
+            relationLabels_[index].setText(relationDisplayNames_[index] + cableActSuffix(index),
+                                           juce::dontSendNotification);
             relationSliders_[index].setTooltip(relationDisplayNames_[index] + uiText(supportLanguage_,
                 " · proximidade e intensidade alteram o comportamento compartilhado.",
                 " · proximity and intensity change shared behaviour.",
@@ -4223,99 +4246,9 @@ private:
         repaint();
     }
 
-    void triggerCell(std::size_t index) {
-        if (index < 4U) { triggerSeedModule(index); return; }
-        if (index < 8U) { toggleCellRelation(index - 4U); return; }
-        if (index < 12U) { toggleCellModuleControl(index - 8U); return; }
-        static constexpr std::array<GestureType, 4> seedGestures{
-            GestureType::Mutate, GestureType::Rasgar, GestureType::Recall, GestureType::Hold};
-        const auto gesture = seedGestures[index - 12U];
-        if (gesture == GestureType::Hold) requestHold();
-        else pushSeedGesture(gesture, static_cast<std::uint32_t>(index));
-    }
-
-    void triggerSeedModule(std::size_t index) {
-        if (index >= moduleDisplayNames_.size() && index != 3U) return;
-        const auto actorId = static_cast<std::uint16_t>(index + 1U);
-        if (index == 3U && !modulePanelActive_[3U]) {
-            lastAction_ = optionalModuleDisplayName_ + uiText(supportLanguage_,
-                " está na reserva · arraste para o Campo", " is in reserve · drag into the Field",
-                " est en réserve · glissez dans le Champ", " está en reserva · arrastre al Campo");
-            repaint();
-            return;
-        }
-        PerformanceGestureEvent event;
-        event.type = GestureType::Mutate;
-        event.targetActorId = actorId;
-        event.intensity = 0.76;
-        event.variationToken = static_cast<std::uint32_t>(startupDocument_.territory.seed
-            ^ (static_cast<std::uint32_t>(index + 1U) * 0x9e3779b9U));
-        if (controller_.pushGesture(event)) {
-            selectedActorId_ = actorId;
-            selectedModuleIndex_ = index;
-            refreshNarrativeGestureLabels();
-            lastAction_ = "SEED → " + moduleDisplayNameForIndex(index)
-                + uiText(supportLanguage_, " · acontecimento dirigido", " · directed event",
-                          " · événement dirigé", " · acontecimiento dirigido");
-        }
-        repaint();
-    }
-
-    void pushSeedGesture(GestureType type, std::uint32_t salt) {
-        PerformanceGestureEvent event;
-        event.type = type;
-        event.intensity = type == GestureType::Rasgar ? 0.72 : 0.66;
-        event.variationToken = static_cast<std::uint32_t>(startupDocument_.territory.seed
-            ^ (salt * 0x85ebca6bU));
-        event.targetActorId = selectedActorId_;
-        if (controller_.pushGesture(event))
-            lastAction_ = uiText(supportLanguage_, "SEED · ", "SEED · ", "SEED · ", "SEED · ") + gestureName(type);
-        repaint();
-    }
-
     juce::String moduleDisplayNameForIndex(std::size_t index) const {
         return index < moduleDisplayNames_.size() ? moduleDisplayNames_[index]
             : optionalModuleDisplayName_;
-    }
-
-    void toggleCellRelation(std::size_t index) {
-        if (index < 3U) {
-            const auto value = relationValues_[index] < 0.55 ? 0.82 : 0.24;
-            setRelationControl(index, value, false);
-            lastAction_ = uiText(supportLanguage_, "conexão ", "connection ", "connexion ", "conexión ")
-                + relationDisplayNames_[index] + " · " + juce::String(value, 2);
-        } else {
-            const auto value = walshRelationValue_ < 0.55 ? 0.82 : 0.24;
-            if (controller_.setRelationIntensity(1U, 4U, value)) {
-                walshRelationValue_ = value;
-                lastAction_ = uiText(supportLanguage_, "conexão ", "connection ", "connexion ", "conexión ")
-                    + optionalModuleDisplayName_ + " · " + juce::String(value, 2);
-            }
-        }
-        repaint();
-    }
-
-    void toggleCellModuleControl(std::size_t index) {
-        if (index < 3U) {
-            const auto value = moduleControlValues_[index][0] < 0.55 ? 0.86 : 0.18;
-            if (controller_.setModuleControl(static_cast<std::uint16_t>(index + 1U),
-                                              PerformanceModuleControl::Primary, value)) {
-                moduleControlValues_[index][0] = value;
-                moduleControlSliders_[index][0].setValue(value, juce::dontSendNotification);
-                lastAction_ = moduleDisplayNames_[index] + uiText(supportLanguage_, " · CORPO ", " · BODY ",
-                    " · CORPS ", " · CUERPO ") + juce::String(value, 2);
-            }
-        } else {
-            const auto value = walshControlValues_[0] < 0.55 ? 0.86 : 0.18;
-            if (controller_.setModuleControl(4U, PerformanceModuleControl::Primary, value)) {
-                walshControlValues_[0] = value;
-                walshControlSliders_[0].setValue(value, juce::dontSendNotification);
-                lastAction_ = optionalModuleDisplayName_ + uiText(supportLanguage_, " · CORPO ", " · BODY ",
-                    " · CORPS ", " · CUERPO ") + juce::String(value, 2);
-            }
-        }
-        sceneDirty_ = true;
-        repaint();
     }
 
     void recallScene(std::uint16_t sceneId) {
@@ -5075,7 +5008,6 @@ private:
         sceneRelations[2U] = relationValues_[2U];
         constellationGraph_.setRelations(sceneRelations);
         synchronizeFocusedActor();
-        refreshMacroCellVisuals();
         resized();
     }
 
@@ -5099,7 +5031,8 @@ private:
                 ? (type == GestureType::Mutate ? utf8("MUTATE · SELVAGEM")
                    : type == GestureType::Rasgar ? utf8("RASGAR")
                    : type == GestureType::Recall ? utf8("RECALL")
-                   : type == GestureType::Stutter ? utf8("STUTTER") : utf8("TEMPO SHIFT"))
+                   : type == GestureType::Stutter ? utf8("STUTTER")
+                   : uiText(supportLanguage_, "DESLOCAR", "DISPLACE", "DÉCALER", "DESPLAZAR"))
                     + (selectedModuleIndex_ < moduleDisplayNames_.size()
                         ? utf8(" · ") + moduleDisplayNames_[selectedModuleIndex_]
                         : juce::String{})
@@ -6034,7 +5967,6 @@ private:
         macroValues_[index] = bounded;
         notePerformerActivity();
         macroSliders_[index].setValue(bounded, juce::dontSendNotification);
-        refreshMacroCellVisuals();
         lastAction_ = macroName + " " + juce::String(macroValues_[index], 2)
             + (bounded < value ? uiText(supportLanguage_, " · limite do território", " · territory limit",
                 " · limite du territoire", " · límite del territorio") : "");
@@ -6165,19 +6097,12 @@ private:
         if (progress >= 1.0) fieldNarrativeActive_ = false;
     }
 
-    void refreshMacroCellVisuals() {
-        // The 16-cell surface now addresses modules, relations and seed
-        // gestures. Macro values remain available as parameter controls but
-        // must not rewrite the cell labels or detach the grid from the desk.
-        for (std::size_t index = 8U; index < cellButtons_.size(); ++index)
-            cellButtons_[index].setColour(juce::TextButton::buttonColourId,
-                index >= 12U ? juce::Colour(0xff564033) : juce::Colour(0xff285348));
-    }
-
     void timerCallback() override {
         refreshAudioFooter();
         const auto telemetry = controller_.readTelemetry();
         watchAudioFlow();
+        refreshEffectiveTempoLabel(telemetry);
+        refreshCableActs();
         // A física do céu repousa onde a tela desenha cada nó: a cada ~2 s
         // (e logo ao abrir) o app reenvia os oito lugares como âncoras — as
         // vozes são refeitas quando a seed muda. Não muda a posição da
@@ -6308,14 +6233,24 @@ private:
         repaint();
     }
 
+    // O andamento que soa (3/11, R8): com a trama tocando, o tempo respira;
+    // o rótulo mostra o BPM efetivo ao lado do de base ("TEMPO / BPM → 124").
+    void refreshEffectiveTempoLabel(const PerformanceTelemetrySnapshot& telemetry) {
+        juce::String text = "TEMPO / BPM";
+        if (telemetry.playing && controller_.skyWeb() && telemetry.skyTempoMillis > 0U) {
+            const auto effective = static_cast<int>(std::lround(
+                tempoSlider_.getValue() * static_cast<double>(telemetry.skyTempoMillis) / 1000.0));
+            if (effective != static_cast<int>(std::lround(tempoSlider_.getValue())))
+                text += utf8(" → ") + juce::String(effective);
+        }
+        if (tempoLabel_.getText() != text) tempoLabel_.setText(text, juce::dontSendNotification);
+    }
+
     void refreshHoldVisual() {
         auto& holdButton = gestureButtons_.front();
         holdButton.setButtonText(holdRequested_ ? "RELEASE" : "HOLD");
         holdButton.setColour(juce::TextButton::buttonColourId,
                              holdRequested_ ? juce::Colour(0xffb66b39) : juce::Colour(0xff6b5035));
-        cellButtons_[4].setButtonText(holdRequested_ ? "RELEASE" : "HOLD");
-        cellButtons_[4].setColour(juce::TextButton::buttonColourId,
-                                  holdRequested_ ? juce::Colour(0xffb66b39) : juce::Colour(0xff285348));
     }
 
     void refreshSafetyVisual() {
@@ -6323,9 +6258,6 @@ private:
         panicButton.setButtonText(panicSafeDisplayed_ ? "RESET SAFE" : "PANIC SAFE");
         panicButton.setColour(juce::TextButton::buttonColourId,
                               panicSafeDisplayed_ ? juce::Colour(0xffb66b39) : juce::Colour(0xff813d34));
-        cellButtons_[15].setButtonText(panicSafeDisplayed_ ? "RESET SAFE" : "SEGURO");
-        cellButtons_[15].setColour(juce::TextButton::buttonColourId,
-                                   panicSafeDisplayed_ ? juce::Colour(0xffb66b39) : juce::Colour(0xff564033));
     }
 
     void refreshAudioFooter() {
@@ -6680,7 +6612,6 @@ private:
     juce::Label masterLabel_;
     juce::Slider morphSlider_;
     juce::Label morphLabel_;
-    std::array<juce::TextButton, 16> cellButtons_;
     std::array<juce::Slider, 8> macroSliders_;
     std::array<juce::Label, 8> macroLabels_;
     std::array<juce::Slider, 8> actorSliders_;
@@ -6748,7 +6679,6 @@ private:
     juce::Rectangle<int> sceneArea_;
     juce::Rectangle<int> gestureArea_;
     juce::Rectangle<int> fieldArea_;
-    juce::Rectangle<int> cellArea_;
     juce::Rectangle<int> macroArea_;
     juce::Rectangle<int> constellationArea_;
     juce::Rectangle<int> relationArea_;

@@ -117,7 +117,7 @@ escolhe o ato musical do par e vira uma força física entre os dois. A DANÇA
 virou família de movimento em 30/10. O 4 (nome da cena) foi resolvido hoje
 (NASCENTE).
 
-Recomendações para o que resta — nada aplicado, aguardam o autor:
+Recomendações para o que resta — **aprovadas pelo autor ("ok", 3/11) e aplicadas no mesmo dia** (detalhe na tabela seguinte):
 
 | # | Item | Recomendação |
 |---|---|---|
@@ -129,4 +129,18 @@ Recomendações para o que resta — nada aplicado, aguardam o autor:
 | R6 | Linha de estado | duas linhas: música (forma, tempo, swing, agrupamento, deriva, eclipse) em cima; máquina (stems, atrasos, CPU, limite) embaixo; nenhum dado novo |
 | R7 | O "grão" do token do MUTATE (não soa mais com a trama) | vira o empurrão físico que ABRIR dá na estrela em foco: o gesto se vê na Constelação e se ouve no pan |
 | R8 | Andamento | o andamento efetivo ao lado do BPM ("120 → 124") |
+
+Como ficou (3/11): R1 — `PerformanceSkyDirector::naturalKind` ficou público
+(mesmo cálculo; som idêntico) e o rótulo do cabo ganha " · ATO" com a trama;
+R2 — botão, dica, tutorial e eco da ação nos 4 idiomas (o nome interno do
+gesto no trace da tomada segue `TEMPO SHIFT`, para não quebrar a leitura de
+tomadas antigas); R3 — PRONTO / MUDO / SOA / RECUSADO (4 idiomas); R4 — uma
+frase na seção 4 do tutorial (4 idiomas); R5 — as 16 células, a zona "16
+CÉLULAS" e as funções que só elas chamavam removidas; R6 — música na
+primeira linha, máquina (corpos, stems, limite, perfil, atrasos, Modal, CPU)
+na segunda, menor; R7 — o grão empurra a estrela em foco (ou todas, cada
+uma num ângulo áureo) com ≈ 3 ataques de força; teste novo no motor; R8 — o
+rótulo TEMPO / BPM mostra "→ 124" quando a trama faz o tempo respirar.
+**Não conferido na tela** (sem tela virtual na máquina; abrir na tela do
+autor arriscaria roubar o foco do teclado): conferência do autor.
 

@@ -974,6 +974,10 @@ private:
             wildToken_ = event.variationToken != 0U ? event.variationToken
                 : static_cast<std::uint32_t>(session_.territorySeed ^ sampleCursor_);
             wildTargetActorId_ = event.targetActorId;
+            // O grão do token (bits 16–23) empurra a estrela com a trama
+            // (3/11, R7): o gesto se vê na Constelação e se ouve no pan.
+            ecology_.pushStar(event.targetActorId, static_cast<std::uint8_t>((wildToken_ >> 16U) & 0xffU),
+                              event.intensity);
             break;
         case GestureType::Rasgar:
             tear_ = std::max(tear_, event.intensity);

@@ -114,7 +114,9 @@ fixo), picos iguais. Teste: `tests/test_performance_sky_pan.cpp`.
 Achado: o "grão" do token do MUTATE (bits 16–23) só acelerava a fase
 estéreo antiga; com a trama ele não soa mais (a "inclinação", bits 8–15,
 segue mudando as estrelas). O teste dos tokens passou a rodar sem a trama.
-Se o grão deve ganhar outro papel é decisão do autor.
+Decisão do autor (3/11, R7): com a trama, o grão **empurra a estrela em
+foco** (a direção é o grão; ≈ 3 ataques de força) — o gesto se vê e se
+ouve no pan. O teste dos tokens confere os dois caminhos.
 
 ## 5. Fontes e conceitos
 

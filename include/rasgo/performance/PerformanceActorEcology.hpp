@@ -899,6 +899,16 @@ public:
 
     double motionPhase() const noexcept { return motionPhase_; }
     void setSkyInfluence(double influence) noexcept { director_.setInfluence(influence); }
+    // O empurrão do ABRIR na estrela `actorId` (ou em todas, sem alvo).
+    void pushStar(std::uint16_t actorId, std::uint8_t grain, double intensity) noexcept {
+        std::size_t slot = PerformanceSkyDirector::kBodies;
+        if (actorId != kInvalidActorId) {
+            for (std::size_t index = 0U; index < voiceCount_; ++index)
+                if (voices_[index].actorId == actorId) slot = index;
+            if (slot >= PerformanceSkyDirector::kBodies) return;
+        }
+        director_.push(slot, grain, intensity);
+    }
     // Identidade e vida de cada corpo, para a telemetria quando o céu está
     // parado e não renderiza.
     std::uint16_t actorIdAt(std::size_t index) const noexcept {

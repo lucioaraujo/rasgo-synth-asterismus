@@ -949,11 +949,10 @@ void testWildTokensChangeTheSeedTrajectory() {
     expect(first.prepare(48000.0, 64U, 2U) && second.prepare(48000.0, 64U, 2U)
            && first.setScene(scene, territory) && second.setScene(scene, territory),
            "matching engines prepare one seed for wild-token comparison");
-    // Estes dois tokens diferem só no "grão" (bits 16–23), que acelera a fase
-    // estéreo da mistura antiga. Com a trama, o pan pela física (3/11) toma o
-    // lugar dessa fase e o grão deixa de soar — por isso a comparação roda
-    // sem a trama. A "inclinação" do token (bits 8–15) muda as estrelas nos
-    // dois caminhos.
+    // Estes dois tokens diferem só no "grão" (bits 16–23). Sem a trama, ele
+    // acelera a fase estéreo da mistura antiga; com a trama, empurra a
+    // estrela (R7, 3/11) e soa pelo pan pela física — os dois caminhos são
+    // conferidos (o com trama logo abaixo).
     first.setSkyInfluence(0.0);
     second.setSkyInfluence(0.0);
 
@@ -977,6 +976,33 @@ void testWildTokensChangeTheSeedTrajectory() {
     }
     expect(difference > 1.0e-4,
            "different wild tokens audibly subvert the same seed along different trajectories");
+
+    // Com a trama: o grão empurra as estrelas em direções diferentes e a
+    // diferença chega ao estéreo pelo pan pela física.
+    PerformanceSessionEngine woven;
+    PerformanceSessionEngine otherWoven;
+    expect(woven.prepare(48000.0, 64U, 2U) && otherWoven.prepare(48000.0, 64U, 2U)
+           && woven.setScene(scene, territory) && otherWoven.setScene(scene, territory),
+           "woven engines prepare one seed for the grain push");
+    std::array<float, 64> wovenLeft{}, wovenRight{}, otherLeft{}, otherRight{};
+    for (int block = 0; block < 400; ++block) {
+        woven.processBlock(wovenLeft.data(), wovenRight.data(), 64U);
+        otherWoven.processBlock(otherLeft.data(), otherRight.data(), 64U);
+    }
+    expect(woven.pushGesture(firstGesture) && otherWoven.pushGesture(secondGesture),
+           "woven engines accept the two grains");
+    double wovenDifference = 0.0;
+    for (int block = 0; block < 1200; ++block) {
+        woven.processBlock(wovenLeft.data(), wovenRight.data(), 64U);
+        otherWoven.processBlock(otherLeft.data(), otherRight.data(), 64U);
+        for (std::size_t sample = 0U; sample < wovenLeft.size(); ++sample) {
+            const auto leftDelta = static_cast<double>(wovenLeft[sample] - otherLeft[sample]);
+            const auto rightDelta = static_cast<double>(wovenRight[sample] - otherRight[sample]);
+            wovenDifference += leftDelta * leftDelta + rightDelta * rightDelta;
+        }
+    }
+    expect(wovenDifference > 1.0e-4,
+           "with the sky web, the grain pushes the star and is heard through the physical pan");
 }
 
 void testFocusedWildGesturePrioritizesTheSelectedStem() {

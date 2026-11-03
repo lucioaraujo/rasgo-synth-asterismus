@@ -506,6 +506,20 @@ public:
         influence_ = std::isfinite(influence) ? std::clamp(influence, 0.0, 1.0) : 0.0;
     }
     double influence() const noexcept { return influence_; }
+    // O empurrão do ABRIR (3/11, R7): o "grão" do token do gesto escolhe a
+    // direção; a intensidade, a força (≈ 3 ataques). Sem a trama, nada.
+    // slot = kBodies empurra todas as acesas, cada uma num ângulo (áureo).
+    void push(std::size_t slot, std::uint8_t grain, double intensity) noexcept {
+        if (influence_ <= 0.0 || !std::isfinite(intensity)) return;
+        const double base = static_cast<double>(grain) / 256.0 * 6.283185307179586;
+        for (std::size_t body = 0U; body < kBodies; ++body) {
+            if (slot < kBodies ? body != slot : !bodies_[body].lit) continue;
+            const double angle = base + (slot < kBodies ? 0.0 : static_cast<double>(body) * 2.399963229728653);
+            const double impulse = kKick * 3.0 * std::clamp(intensity, 0.0, 1.0) / massOf(bodies_[body]);
+            vx_[body] += std::cos(angle) * impulse;
+            vy_[body] += std::sin(angle) * impulse;
+        }
+    }
 
     // Chamado uma vez por amostra, antes das estrelas, com o estado dos corpos
     // e o andamento. Roda o relógio de controle quando é a vez.
@@ -1542,9 +1556,18 @@ private:
     // O tipo de relação nasce das funções das duas estrelas, com a seed
     // escolhendo entre alternativas plausíveis para cada par.
     RelationKind kindFor(std::size_t a, std::size_t b) const noexcept {
-        const auto fa = performanceStarFunction(bodies_[a].star);
-        const auto fb = performanceStarFunction(bodies_[b].star);
-        const auto word = mix(seed_ ^ static_cast<std::uint32_t>(a * 31U + b * 131U + 7U));
+        return naturalKind(seed_, a, b, bodies_[a].star, bodies_[b].star);
+    }
+
+public:
+    // O ato natural do par a → b (pela função das duas estrelas e a seed);
+    // público para a interface mostrar no rótulo do cabo o ato que ele pede
+    // (3/11, R1). Mesmo cálculo de antes — som idêntico.
+    static RelationKind naturalKind(std::uint32_t seed, std::size_t a, std::size_t b,
+                                    PerformanceModuleBody starA, PerformanceModuleBody starB) noexcept {
+        const auto fa = performanceStarFunction(starA);
+        const auto fb = performanceStarFunction(starB);
+        const auto word = mix(seed ^ static_cast<std::uint32_t>(a * 31U + b * 131U + 7U));
         const bool alternative = (word & 3U) == 0U;
         // Entre estrelas de altura (tom e voz), parte dos pares vive em atrito
         // harmônico (passo 3 da trama: a harmonia que trabalha).
@@ -1564,6 +1587,7 @@ private:
         return alternative ? RelationKind::Support : RelationKind::CallResponse;
     }
 
+private:
     void updateWeb() noexcept {
         for (std::size_t a = 0U; a < kBodies; ++a) {
             for (std::size_t b = 0U; b < kBodies; ++b) {
