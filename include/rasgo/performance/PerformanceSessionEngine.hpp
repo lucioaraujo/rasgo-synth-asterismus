@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <cmath>
 #include <cstddef>
@@ -11,6 +12,7 @@
 #include "PerformanceLoudnessMeter.hpp"
 #include "PerformanceMasterStage.hpp"
 #include "PerformanceMorceauLifecycle.hpp"
+#include "PerformanceSkyPan.hpp"
 
 namespace rasgo::performance {
 
@@ -33,6 +35,7 @@ public:
         if (!ecology_.prepare(sampleRate, maximumBlockSize, channels)) return false;
         master_.prepare(sampleRate);
         meter_.prepare(sampleRate);
+        skyPan_.prepare(sampleRate);
         prepared_ = true;
         reset();
         if (!morceau_.prepare(sampleRate_, session_.territorySeed)) {
@@ -44,6 +47,8 @@ public:
 
     void reset() noexcept {
         phase_ = 0.0;
+        skyPan_.reset();
+        skyPanActor_.fill(kInvalidActorId);
         sampleCursor_ = 0U;
         spatialGameSampleAccumulator_ = 0U;
         performerPauseSamples_ = 0U;
@@ -589,6 +594,9 @@ public:
             // changing its pitch. Silence between events is a valid musical
             // state; the ecology is the sole source of audible material.
             double ecological = 0.0;
+            bool physicalPan = false;
+            double panLeft = 0.0;
+            double panRight = 0.0;
             // Em STOP, depois do de-click, a saída é exatamente zero: o céu
             // fica parado (não calcula estrelas para jogar fora) e retoma de
             // onde estava no próximo PLAY. Achado da auditoria de 28/10 (4.2).
@@ -602,6 +610,30 @@ public:
                                                         repairTargetActorId_);
                 ecological = stems.mixedMono();
                 stemCount = stems.actorCount;
+                // O pan pela física (3/11): com a trama, cada estrela soa onde
+                // a Constelação a mostra; ESPAÇO é a largura do campo. Sem a
+                // trama (ou em mono), o estéreo é o de antes, idêntico.
+                double probeX = 0.0;
+                if (channels_ == 2U && stems.actorCount > 0U && ecology_.physicsPanX(0U, probeX)) {
+                    physicalPan = true;
+                    const auto width = clampUnit(session_.space + ecology_.spacePressure() * 0.62);
+                    for (std::size_t stem = 0U; stem < std::min(stems.actorCount, skyPanActor_.size()); ++stem) {
+                        const auto actorId = stems.actors[stem].actorId;
+                        if (skyPanActor_[stem] != actorId) {
+                            skyPan_.release(stem);
+                            skyPanActor_[stem] = actorId;
+                        }
+                        double x = 0.5;
+                        ecology_.physicsPanX(stem, x);
+                        skyPan_.add(stem, stems.actors[stem].mono,
+                                    PerformanceSkyPan::targetPan(x, width), panLeft, panRight);
+                    }
+                    const double centre = stems.modalReturn * PerformanceSkyPan::kCentreGain;
+                    // O mesmo teto da soma mono (±0,90), na escala do centro.
+                    const double ceiling = 0.90 * PerformanceSkyPan::kCentreGain * std::sqrt(2.0);
+                    panLeft = std::clamp(finite(panLeft + centre) ? panLeft + centre : 0.0, -ceiling, ceiling);
+                    panRight = std::clamp(finite(panRight + centre) ? panRight + centre : 0.0, -ceiling, ceiling);
+                }
                 for (std::size_t stem = 0U; stem < stems.actorCount; ++stem) {
                     stemActorIds[stem] = stems.actors[stem].actorId;
                     stemPeaks[stem] = std::max(stemPeaks[stem], std::fabs(stems.actors[stem].mono));
@@ -641,6 +673,10 @@ public:
             double rightSample = channels_ == 2U
                 ? mono * (0.94 + spatial * 0.20) - spatialMotion * (0.55 + spatial * 0.35)
                 : leftSample;
+            if (physicalPan) {
+                leftSample = finiteSample(panLeft * amplitude);
+                rightSample = finiteSample(panRight * amplitude);
+            }
             // O master (30/10): ganho fixo → MASTER → limitador → teto.
             // Parado e já no silêncio do STOP, a saída é zero exato: o master
             // zera o seu estado uma vez (o filtro anti-DC e o atraso não
@@ -756,6 +792,8 @@ private:
     double masterTrimDb_ = 0.0;
     double lastPeak_ = 0.0;
     PerformanceMasterStage master_{};
+    PerformanceSkyPan skyPan_{};
+    std::array<std::uint16_t, PerformanceSkyPan::kStems> skyPanActor_{};
     bool masterSilent_ = false;
     double limiterMaxReduction_ = 0.0;
     PerformanceLoudnessMeter meter_{};

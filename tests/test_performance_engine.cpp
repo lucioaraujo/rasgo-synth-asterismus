@@ -949,6 +949,13 @@ void testWildTokensChangeTheSeedTrajectory() {
     expect(first.prepare(48000.0, 64U, 2U) && second.prepare(48000.0, 64U, 2U)
            && first.setScene(scene, territory) && second.setScene(scene, territory),
            "matching engines prepare one seed for wild-token comparison");
+    // Estes dois tokens diferem só no "grão" (bits 16–23), que acelera a fase
+    // estéreo da mistura antiga. Com a trama, o pan pela física (3/11) toma o
+    // lugar dessa fase e o grão deixa de soar — por isso a comparação roda
+    // sem a trama. A "inclinação" do token (bits 8–15) muda as estrelas nos
+    // dois caminhos.
+    first.setSkyInfluence(0.0);
+    second.setSkyInfluence(0.0);
 
     auto firstGesture = gesture(GestureType::Mutate, 0U, 0.86);
     auto secondGesture = firstGesture;

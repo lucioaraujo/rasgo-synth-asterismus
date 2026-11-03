@@ -33,7 +33,7 @@ ou de identidade — não aplicada).
 |---|---|---|---|---|
 | DESFAZER / CAPTURAR | **cortados** ("DESFAZ…", "CAPTUR…") | captura BPM, 7 macros, presenças e relações numa cena; desfaz a última captura | útil para performance | **corrigido** (largura) |
 | MORPH 0,8 s | legível, pequeno | tempo de transição entre cenas | útil | manter |
-| ABERTURA / ESPIRAL / RASGO / BALANÇO (cenas 1–4) | legível | recallam cenas | **colisão de nome**: "ABERTURA" é também a primeira seção da forma, que aparece no cabeçalho (FORMA · ABERTURA) | decisão do autor: renomear as cenas (ex.: CENA 1–4 com nome livre) ou a seção |
+| ABERTURA / ESPIRAL / RASGO / BALANÇO (cenas 1–4) | legível | recallam cenas | **colisão de nome**: "ABERTURA" é também a primeira seção da forma, que aparece no cabeçalho (FORMA · ABERTURA) | **resolvido 03/11/2026**: a cena 1 passou a NASCENTE (decisão do autor); a seção segue ABERTURA |
 | HOLD | legível | suspende os relógios (o céu também para) | pertinente | manter |
 | ABRIR · ⟨módulo⟩ / RASGAR · ⟨módulo⟩ / REPARAR · ⟨módulo⟩ | **tamanhos de letra diferentes** (RASGAR e REPARAR encolhem por serem longos) | atuam no módulo em foco (variação selvagem, cicatriz, reparo) | pertinentes; o alvo é o nó em foco | **corrigido** (fonte única); a dica do campo dizia "MUTATE, RASGAR E RECALL" — **corrigido** para os nomes dos botões |
 | STUTTER | legível | recorte rítmico do material | pertinente | manter |

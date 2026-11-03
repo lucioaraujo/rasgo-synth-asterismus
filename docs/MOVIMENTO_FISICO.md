@@ -82,8 +82,39 @@ apagando-se — as curvas e os ricochetes ficam legíveis.
 As posições alimentam a distância entre estrelas, que dá o atraso das
 respostas ("tempo-luz"). Logo o movimento novo muda o tempo das respostas —
 só com a trama ligada (com ela desligada, o som é idêntico, conferido por
-hash). A espacialização do áudio ainda usa a órbita antiga: ligar o pan à
-física é um próximo passo possível (decisão do autor).
+hash). Desde 3/11/2026 a física também dá o **lugar no estéreo** (pan pela
+física, §4.1).
+
+### 4.1 Pan pela física (3/11/2026, aprovado pelo autor)
+
+Antes, todas as estrelas eram somadas em mono e uma fase lenta e global
+(ESPAÇO + cabo de órbita) abria esse mono: o céu se movia em bloco, quase
+mono (correlação 0,999) e com um viés fixo de 1–2 dB para a direita. Agora,
+com a TRAMA ligada, cada estrela soa onde a Constelação a mostra
+(`include/rasgo/performance/PerformanceSkyPan.hpp`):
+
+- a posição x mostrada (`shownX`) vira o pan do stem, lei de potência igual,
+  normalizada para o ganho de antes no centro (0,94 por canal);
+- **ESPAÇO** (+ a pressão do cabo de órbita) é a largura: 0 = mono exato (o
+  contrato de antes), 1 = até **70 %** para um lado — nenhuma estrela fica
+  só num ouvido;
+- o **grave fica no centro**: em cada stem, um filtro de um polo (~150 Hz)
+  separa o grave (sempre no centro) do resto (agudo = sinal − grave, soma
+  exata). Isso vale para toda estrela, não por lista — o bumbo da DRUMS, a
+  Tuba e o Bass Fallback ficam firmes, e o agudo deles ainda anda;
+- o lugar é alisado (~30 ms); um stem novo começa no seu lugar, sem deslizar;
+- o retorno do Modal fica no centro; o stem gravado por estrela segue mono.
+
+Sem a trama (ou em saída mono) o estéreo é o de antes, **idêntico** (hash de
+20 s × 3 seeds igual ao do commit anterior). Medido com a trama, 60 s, seeds
+181/9001/42, ESPAÇO 0,7: correlação 0,97, lado/meio 0,12–0,17 (antes
+0,07–0,08), equilíbrio em janelas de 0,5 s entre −5 e +5 dB (antes +1 a +2
+fixo), picos iguais. Teste: `tests/test_performance_sky_pan.cpp`.
+
+Achado: o "grão" do token do MUTATE (bits 16–23) só acelerava a fase
+estéreo antiga; com a trama ele não soa mais (a "inclinação", bits 8–15,
+segue mudando as estrelas). O teste dos tokens passou a rodar sem a trama.
+Se o grão deve ganhar outro papel é decisão do autor.
 
 ## 5. Fontes e conceitos
 
@@ -204,5 +235,6 @@ menos de 0,05 rad.
 ## 10. Próximo
 
 - Escuta e olhar do autor: pesos da coreografia, rapidez, quanto distorcer.
-- Pan do áudio pela física (opcional).
+- Pan do áudio pela física: feito em 3/11 (§4.1); falta a escuta. A altura
+  y (mais longe = mais escuro) fica para depois da escuta.
 - Mais ou menos choques audíveis (o limiar de impacto) — decisão de escuta.

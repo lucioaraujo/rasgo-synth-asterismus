@@ -796,7 +796,7 @@ O algoritmo que articula seed, módulos, jogo, dança e Constelação está em
 
 ## Correções de continuidade sonora — 2026-09-07
 
-`ABERTURA`, `ESPIRAL`, `RASGO` e `BALANÇO` são transformações composicionais
+`NASCENTE` (até 03/11/2026 `ABERTURA`), `ESPIRAL`, `RASGO` e `BALANÇO` são transformações composicionais
 do mesmo morceau: trocar de cena durante `PLAY` preserva o transporte e o
 envelope da peça. O estado `playing` armazenado numa cena não pode interromper
 uma performance que já está em curso. A regressão do motor percorre

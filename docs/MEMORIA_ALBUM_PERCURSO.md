@@ -59,7 +59,7 @@ manifesto e os stems de sempre).
 ## 4. PERCURSO (seguindo a forma do céu)
 
 Botão **PERCURSO** na faixa de título das cenas. As cenas seguem a forma do
-céu: ABERTURA → cena 1 (ABERTURA), DESENVOLVIMENTO → ESPIRAL, CONTRASTE →
+céu: ABERTURA → cena 1 (NASCENTE), DESENVOLVIMENTO → ESPIRAL, CONTRASTE →
 RASGO, RETORNO → BALANÇO, com o MORPH escolhido. A forma: abertura uma vez,
 depois desenvolvimento → contraste → retorno em ciclo, cada seção com 8 a 20
 compassos. Ela só anda com a TRAMA ou a VARIAÇÃO; se as duas estiverem

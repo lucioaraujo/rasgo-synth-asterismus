@@ -912,6 +912,15 @@ public:
     bool mixerVariation() const noexcept { return director_.mixerVariation(); }
     double starBrightness(std::size_t index) const noexcept { return director_.brightness(index); }
     const PerformanceSkyDirector& skyDirector() const noexcept { return director_; }
+    // O lugar x do stem `index` na Constelação, pela física do céu (pan pela
+    // física, 3/11/2026). Falso sem a trama: o estéreo segue o de antes.
+    bool physicsPanX(std::size_t index, double& x) const noexcept {
+        if (index >= voiceCount_ || index >= PerformanceSkyDirector::kBodies
+            || !director_.positionsReady())
+            return false;
+        x = director_.shownX(index);
+        return true;
+    }
     // O nível da fratura (cicatriz + impulso, 0–1) e o corpo rasgado agora.
     double fractureLevel() const noexcept { return fractureLevel_; }
     // Quantos cortes o rasgo já abriu (para testes e diagnóstico).

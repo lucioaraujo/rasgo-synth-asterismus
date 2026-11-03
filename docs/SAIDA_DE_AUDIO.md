@@ -35,7 +35,9 @@ Antitotem: true peak entre −1,7 e −1,1 dBTP.
 `include/rasgo/performance/PerformanceMasterStage.hpp`, segundo a
 **arquitetura comum de saída RASGO**
 (`RASGO_DOCUMENTATION/architecture/SAIDA_AUDIO_COMUM.md`), que já previa que o
-Performance (hoje Asterismus) a adotasse. Cadeia, depois da soma estéreo:
+Performance (hoje Asterismus) a adotasse. Cadeia, depois da soma estéreo
+(desde 3/11/2026, com a trama, a soma estéreo é o pan pela física — cada
+estrela no seu lugar, o grave no centro; ver `MOVIMENTO_FISICO.md` §4.1):
 
 1. DC fora;
 2. **orçamento de ganho fixo** (+26 dB);

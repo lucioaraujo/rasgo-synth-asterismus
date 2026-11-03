@@ -318,6 +318,13 @@ if(BUILD_TESTING)
     endif()
     add_test(NAME rasgo_synth_performance_harmony_stars_tests COMMAND rasgo_synth_performance_harmony_stars_tests)
 
+    add_executable(rasgo_synth_performance_sky_pan_tests tests/test_performance_sky_pan.cpp)
+    target_link_libraries(rasgo_synth_performance_sky_pan_tests PRIVATE rasgo_synth_performance_contracts)
+    if(NOT MSVC)
+        target_compile_options(rasgo_synth_performance_sky_pan_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME rasgo_synth_performance_sky_pan_tests COMMAND rasgo_synth_performance_sky_pan_tests)
+
     add_executable(rasgo_synth_performance_concept_stars_tests tests/test_performance_concept_stars.cpp)
     target_link_libraries(rasgo_synth_performance_concept_stars_tests PRIVATE rasgo_synth_performance_contracts)
     if(NOT MSVC)
