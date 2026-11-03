@@ -101,7 +101,24 @@ true peak máximo, se foi com PERCURSO).
   4,1 s, contraste em 11,9 s, retorno em 17,7 s (o tempo elástico adianta um
   pouco). O manifesto da tomada traz `targetSeconds`.
 
-## 7. Falta
+## 7. Pastas e correções (3/11)
+
+- **Uma pasta por tomada**: `recordings/AAAA-MM-DD/HH-MM-SS seed N/` com a
+  mistura, os 8 stems e o manifesto; num álbum, `<álbum>/FAIXA_nn HH-MM-SS/`
+  (o registro guarda o caminho dentro do álbum). As 355 gravações de teste
+  antigas foram removidas (autorizado; da lixeira só os itens daquela pasta;
+  +17 GB livres).
+- **Chamar uma cena não reinicia a forma do céu** (com a mesma seed); só um
+  território novo recomeça. Antes o PERCURSO ficava preso entre abertura e
+  desenvolvimento e o clique numa cena voltava à abertura.
+- Numa faixa com duração, quando o retorno acaba antes do alvo (o tempo
+  elástico adianta ~4 %), o PERCURSO fica no BALANÇO até a coda.
+- Gancho de teste `RASGO_ASTERISMUS_AUTOREC=1` (aperta 1 MIN sozinho quando o
+  áudio fica pronto). **Verificado no app mudo e isolado**: pasta
+  `2026-11-03/01-…-… seed N/`, tomada de 60,1 s finalizada, rastro
+  `percurso 0, 1, 2, 3` e `coda:duracao`.
+
+## 8. Falta
 
 - Masterização de álbum offline (igualar o nível entre as faixas, como o
   Studio) — a parte 4 do pedido.

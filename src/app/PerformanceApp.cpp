@@ -2176,6 +2176,19 @@ public:
         // play sozinho 2 s depois de abrir — para conferir a tela tocando
         // numa instância isolada (HOME temporário, saída muda) sem mexer no
         // mouse do autor. Sem a variável, nada muda.
+        // Gancho de teste (3/11): com RASGO_ASTERISMUS_AUTOREC=1 o app aperta
+        // 1 MIN sozinho — para conferir, numa instância isolada e muda, a
+        // forma encaixada na duração e a pasta da tomada. O REC recusa até o
+        // dispositivo de áudio estar pronto: tenta a cada segundo, por até
+        // 10 s. Sem a variável, nada muda.
+        if (juce::SystemStats::getEnvironmentVariable("RASGO_ASTERISMUS_AUTOREC", {}) == "1")
+            for (int attempt = 1; attempt <= 10; ++attempt)
+                juce::Timer::callAfterDelay(1000 + attempt * 1000,
+                    [safe = juce::Component::SafePointer<PerformanceHostComponent>(this)] {
+                        if (safe != nullptr && !safe->recorder_.recording() && safe->takeTargetSeconds_ <= 0.0
+                            && safe->ready_.load(std::memory_order_acquire))
+                            safe->startTimedTake(kTakeDurations[0]);
+                    });
         if (juce::SystemStats::getEnvironmentVariable("RASGO_ASTERISMUS_AUTOPLAY", {}) == "1")
             juce::Timer::callAfterDelay(2000, [safe = juce::Component::SafePointer<PerformanceHostComponent>(this)] {
                 if (safe != nullptr && !safe->playingRequested_) safe->togglePlaying();
@@ -4316,6 +4329,11 @@ private:
         const auto section = static_cast<std::uint8_t>(std::min<unsigned>(telemetry.skySection, 3U));
         if (section == percursoSection_) return;
         const bool returnEnded = percursoSection_ == 3U && section == 1U;
+        // Numa faixa com duração, a forma termina no retorno: se o tempo
+        // elástico do céu a fizer acabar antes do alvo, fica no BALANÇO até a
+        // coda (no app, 3/11, ela recomeçava o desenvolvimento nos últimos
+        // segundos).
+        if (returnEnded && takeTargetSeconds_ > 0.0 && recorder_.recording()) return;
         percursoSection_ = section;
         recallScene(static_cast<std::uint16_t>(section + 1U));
         appendTakeTrace("percurso:" + juce::String(static_cast<int>(section)));
@@ -5206,17 +5224,21 @@ private:
                                  "DÉMARRER requiert un périphérique audio prêt", "INICIAR requiere un dispositivo de audio listo");
             return false;
         }
-        const auto directory = album_.active() ? albumDirectory_
+        // Uma pasta por tomada (3/11, pedido do autor: "organize as pastas"):
+        // recordings/AAAA-MM-DD/HH-MM-SS seed N/, com a mistura, os stems e o
+        // manifesto juntos; num álbum, <álbum>/FAIXA_nn HH-MM-SS/. A pasta de
+        // dados mantém o nome antigo ("Rasgo Synth Performance", 27/10).
+        const auto now = juce::Time::getCurrentTime();
+        const auto seed = controller_.document() != nullptr ? controller_.document()->territory.seed : 0U;
+        const auto trackTag = "FAIXA_" + juce::String(static_cast<int>(album_.current())).paddedLeft('0', 2);
+        const auto directory = album_.active()
+            ? albumDirectory_.getChildFile(trackTag + " " + now.formatted("%H-%M-%S"))
             : juce::File::getSpecialLocation(juce::File::userMusicDirectory)
-            // a pasta de dados mantém o nome antigo depois da troca para
-            // Asterismus (2026-10-27), como o Studio manteve "Rasgo Synth":
-            // as tomadas já gravadas continuam no mesmo lugar
-            .getChildFile("Rasgo Synth Performance").getChildFile("recordings");
-        // Com um álbum, a tomada vai à pasta dele com o número da faixa.
-        const auto take = directory.getChildFile((album_.active()
-                ? "FAIXA_" + juce::String(static_cast<int>(album_.current())).paddedLeft('0', 2) + "_"
-                : juce::String("RASGO_ASTERISMUS_"))
-            + juce::Time::getCurrentTime().formatted("%Y-%m-%d_%H-%M-%S") + ".wav");
+                  .getChildFile("Rasgo Synth Performance").getChildFile("recordings")
+                  .getChildFile(now.formatted("%Y-%m-%d"))
+                  .getChildFile(now.formatted("%H-%M-%S") + " seed " + juce::String(static_cast<juce::int64>(seed)));
+        const auto take = directory.getChildFile((album_.active() ? trackTag + "_" : juce::String("RASGO_ASTERISMUS_"))
+            + now.formatted("%Y-%m-%d_%H-%M-%S") + ".wav");
         if (!recorder_.start(take, rate)) {
             lastAction_ = uiText(supportLanguage_, "REC não pôde abrir o arquivo", "REC could not open the file",
                                  "REC n’a pas pu ouvrir le fichier", "REC no pudo abrir el archivo");
@@ -5389,14 +5411,14 @@ private:
             + "  \"relations\": " + relationsJson + ",\n"
             + "  \"trace\": [" + traceJson + "]\n}\n";
         const bool manifestWritten = manifest.replaceWithText(manifestText);
-        if (album_.active() && take.getParentDirectory() == albumDirectory_) {
+        if (album_.active() && take.isAChildOf(albumDirectory_)) {
             // O registro de faixas (album.json): a tomada entra com a faixa, a
             // seed, o andamento, a memória lembrada, a duração e a loudness.
             PerformanceAlbumTake entry;
             entry.track = album_.current();
             entry.seed = takeSeed_;
             entry.bpm = tempoSlider_.getValue();
-            entry.file = take.getFileName().toStdString();
+            entry.file = take.getRelativePathFrom(albumDirectory_).toStdString();
             entry.memory = lastRecalledMemory_;
             entry.started = takeStartedAt_.toStdString();
             entry.seconds = seconds;
