@@ -497,8 +497,8 @@ std::array<std::array<double, 3>, 8> initialModuleControls(std::uint32_t seed) {
 
 // O trilho ORIGEM ⇄ VARIAÇÃO (3/11, proposta A1 + A2 aprovada pelo autor):
 // o trecho de 0 até o valor em âmbar — a cor da VARIAÇÃO no mixer —, o resto
-// num verde médio com contorno fino, trilho de 6 px; três marcas finas sob
-// ele em 0 · 0,5 · 1. Antes: verde-escuro sobre verde-escuro, quase invisível.
+// num verde médio com contorno fino, na espessura dos outros sliders; três
+// marcas finas sob ele em 0 · 0,5 · 1. Antes: verde-escuro sobre verde-escuro, quase invisível.
 class VariationTrackLookAndFeel final : public juce::LookAndFeel_V4 {
 public:
     void drawLinearSlider(juce::Graphics& graphics, int x, int y, int width, int height,
@@ -509,28 +509,34 @@ public:
                                                    minSliderPos, maxSliderPos, style, slider);
             return;
         }
-        constexpr float trackHeight = 6.0f;
+        // As mesmas medidas dos outros sliders (LookAndFeel_V4): o destaque é
+        // a cor, o contorno e as marcas, não o tamanho (3/11, o autor achou
+        // o primeiro desenho grande demais).
+        const float trackHeight = juce::jmin(6.0f, static_cast<float>(height) * 0.25f);
         const auto centreY = static_cast<float>(y) + static_cast<float>(height) * 0.5f;
         const auto left = static_cast<float>(x);
         const auto right = static_cast<float>(x + width);
         const juce::Rectangle<float> track(left, centreY - trackHeight * 0.5f, right - left, trackHeight);
         graphics.setColour(juce::Colour(0xff2a5a4d));
-        graphics.fillRoundedRectangle(track, 3.0f);
+        const float corner = trackHeight * 0.5f;
+        graphics.fillRoundedRectangle(track, corner);
         graphics.setColour(juce::Colour(0xff8aa99b).withAlpha(0.55f));
-        graphics.drawRoundedRectangle(track, 3.0f, 1.0f);
+        graphics.drawRoundedRectangle(track, corner, 1.0f);
         graphics.setColour(juce::Colour(0xffd18a45));
-        graphics.fillRoundedRectangle(track.withRight(juce::jmax(left + trackHeight, sliderPos)), 3.0f);
+        graphics.fillRoundedRectangle(track.withRight(juce::jmax(left + trackHeight, sliderPos)), corner);
         // A2: as marcas 0 · 0,5 · 1, finas, logo abaixo do trilho.
         graphics.setColour(juce::Colour(0xff8aa99b));
         for (const float fraction : {0.0f, 0.5f, 1.0f}) {
             const auto markX = left + (right - left) * fraction;
-            graphics.drawVerticalLine(juce::roundToInt(markX), track.getBottom() + 2.0f, track.getBottom() + 6.0f);
+            graphics.drawVerticalLine(juce::roundToInt(markX), track.getBottom() + 2.0f, track.getBottom() + 5.0f);
         }
+        // O JUCE desenha o botão com diâmetro = getSliderThumbRadius.
         const auto thumb = static_cast<float>(getSliderThumbRadius(slider));
+        const auto knob = juce::Rectangle<float>(thumb, thumb).withCentre({sliderPos, centreY});
         graphics.setColour(slider.findColour(juce::Slider::thumbColourId));
-        graphics.fillEllipse(juce::Rectangle<float>(thumb * 2.0f, thumb * 2.0f).withCentre({sliderPos, centreY}));
+        graphics.fillEllipse(knob);
         graphics.setColour(juce::Colour(0xfff2e7d5));
-        graphics.drawEllipse(juce::Rectangle<float>(thumb * 2.0f, thumb * 2.0f).withCentre({sliderPos, centreY}), 1.2f);
+        graphics.drawEllipse(knob, 1.0f);
     }
 };
 

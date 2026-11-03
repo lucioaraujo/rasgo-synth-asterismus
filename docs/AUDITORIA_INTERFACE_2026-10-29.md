@@ -167,4 +167,9 @@ Decisão do autor (3/11): **A1 + A2 e B1** — aplicadas no mesmo dia
 `PerformanceField::setSkyState` no Eixo: velocidade média das estrelas
 normalizada por 0,4 campo/s, alisada; tensão do céu na cor). Não conferidas
 na tela — olhar do autor.
+Olhar do autor (4/11): o slider "ficou meio desproporcional, meio grande,
+mas merece destaque". Causa: o botão desenhado com o dobro do diâmetro dos
+outros (o JUCE usa getSliderThumbRadius como diâmetro) e o trilho fixo em
+6 px. Corrigido para as medidas dos outros sliders; o destaque fica na cor
+âmbar, no contorno e nas marcas.
 
