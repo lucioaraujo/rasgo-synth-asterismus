@@ -4870,6 +4870,27 @@ private:
 
     // Exportar e importar: um arquivo .asterismus (texto, só parâmetros —
     // nunca áudio). Importar só guarda no lugar; para tocar, LEMBRAR.
+    // A última pasta usada para exportar ou importar (3/11, pedido do autor:
+    // "sempre parte de Documentos; melhor do último diretório utilizado").
+    // Guardada num arquivo de texto ao lado das memórias, para valer também
+    // na próxima vez que o app abrir; se a pasta sumiu, volta a Documentos.
+    static juce::File lastMemoryFolderFile() {
+        return memoryDirectory().getParentDirectory().getChildFile("ultima_pasta_de_memoria.txt");
+    }
+    static juce::File lastMemoryFolder() {
+        const auto saved = lastMemoryFolderFile().loadFileAsString().trim();
+        if (saved.isNotEmpty() && juce::File::isAbsolutePath(saved)) {
+            const juce::File folder(saved);
+            if (folder.isDirectory()) return folder;
+        }
+        return juce::File::getSpecialLocation(juce::File::userDocumentsDirectory);
+    }
+    static void rememberMemoryFolder(const juce::File& folder) {
+        if (!folder.isDirectory()) return;
+        const auto file = lastMemoryFolderFile();
+        if (file.getParentDirectory().createDirectory()) file.replaceWithText(folder.getFullPathName());
+    }
+
     void chooseMemoryFile(std::size_t slot, bool exporting) {
         if (memoryChooser_ || slot >= memories_.size() || (exporting && !memories_[slot])) return;
         memoryChooser_ = std::make_unique<juce::FileChooser>(
@@ -4877,7 +4898,7 @@ private:
                                "Exportar la memoria")
                       : uiText(supportLanguage_, "Importar uma memória", "Import a memory", "Importer une mémoire",
                                "Importar una memoria"),
-            juce::File::getSpecialLocation(juce::File::userDocumentsDirectory), "*.asterismus");
+            lastMemoryFolder(), "*.asterismus");
         const auto flags = juce::FileBrowserComponent::canSelectFiles
             | (exporting ? juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::warnAboutOverwriting
                          : juce::FileBrowserComponent::openMode);
@@ -4887,11 +4908,12 @@ private:
             const auto file = chooser.getResult();
             safe->memoryChooser_.reset();
             if (file == juce::File{}) return;
+            rememberMemoryFolder(file.getParentDirectory());
             if (exporting) {
                 const auto target = file.hasFileExtension(".asterismus") ? file : file.withFileExtension(".asterismus");
                 safe->lastAction_ = writeMemoryFile(target, *safe->memories_[slot])
                     ? uiText(safe->supportLanguage_, "memória exportada · ", "memory exported · ",
-                             "mémoire exportée · ", "memoria exportada · ") + target.getFileName()
+                             "mémoire exportée · ", "memoria exportada · ") + target.getFullPathName()
                     : uiText(safe->supportLanguage_, "exportação falhou", "export failed", "échec de l’export",
                              "la exportación falló");
                 safe->repaint();
@@ -4904,8 +4926,12 @@ private:
                 safe->repaint();
                 return;
             }
-            safe->changeMemory(slot, memory, uiText(safe->supportLanguage_, "memória importada", "memory imported",
-                                                    "mémoire importée", "memoria importada"));
+            // Dizer de onde veio (3/11): o nome guardado dentro do arquivo pode
+            // ser igual ao que já estava no lugar, e a importação parecia não
+            // ter feito nada.
+            safe->changeMemory(slot, memory, uiText(safe->supportLanguage_, "memória importada de ", "memory imported from ",
+                                                    "mémoire importée depuis ", "memoria importada de ")
+                                                 + file.getFileName());
         });
     }
 
