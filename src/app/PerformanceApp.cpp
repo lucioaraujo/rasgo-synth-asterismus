@@ -3183,6 +3183,10 @@ private:
         addAndMakeVisible(seedLabel_);
         seedEditor_.setText(juce::String(startupDocument_.territory.seed), false);
         seedEditor_.setInputRestrictions(10, "0123456789");
+        // Ao clicar, o número inteiro fica selecionado (4/11): o que se digita o
+        // substitui. Antes o cursor parava no ponto do clique e "1" virava
+        // "1632995514" (achado na escuta guiada).
+        seedEditor_.setSelectAllWhenFocused(true);
         seedEditor_.setColour(juce::TextEditor::backgroundColourId, juce::Colour(0xff183b33));
         seedEditor_.setColour(juce::TextEditor::outlineColourId, juce::Colour(0xff315e51));
         seedEditor_.setColour(juce::TextEditor::focusedOutlineColourId, juce::Colour(0xffd18a45));
@@ -3190,7 +3194,11 @@ private:
         seedEditor_.setFont(interfaceFont(13.0f, juce::Font::bold));
         seedEditor_.setJustification(juce::Justification::centredRight);
         seedEditor_.setTooltip(utf8("Seed do próximo território: 184 = Digital; 185 = Memória. Pare o transporte antes de aplicar."));
-        seedEditor_.onReturnKey = [this] { queueSeedTerritory(); };
+        seedEditor_.onReturnKey = [this] { queueSeedTerritory("enter"); };
+        // Ao sair do campo, o número digitado vale (4/11): antes só o Enter o
+        // aplicava, e na escuta guiada o campo mostrava "1" enquanto tocava
+        // outra seed (o autor clicou em ALEA para "aplicar", e o ALEA sorteia).
+        seedEditor_.onFocusLost = [this] { applyTypedSeedIfChanged("campo"); };
         addAndMakeVisible(seedEditor_);
         seedButton_.setButtonText("ALEA");
         seedButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff315e51));
@@ -5224,6 +5232,7 @@ private:
     // PLAY só toca (2/11, decisão do autor: "a gravação começa quando o
     // usuário define fazer a gravação"); a tomada abre pelo REC.
     void togglePlaying(bool openedTake = false) {
+        if (!playingRequested_) applyTypedSeedIfChanged("antes-de-tocar");
         const auto requested = !playingRequested_;
         if (!controller_.setPlaying(requested)) {
             if (openedTake) closeRecording(uiText(supportLanguage_, "tomada cancelada", "take cancelled",
@@ -5327,6 +5336,8 @@ private:
     }
 
     bool beginRecording() {
+        // A tomada nunca começa com uma seed diferente da que o campo mostra.
+        applyTypedSeedIfChanged("antes-de-gravar");
         const auto rate = sampleRate_.load(std::memory_order_acquire);
         if (!ready_.load(std::memory_order_acquire) || rate < 8000.0) {
             lastAction_ = uiText(supportLanguage_, "INICIAR requer dispositivo de áudio pronto", "START requires a ready audio device",
@@ -5357,7 +5368,9 @@ private:
         // Onde está gravando (2/11): na linha de status e na dica do REC.
         recordButton_.setTooltip(uiText(supportLanguage_, "Gravando em: ", "Recording to: ", "Enregistrement dans : ",
                                         "Grabando en: ") + take.getFullPathName());
-        takeSeed_ = controller_.document() != nullptr ? controller_.document()->territory.seed : 0U;
+        // A seed que a interface adotou (a fila do território pode ainda não
+        // ter chegado ao motor neste instante).
+        takeSeed_ = startupDocument_.territory.seed;
         takeStartedAt_ = juce::Time::getCurrentTime().toISO8601(true);
         takeSampleRate_ = rate;
         takeCodaGesture_ = "";
@@ -5579,7 +5592,19 @@ private:
         repaint();
     }
 
-    void queueSeedTerritory() {
+    // O campo SEED e a seed que toca nunca divergem: o que estiver digitado e
+    // for diferente da seed atual é aplicado (ao sair do campo e antes de gravar).
+    void applyTypedSeedIfChanged(const char* source) {
+        const auto text = seedEditor_.getText().trim();
+        if (text.isEmpty()) {
+            seedEditor_.setText(juce::String(startupDocument_.territory.seed), false);
+            return;
+        }
+        if (text.getLargeIntValue() != static_cast<juce::int64>(startupDocument_.territory.seed))
+            queueSeedTerritory(source);
+    }
+
+    void queueSeedTerritory(const char* source = "enter") {
         const auto entered = seedEditor_.getText().getLargeIntValue();
         if (entered < 0 || entered > static_cast<juce::int64>(std::numeric_limits<std::uint32_t>::max())) {
             lastAction_ = uiText(supportLanguage_, "semente inválida", "invalid seed", "seed invalide", "seed inválida");
@@ -5594,6 +5619,11 @@ private:
             return;
         }
         adoptDocument(territory, 1U);
+        // Toda troca de seed fica no diagnóstico, com a origem.
+        if (diagnosticLog_ != nullptr)
+            diagnosticLog_->writeText("seed," + juce::Time::getCurrentTime().formatted("%H:%M:%S") + ","
+                + juce::String(static_cast<juce::int64>(startupDocument_.territory.seed)) + "," + juce::String(source)
+                + "\n", false, false, nullptr);
         lastAction_ = uiText(supportLanguage_, "território ", "territory ", "territoire ", "territorio ")
             + juce::String(startupDocument_.territory.seed)
             + uiText(supportLanguage_, " enfileirado · transição ao vivo", " queued · live transition",
@@ -5661,7 +5691,7 @@ private:
         // bounded territory queue as a manually entered reproducible seed.
         const auto seed = static_cast<std::uint32_t>(juce::Random::getSystemRandom().nextInt());
         seedEditor_.setText(juce::String(static_cast<juce::int64>(seed)), false);
-        queueSeedTerritory();
+        queueSeedTerritory("alea");
     }
 
     bool setActorSeedVariationControl(std::size_t index, double amount) {
