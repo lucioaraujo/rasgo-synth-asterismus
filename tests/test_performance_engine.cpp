@@ -147,17 +147,19 @@ void testLiveStemMixer() {
     // constellation is intentionally silent (there is no safety carrier).
     // Desde 3/11 a seed escolhe entre todas as estrelas: o corpo 3 pode ser
     // uma estrela de ataques raros (o Bluff, na seed 181). Por isso o solo é
-    // conferido ao longo de até 3 s: o solado soa em algum momento, os
-    // outros nunca, depois que o solo assentou.
+    // conferido ao longo de até 8 s: o solado soa em algum momento, os
+    // outros nunca, depois que o solo assentou. (Desde 4/11 a atividade da
+    // parte da forma pode deixar passar só 35 % dos ataques.)
     for (int block = 0; block < 176; ++block) solo.processBlock(left.data(), right.data(), 64U);
     std::uint32_t othersPeak = 0U;
     std::uint32_t soloPeak = 0U;
-    for (int block = 0; block < 2250; ++block) {
+    for (int block = 0; block < 6000 && soloPeak <= 1000U; ++block) {
         solo.processBlock(left.data(), right.data(), 64U);
         const auto live = solo.readTelemetry();
         othersPeak = std::max({othersPeak, live.stemPeakMicros[0], live.stemPeakMicros[1]});
         soloPeak = std::max(soloPeak, live.stemPeakMicros[2]);
     }
+    std::cout << "solo: soloed stem peak " << soloPeak << " micros, others " << othersPeak << " micros\n";
     expect(othersPeak < 100U && soloPeak > 1000U && solo.soloActorId() == 13U,
            "solo isolates one stem through the same realtime mixer path");
     expect(solo.setStemSolo(13U, false) && solo.soloActorId() == kInvalidActorId,
@@ -340,10 +342,11 @@ void testEcologyAndSceneMorph() {
            "three-actor ecology is audible");
     // Desde 3/11 a seed escolhe entre todas as estrelas: uma delas pode ser de
     // ataques raros (o Bluff no corpo 3 da seed 181). O pico de cada stem é
-    // conferido ao longo de até 3 s, não num instante só.
+    // conferido ao longo de até 8 s, não num instante só (desde 4/11 a
+    // atividade da parte pode deixar passar só 35 % dos ataques).
     auto stemTelemetry = engine.readTelemetry();
     std::array<std::uint32_t, 3> stemPeaks{};
-    for (int pass = 0; pass < 2250; ++pass) {
+    for (int pass = 0; pass < 6000; ++pass) {
         for (std::size_t stem = 0U; stem < stemPeaks.size(); ++stem)
             stemPeaks[stem] = std::max(stemPeaks[stem], stemTelemetry.stemPeakMicros[stem]);
         if (stemPeaks[0] > 0U && stemPeaks[1] > 0U && stemPeaks[2] > 0U) break;
@@ -557,7 +560,9 @@ double expandedModuleControlDifference(std::uint16_t actorId,
            "an expanded module can be heard alone");
     std::array<float, 64> lowLeft{}, lowRight{}, highLeft{}, highRight{};
     double difference = 0.0;
-    for (int block = 0; block < 144; ++block) {
+    // 1,5 s (era 0,19 s): desde 4/11 a atividade da parte pode filtrar os
+    // primeiros ataques de uma estrela.
+    for (int block = 0; block < 1125; ++block) {
         low.processBlock(lowLeft.data(), lowRight.data(), 64U);
         high.processBlock(highLeft.data(), highRight.data(), 64U);
         for (std::size_t sample = 0; sample < lowLeft.size(); ++sample) {
@@ -1099,7 +1104,9 @@ void testSeedEcologiesReachTheCompleteEngine() {
         std::array<float, 64> left{}, right{};
         std::array<std::uint32_t, 3> maximumStemPeak{};
         double energy = 0.0;
-        for (int block = 0; block < 750; ++block) {
+        // Os 3 primeiros segundos (era 1 s): desde 4/11 a abertura pode ser
+        // rarefeita (o caráter da parte), e a segunda estrela entra depois.
+        for (int block = 0; block < 2250; ++block) {
             engine.processBlock(left.data(), right.data(), 64U);
             const auto telemetry = engine.readTelemetry();
             expect(telemetry.stemCount == 3U,

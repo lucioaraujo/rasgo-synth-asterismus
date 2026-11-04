@@ -110,6 +110,7 @@ public:
         section_ = Section::Opening;
         sectionOrdinal_ = 0U;
         sectionBarsLeft_ = 0U;
+        characterReady_ = false;
         openingLit_ = {};
         brightnessTarget_.fill(1.0);
         litBars_ = {};
@@ -372,8 +373,50 @@ public:
         section_ = Section::Opening;
         sectionOrdinal_ = 0U;
         sectionBarsLeft_ = std::max<std::uint32_t>(1U, formPlan_[0]);
+        characterReady_ = false;
+        stepCharacter();
     }
     bool formPlanned() const noexcept { return formPlanned_; }
+
+    // O caráter de cada parte da forma (4/11, pedido do autor: "contrastes de
+    // modo generativo, sem padrões que se repitam em faixas diferentes"). Não
+    // há cardápio de gestos: cada parte é um ponto num espaço contínuo de
+    // nove dimensões em [0, 1] — quantas estrelas soam, quanto elas tocam, o
+    // andamento e o swing sentidos, e o peso de cada família (tom, textura,
+    // voz, pulso, controle) no elenco. A seed desenha o caminho: a abertura é
+    // um ponto qualquer; o desenvolvimento dá um passo curto; o contraste,
+    // um salto longo que rebate nas bordas (nunca fica perto); o retorno cai
+    // entre a abertura e o contraste. Os ciclos seguintes continuam o
+    // caminho. Mesma ideia leve dos genes do Studio e da "mão" do Modular:
+    // poucas restrições, o resto em movimento.
+    static constexpr std::size_t kCharacterDims = 9U;
+    struct SectionCharacter {
+        // 0 estrelas, 1 atividade, 2 andamento, 3 swing, 4..8 famílias
+        std::array<double, kCharacterDims> v{{0.4, 0.7, 0.5, 0.3, 0.6, 0.6, 0.6, 0.6, 0.15}};
+        std::size_t litTarget() const noexcept {
+            return static_cast<std::size_t>(std::lround(2.0 + 5.0 * v[0]));
+        }
+        double activity() const noexcept { return 0.35 + 0.65 * v[1]; }
+        // ±6 %, a mesma ordem da variação antiga (0,95–1,05): a faixa com
+        // duração calcula os compassos pelo BPM do controle.
+        double tempo() const noexcept { return 0.94 + 0.12 * v[2]; }
+        double swing() const noexcept { return 0.5 + 0.14 * v[3]; }
+        double family(PerformanceStarFunction f) const noexcept {
+            return v[4U + std::min<std::size_t>(static_cast<std::size_t>(f), 4U)];
+        }
+    };
+    const SectionCharacter& character() const noexcept { return character_; }
+    // Quanto as estrelas tocam agora (a fração de ataques que passa), com a
+    // trama; sem ela, tudo passa.
+    double activity() const noexcept { return influence_ > 0.0 ? character_.activity() : 1.0; }
+    static double characterDistance(const SectionCharacter& a, const SectionCharacter& b) noexcept {
+        double sum = 0.0;
+        for (std::size_t i = 0U; i < kCharacterDims; ++i) {
+            const double w = i < 4U ? 1.0 : 0.5;
+            sum += w * (a.v[i] - b.v[i]) * (a.v[i] - b.v[i]);
+        }
+        return std::sqrt(sum);
+    }
     // Uma estrela fixada pelo performer (2/11) fica acesa: a VARIAÇÃO e os
     // eclipses não a apagam.
     void setPinned(std::size_t slot, bool pinned) noexcept {
@@ -863,13 +906,9 @@ private:
     }
 
     void stepElasticTime(double dt) noexcept {
-        double target = 1.0;
-        switch (section_) {
-        case Section::Opening: target = 0.95; break;
-        case Section::Development: target = 1.05; break;
-        case Section::Contrast: target = 1.0; break;
-        case Section::Return: default: target = 1.0; break;
-        }
+        // O andamento sentido de cada parte vem do caráter dela (4/11); antes,
+        // 0,95 / 1,05 / 1,0 / 1,0 em toda faixa.
+        double target = character_.tempo();
         // A tensão harmônica puxa um ritardando; a cadência o desfaz.
         target *= 1.0 - 0.07 * tension_;
         constexpr double kOmega = 1.1;   // rad/s: a mola leva alguns segundos
@@ -907,17 +946,73 @@ private:
             tempoVelocity_ = 0.0;
         }
         tempoFactor_ = std::isfinite(factor) ? std::clamp(factor, 0.7, 1.35) : 1.0;
-        // Swing por seção: a seed dá a base; o desenvolvimento balança mais; o
-        // contraste inverte (reto vira balançado e vice-versa).
-        const double base = 0.5 + static_cast<double>(mix(seed_ ^ 0x5bd1e995U) % 11U) * 0.01;
-        swing_ = section_ == Section::Development ? std::min(0.64, base + 0.04)
-               : section_ == Section::Contrast ? (base > 0.53 ? 0.5 : 0.62)
-               : base;
+        // O swing também vem do caráter da parte (4/11).
+        swing_ = character_.swing();
         groove_ = section_ == Section::Opening ? 0.5 : 1.0;
     }
     double springPosition_ = 1.0;
     std::uint32_t sectionOrdinal_ = 0U;
     std::uint32_t sectionBarsLeft_ = 0U;
+    SectionCharacter character_{};
+    SectionCharacter openingCharacter_{};
+    SectionCharacter contrastCharacter_{};
+    bool characterReady_ = false;
+
+    double characterUnit(std::uint32_t salt) const noexcept {
+        return static_cast<double>(mix(seed_ ^ (salt * 0x9e3779b9U) ^ (sectionOrdinal_ * 0x85ebca6bU)))
+            / 4294967296.0;
+    }
+    static double reflect(double x) noexcept {
+        while (x < 0.0 || x > 1.0) x = x < 0.0 ? -x : 2.0 - x;
+        return x;
+    }
+    // O próximo ponto do caminho, ao entrar numa parte.
+    void stepCharacter() noexcept {
+        SectionCharacter next = character_;
+        if (!characterReady_ || section_ == Section::Opening) {
+            for (std::size_t i = 0U; i < kCharacterDims; ++i) next.v[i] = characterUnit(101U + static_cast<std::uint32_t>(i));
+            next.v[8] *= 0.4;  // o controle (que não soa) pesa menos no elenco
+            openingCharacter_ = next;
+            characterReady_ = true;
+        } else if (section_ == Section::Return) {
+            const double r = 0.1 + 0.35 * characterUnit(211U);
+            for (std::size_t i = 0U; i < kCharacterDims; ++i)
+                next.v[i] = openingCharacter_.v[i] + r * (contrastCharacter_.v[i] - openingCharacter_.v[i]);
+        } else {
+            // Uma direção qualquer (soma de três sorteios: perto de uma normal).
+            std::array<double, kCharacterDims> d{};
+            double norm = 0.0;
+            for (std::size_t i = 0U; i < kCharacterDims; ++i) {
+                const auto k = static_cast<std::uint32_t>(i) * 3U;
+                d[i] = characterUnit(301U + k) + characterUnit(302U + k) + characterUnit(303U + k) - 1.5;
+                norm += d[i] * d[i];
+            }
+            norm = std::sqrt(std::max(norm, 1.0e-9));
+            const bool contrast = section_ == Section::Contrast;
+            const double step = contrast ? 0.55 + 0.35 * characterUnit(401U) : 0.15 + 0.2 * characterUnit(402U);
+            for (std::size_t i = 0U; i < kCharacterDims; ++i)
+                next.v[i] = reflect(character_.v[i] + step * d[i] / norm * (i < 4U ? 1.0 : 1.4));
+            // Uma única regra leve (4/11): o salto do contraste move de verdade
+            // o que mais se ouve — quantas estrelas soam e quanto tocam. A
+            // direção segue a da seed (o contraste pode ser mais cheio ou mais
+            // vazio); só a distância nessas duas dimensões tem um mínimo.
+            if (contrast) {
+                const double audible = std::hypot(next.v[0] - character_.v[0], next.v[1] - character_.v[1]);
+                if (audible < 0.45) {
+                    for (std::size_t i = 0U; i < 2U; ++i) {
+                        const double from = character_.v[i];
+                        // Para o lado com mais espaço, se a seed não apontou.
+                        double sign = next.v[i] - from;
+                        if (std::fabs(sign) < 1.0e-6) sign = from < 0.5 ? 1.0 : -1.0;
+                        const double want = from + (sign > 0.0 ? 0.35 : -0.35);
+                        next.v[i] = reflect(want);
+                    }
+                }
+                contrastCharacter_ = next;
+            }
+        }
+        character_ = next;
+    }
     std::array<bool, kBodies> openingLit_{};
 
     std::uint32_t sectionLength(std::uint32_t ordinal) const noexcept {
@@ -930,6 +1025,7 @@ private:
     void advanceForm() noexcept {
         if (sectionBarsLeft_ == 0U) {
             sectionBarsLeft_ = sectionLength(0U);
+            if (!characterReady_) stepCharacter();
             return;
         }
         if (--sectionBarsLeft_ > 0U) return;
@@ -938,6 +1034,7 @@ private:
         section_ = section_ == Section::Opening || section_ == Section::Return ? Section::Development
                  : section_ == Section::Development ? Section::Contrast : Section::Return;
         sectionBarsLeft_ = sectionLength(sectionOrdinal_);
+        stepCharacter();
         if (mixerVariation_ && brightnessReady_) reshapeForSection();
         chooseDrift();
         reshapeMotion();
@@ -1027,39 +1124,50 @@ private:
             * (((word >> 16U) & 1U) != 0U ? 1.0 : -1.0);
     }
 
-    // O contraste troca boa parte das estrelas acesas por outras e quem
-    // liderava (o corpo 1, o chão) recua; o retorno reacende as estrelas da
-    // abertura.
+    // O elenco de cada parte (4/11): ao entrar numa parte, as estrelas que
+    // soam são escolhidas pelo peso da família delas no caráter da parte, com
+    // um pouco de acaso da seed; no retorno, quem estava na abertura tem
+    // vantagem (tanto mais quanto mais o retorno se parece com ela). Antes
+    // eram regras fixas, iguais em toda faixa (a abertura nos corpos 1–3, o
+    // corpo 1 recuando no contraste, o retorno literal).
+    double castScore(std::size_t slot) const noexcept {
+        double score = character_.family(performanceStarFunction(bodies_[slot].star))
+            + 0.35 * static_cast<double>(mix(seed_ ^ static_cast<std::uint32_t>(slot * 977U + sectionOrdinal_ * 131U)) & 1023U)
+                / 1023.0;
+        if (section_ == Section::Return && openingLit_[slot])
+            score += 0.6 * (1.0 - characterDistance(character_, openingCharacter_) / 2.0);
+        return score;
+    }
     void reshapeForSection() noexcept {
-        if (section_ == Section::Contrast) {
-            const bool leaderStepsBack = bodies_[0].presence > 0.0 && heldBars_[0] == 0U && !pinned_[0];
-            if (leaderStepsBack) {
-                brightnessTarget_[0] = 0.0;
-                restBars_[0] = sectionBarsLeft_;
+        std::array<std::size_t, kBodies> order{};
+        std::size_t count = 0U;
+        for (std::size_t slot = 0U; slot < kBodies; ++slot)
+            if (bodies_[slot].presence > 0.0 && PerformanceSky::isStar(bodies_[slot].star)) order[count++] = slot;
+        // Inserção (no máximo 8 itens; o std::sort sobre parte do array dava um
+        // falso alarme de -Warray-bounds no GCC 13 com -O3).
+        std::array<double, kBodies> scores{};
+        for (std::size_t index = 0U; index < count; ++index) scores[index] = castScore(order[index]);
+        for (std::size_t index = 1U; index < count && index < kBodies; ++index) {
+            for (std::size_t back = index; back > 0U && scores[back] > scores[back - 1U]; --back) {
+                std::swap(scores[back], scores[back - 1U]);
+                std::swap(order[back], order[back - 1U]);
             }
-            for (std::size_t slot = leaderStepsBack ? 1U : 0U; slot < kBodies; ++slot) {
-                if (bodies_[slot].presence <= 0.0 || heldBars_[slot] > 0U) continue;
-                const bool lit = brightnessTarget_[slot] > 0.5;
-                if (lit && (mix(seed_ ^ static_cast<std::uint32_t>(slot * 41U + sectionOrdinal_)) & 1U) == 0U) {
-                    brightnessTarget_[slot] = 0.0;
-                    restBars_[slot] = sectionBarsLeft_;
-                } else if (!lit) {
-                    brightnessTarget_[slot] = 1.0;
-                    litBars_[slot] = sectionBarsLeft_;
-                    if (influence_ > 0.0) schedule(slot, 0.0, 0.95, 0.0, kMaxChainDepth);
-                }
-            }
-        } else if (section_ == Section::Return) {
-            for (std::size_t slot = 0U; slot < kBodies; ++slot) {
-                if (bodies_[slot].presence <= 0.0 || heldBars_[slot] > 0U) continue;
-                const bool wasLit = brightnessTarget_[slot] > 0.5;
-                brightnessTarget_[slot] = openingLit_[slot] ? 1.0 : 0.0;
-                if (openingLit_[slot]) {
-                    litBars_[slot] = sectionBarsLeft_ + 4U;
-                    if (!wasLit && influence_ > 0.0) schedule(slot, 0.0, 0.95, 0.0, kMaxChainDepth);
-                } else {
-                    restBars_[slot] = sectionBarsLeft_;
-                }
+        }
+        const std::size_t wanted = std::min({character_.litTarget(), count, starCapacity_});
+        std::size_t chosen = 0U;
+        for (std::size_t rank = 0U; rank < count; ++rank) {
+            const auto slot = order[rank];
+            if (heldBars_[slot] > 0U) continue;
+            const bool wasLit = brightnessTarget_[slot] > 0.5;
+            const bool on = chosen < wanted || pinned_[slot];
+            if (on) {
+                ++chosen;
+                brightnessTarget_[slot] = 1.0;
+                litBars_[slot] = sectionBarsLeft_ + 2U;
+                if (!wasLit && influence_ > 0.0) schedule(slot, 0.0, 0.95, 0.0, kMaxChainDepth);
+            } else {
+                brightnessTarget_[slot] = 0.0;
+                restBars_[slot] = sectionBarsLeft_;
             }
         }
     }
@@ -1449,28 +1557,16 @@ private:
             availableCount += available[slot] ? 1U : 0U;
         }
         if (!brightnessReady_) {
-            // Abertura: só os corpos 1–3 (chão, atrito, pulso) acesos — o céu
-            // se apresenta com poucas estrelas (orquestração por partes, 4/11;
-            // antes a seed acendia mais uma a quatro e a abertura já vinha
-            // cheia, e as partes soavam parecidas na escuta do autor).
-            const auto extra = 0U;
-            std::uint32_t lit = 0U;
-            for (std::size_t step = 0U; step < kBodies; ++step) {
-                const auto slot = 3U + (mix(seed_ ^ 0xa3c59ac3U) + step) % (kBodies - 3U);
-                if (step >= kBodies - 3U) break;
-                const bool on = lit < extra && (mix(seed_ ^ static_cast<std::uint32_t>(slot * 31U)) & 1U) == 0U;
-                brightnessTarget_[slot] = on ? 1.0 : 0.0;
-                lit += on ? 1U : 0U;
-            }
+            // Abertura (4/11): o elenco vem do caráter da abertura, como em
+            // toda parte; as estrelas acendem direto, sem fade.
+            if (!characterReady_) stepCharacter();
+            reshapeForSection();
             for (std::size_t slot = 0U; slot < kBodies; ++slot) {
-                if (slot < 3U) brightnessTarget_[slot] = 1.0;
-                // A abertura acende direto; uma estrela fixada já nasce acesa.
                 brightness_[slot] = pinned_[slot] ? 1.0 : brightnessTarget_[slot];
                 litBars_[slot] = brightnessTarget_[slot] > 0.5 ? lifeBars(slot, 1U) : 0U;
                 restBars_[slot] = brightnessTarget_[slot] > 0.5 ? 0U : 2U + mix(seed_ ^ static_cast<std::uint32_t>(slot)) % 6U;
-            }
-            for (std::size_t slot = 0U; slot < kBodies; ++slot)
                 openingLit_[slot] = brightnessTarget_[slot] > 0.5;
+            }
             brightnessReady_ = true;
             return;
         }
@@ -1479,22 +1575,13 @@ private:
         std::size_t litCount = 0U;
         for (std::size_t slot = 0U; slot < kBodies; ++slot)
             litCount += available[slot] && brightnessTarget_[slot] > 0.5 ? 1U : 0U;
-        // Orquestração por partes (4/11, aprovada pelo autor): a forma muda
-        // quantas estrelas soam — abertura 2–3, desenvolvimento 4–6 (o céu vai
-        // enchendo), contraste 3–5, retorno 4–7. A capacidade medida da
-        // máquina continua sendo o teto.
-        std::size_t sectionMin = 3U, sectionMax = 6U;
-        switch (section_) {
-        case Section::Opening: sectionMin = 2U; sectionMax = 3U; break;
-        case Section::Development: sectionMin = 4U; sectionMax = 6U; break;
-        case Section::Contrast: sectionMin = 3U; sectionMax = 5U; break;
-        case Section::Return: sectionMin = 4U; sectionMax = 7U; break;
-        default: break;
-        }
-        const std::size_t maxLit = std::min({sectionMax, availableCount, starCapacity_});
-        const std::size_t minLit = std::min({sectionMin, availableCount, maxLit});
-        // No máximo uma estrela entra por compasso: o céu enche aos poucos.
-        bool enteredThisBar = false;
+        // Quantas estrelas soam vem do caráter da parte (4/11): o alvo da parte,
+        // com folga de uma para cada lado; a capacidade medida da máquina
+        // continua sendo o teto.
+        const std::size_t target = character_.litTarget();
+        const std::size_t maxLit = std::min({std::min<std::size_t>(7U, target + 1U), availableCount, starCapacity_});
+        const std::size_t minLit = std::min({std::max<std::size_t>(2U, target > 0U ? target - 1U : 0U), availableCount, maxLit});
+
         // Acima da capacidade medida, apaga já quem tem menos vida pela frente.
         while (litCount > maxLit) {
             std::size_t weakest = kBodies;
@@ -1517,17 +1604,26 @@ private:
                     --litCount;
                     restBars_[slot] = 2U + mix(seed_ ^ (bar * 131U) ^ static_cast<std::uint32_t>(slot)) % 10U;
                 }
-            } else {
-                if (restBars_[slot] > 0U) --restBars_[slot];
-                if ((restBars_[slot] == 0U || litCount < minLit) && litCount < maxLit && !enteredThisBar) {
-                    enteredThisBar = true;
-                    brightnessTarget_[slot] = 1.0;
-                    ++litCount;
-                    litBars_[slot] = lifeBars(slot, bar + 7U);
-                    // Reacender é acontecimento: a estrela entra com um chamado
-                    // forte (uma "nova").
-                    if (influence_ > 0.0) schedule(slot, 0.0, 0.95, 0.0, kMaxChainDepth);
-                }
+            } else if (restBars_[slot] > 0U) {
+                --restBars_[slot];
+            }
+        }
+        // Quem acende (no máximo uma por compasso): entre as que descansaram,
+        // a de família mais forte no caráter da parte — ou, faltando estrelas,
+        // a melhor entre todas as apagadas.
+        if (litCount < maxLit) {
+            std::size_t best = kBodies;
+            for (std::size_t slot = 0U; slot < kBodies; ++slot) {
+                if (!available[slot] || heldBars_[slot] > 0U || brightnessTarget_[slot] > 0.5) continue;
+                if (restBars_[slot] > 0U && litCount >= minLit) continue;
+                if (best == kBodies || castScore(slot) > castScore(best)) best = slot;
+            }
+            if (best < kBodies) {
+                brightnessTarget_[best] = 1.0;
+                litBars_[best] = lifeBars(best, bar + 7U);
+                // Reacender é acontecimento: a estrela entra com um chamado
+                // forte (uma "nova").
+                if (influence_ > 0.0) schedule(best, 0.0, 0.95, 0.0, kMaxChainDepth);
             }
         }
     }

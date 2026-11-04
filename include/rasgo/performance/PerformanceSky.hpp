@@ -399,6 +399,13 @@ public:
     // só lida; nenhum código copiado); G. Toussaint, "The Euclidean algorithm
     // generates traditional musical rhythms", BRIDGES 2005; a polimetria por
     // ciclos coprimos do PolymeterEnsemble do Studio.
+    // A atividade da parte da forma (4/11): a fração de ataques que passa,
+    // de 0,35 a 1. Escolha determinística por estrela e por ataque (a mesma
+    // seed soa igual). 1 = tudo passa, como antes.
+    void setActivity(double activity) noexcept {
+        activity_ = std::isfinite(activity) ? std::clamp(activity, 0.0, 1.0) : 1.0;
+    }
+    double activity() const noexcept { return activity_; }
     void setCounting(bool enabled, std::uint32_t ordinal) noexcept {
         if (enabled == counting_ && ordinal == countingOrdinal_) return;
         counting_ = enabled;
@@ -872,6 +879,11 @@ private:
     bool controlGate() noexcept {
         const auto star = currentStar_;
         if (performanceStarFunction(kPerformanceSkyStars[star]) == PerformanceStarFunction::Control) return true;
+        if (activity_ < 1.0) {
+            std::uint32_t h = static_cast<std::uint32_t>(star) * 0x9e3779b9U ^ (activityStep_[star]++ * 0x85ebca6bU);
+            h ^= h >> 16U; h *= 0x7feb352dU; h ^= h >> 15U; h *= 0x846ca68bU; h ^= h >> 16U;
+            if (static_cast<double>(h) / 4294967296.0 >= activity_) return false;
+        }
         const auto& g = controlActive_;
         if (g.rupture && ruptureBeatsLeft_ > 0U) return false;
         if (g.sieve && !sieveOnset(sieveStep_[star]++, g.sieveM1, g.sieveM2, g.sieveR2)) return false;
@@ -915,6 +927,8 @@ private:
     }
     ControlState controlActive_{}, controlPending_{};
     std::array<std::uint32_t, kStarCount> sieveStep_{}, polyStep_{}, hocketYield_{};
+    std::array<std::uint32_t, kStarCount> activityStep_{};
+    double activity_ = 1.0;
     std::array<std::size_t, 4> hocketRecent_{{kStarCount, kStarCount, kStarCount, kStarCount}};
     std::uint32_t hocketState_ = 0x5EEDU;
     std::uint64_t hocketClock_ = 0U, hocketLastClock_ = ~std::uint64_t{0};

@@ -1088,6 +1088,7 @@ public:
         // trama; desligada, fator 1 e relógio reto (som idêntico).
         sky_.setTiming(director_.eccentricity(), director_.perihelion(), director_.groove());
         sky_.setCounting(director_.influence() > 0.0, director_.countingOrdinal());
+        sky_.setActivity(director_.activity());
         sky_.advance({tempoBpm_ * director_.tempoFactor(), density_, tension_, memory_, risk_, intervention_,
                       timePressure_, matterPressure_, frictionPressure_, backgroundMutate,
                       backgroundTear, backgroundRepair, autonomy_, holding_});
