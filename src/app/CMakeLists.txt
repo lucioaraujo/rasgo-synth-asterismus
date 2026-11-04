@@ -9,6 +9,7 @@ juce_add_gui_app(RasgoSynthAsterismusApp
     PRODUCT_NAME "Rasgo Synth Asterismus"
     COMPANY_NAME "RASGO"
     BUNDLE_ID "org.rasgo.synthperformance"
+    VERSION "${PROJECT_VERSION}"
     ${ASTERISMUS_ICON_ARGS})
 
 target_sources(RasgoSynthAsterismusApp PRIVATE PerformanceApp.cpp)
@@ -21,7 +22,8 @@ target_compile_definitions(RasgoSynthAsterismusApp PRIVATE
     JUCE_STRING_UTF_TYPE=8
     JUCE_WEB_BROWSER=0
     JUCE_USE_CURL=0
-    JUCE_USE_XINPUT=0)
+    JUCE_USE_XINPUT=0
+    RASGO_ASTERISMUS_VERSION="${PROJECT_VERSION}")
 
 # Textos do painel são UTF-8 (incluindo português e os separadores ·/→).
 # Fixar a codificação impede que o compilador a deduza do locale da máquina.

@@ -8,6 +8,10 @@
 #include <memory>
 #include <optional>
 
+#ifndef RASGO_ASTERISMUS_VERSION
+#define RASGO_ASTERISMUS_VERSION "0.0.0"  // vem do CMake (PROJECT_VERSION)
+#endif
+
 #include <rasgo/performance/PerformanceConstellationGeometry.hpp>
 #include <rasgo/performance/PerformanceAudioMeasurement.hpp>
 #include <rasgo/performance/PerformanceModuleTypes.hpp>
@@ -159,28 +163,28 @@ juce::String aboutCopy(SupportLanguage language) {
     switch (language) {
     case SupportLanguage::English:
         return utf8("Generative instrument for composition and performance.\n\n"
-                    "Version 0.1.16-dev · 2026\n\n"
+                    "Version " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
                     "Concept, artistic direction, music and RASGO identity\nLucio Araújo\n\n"
                     "Original code: GNU GPLv3\nHost: JUCE 9 under AGPLv3\n"
                     "Typefaces: Big Shoulders Display and IBM Plex Mono · SIL OFL 1.1\n\n"
                     "Full credits and provenance: THIRD_PARTY_NOTICES.md");
     case SupportLanguage::French:
         return utf8("Instrument génératif pour la composition et la performance.\n\n"
-                    "Version 0.1.16-dev · 2026\n\n"
+                    "Version " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
                     "Conception, direction artistique, musique et identité RASGO\nLucio Araújo\n\n"
                     "Code original : GNU GPLv3\nHôte : JUCE 9 sous AGPLv3\n"
                     "Typographies : Big Shoulders Display et IBM Plex Mono · SIL OFL 1.1\n\n"
                     "Crédits et provenance : THIRD_PARTY_NOTICES.md");
     case SupportLanguage::Spanish:
         return utf8("Instrumento generativo para composición y performance.\n\n"
-                    "Versión 0.1.16-dev · 2026\n\n"
+                    "Versión " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
                     "Concepción, dirección artística, música e identidad RASGO\nLucio Araújo\n\n"
                     "Código original: GNU GPLv3\nHost: JUCE 9 bajo AGPLv3\n"
                     "Tipografías: Big Shoulders Display e IBM Plex Mono · SIL OFL 1.1\n\n"
                     "Créditos y procedencia: THIRD_PARTY_NOTICES.md");
     default:
         return utf8("Instrumento generativo para composição e performance.\n\n"
-                    "Versão 0.1.16-dev · 2026\n\n"
+                    "Versão " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
                     "Concepção, direção artística, música e identidade RASGO\nLucio Araújo\n\n"
                     "Código autoral: GNU GPLv3\nHost: JUCE 9 pela via AGPLv3\n"
                     "Tipografia: Big Shoulders Display e IBM Plex Mono · SIL OFL 1.1\n\n"
@@ -3069,7 +3073,7 @@ private:
         auto right = left.removeFromRight(left.getWidth() / 2);
         graphics.drawFittedText(audioFooterText_, left, juce::Justification::centredLeft, 1);
         graphics.setColour(juce::Colour(0xff8aa99b).withAlpha(0.78f));
-        graphics.drawFittedText(utf8("Rasgo Synth Asterismus v0.1.16-dev  ·  Lucio de Araujo  ·  GPLv3  ·  JUCE AGPLv3  ·  2026"),
+        graphics.drawFittedText(utf8("Rasgo Synth Asterismus v" RASGO_ASTERISMUS_VERSION "  ·  Lucio de Araujo  ·  GPLv3  ·  JUCE AGPLv3  ·  2026"),
                                 right, juce::Justification::centredRight, 1);
     }
 

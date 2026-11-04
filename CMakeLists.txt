@@ -14,7 +14,9 @@ if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "macOS mínimo" FORCE)
     set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Universal 2" FORCE)
 endif()
-project(RasgoSynthPerformanceContracts VERSION 0.1.16 LANGUAGES C CXX)
+# A versão do Asterismus vive só aqui: o app, o SOBRE, o rodapé e os pacotes a
+# leem daqui (4/11/2026; antes estava repetida à mão no código).
+project(RasgoSynthPerformanceContracts VERSION 0.2.0 LANGUAGES C CXX)
 
 include(CTest)
 
