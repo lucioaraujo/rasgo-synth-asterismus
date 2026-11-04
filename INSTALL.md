@@ -39,3 +39,30 @@ publicação (GPLv3; JUCE pela via AGPLv3).
 `~/Music/Rasgo Synth Performance/recordings/` (tomada mixada em WAV 24 bits
 com dither, e os stems de cada estrela) e o diagnóstico em
 `~/Music/Rasgo Synth Performance/diagnostico/`.
+
+## Compilar a partir do código
+
+O JUCE 9.0.0 não vem no repositório (ver [DEPENDENCIES.md](DEPENDENCIES.md)).
+Num Linux Debian/Ubuntu, as bibliotecas do sistema que o JUCE pede (as
+mesmas que a integração contínua instala):
+
+```sh
+sudo apt-get install -y build-essential cmake git \
+  libasound2-dev libjack-jackd2-dev libcurl4-openssl-dev \
+  libfreetype6-dev libfontconfig1-dev \
+  libx11-dev libxcomposite-dev libxcursor-dev libxext-dev \
+  libxinerama-dev libxrandr-dev libxrender-dev libgtk-3-dev
+```
+
+Depois, na pasta do repositório:
+
+```sh
+git clone --branch 9.0.0 --depth 1 https://github.com/juce-framework/JUCE.git third_party/JUCE
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DRASGO_PERFORMANCE_BUILD_APP=ON
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
+```
+
+O app fica em `build/src/app/RasgoSynthAsterismusApp_artefacts/Release/`.
+Os pacotes de Windows e macOS são montados pela integração contínua
+(`.github/workflows/package.yml`); os passos de cada sistema estão lá.

@@ -1,4 +1,38 @@
-# O que falta para publicar o Asterismus (levantamento de 2026-10-30)
+# Publicação do Asterismus — estado e checklist
+
+## ▶ Estado em 2026-11-04 (organização para a publicação)
+
+Pelas camadas de `RASGO_DOCUMENTATION/ESTRATEGIA_DE_PUBLICACAO.md`: o
+Asterismus está entre a **camada 0 (pesquisa local)** e a **1 (candidato
+publicável)**. Tem repositório próprio e público desde 2/11, mas nenhuma
+release nem página no ar. Legenda: **feito** · **falta** (técnico) ·
+**autor** (decisão ou ação dele).
+
+| Gate editorial comum | Estado |
+|---|---|
+| Nome, descrição curta e estado | **feito** — README em EN/PT/FR/ES, CHANGELOG, versão 0.2.0 (num lugar só: `CMakeLists.txt`) |
+| Autoria, créditos, fontes e licença | **feito** — LICENSE, CREDITS, THIRD_PARTY_NOTICES, DEPENDENCIES, `vendor/studio-dsp/PROVENANCE.md` (com os avisos do Studio desde 4/11). **autor:** o Batruc aparece citado em 15 linhas (créditos, avisos, docs, comentários) — manter, trocar por "pesquisa autoral não publicada" ou outra forma |
+| Instruções de build e instalação | **feito** — `INSTALL.md`; **falta** a versão em inglês (os irmãos têm INSTALL em inglês, com "passo a passo" e "problemas comuns") |
+| Matriz de plataformas (testada / parcial / planejada) | **feito** no README: Linux compilado, testado (37) e tocado pelo autor; Windows e macOS **não compilados** (CI preparada, nunca rodou) |
+| Testes e validações realmente executados | suíte 37/37; estabilidade 200 seeds × 20 s (0 bloco acima do prazo em 213 720); som sem a trama idêntico por hash; capturas da tela (4/11). **autor:** a escuta guiada (`docs/ROTEIRO_ESCUTA_2026-11-04.md`) |
+| Imagens com origem autorizada | **feito, provisório** — `website/assets/interface.jpg` (instantâneo do app, 4/11); **autor:** trocar por captura sua, se quiser (o padrão da família) |
+| Links (repositório, documentação, release) | **feito** para repositório e docs; os da release e do site só valem depois da release |
+| Sem áudio privado, recordings, testes, brainstorm | **feito** (conferido em 4/11: nenhum áudio, caminho de máquina ou e-mail pessoal) |
+| Contato oficial | **feito** — rasgo.instruments@gmail.com (o da família), no README e no site |
+| Versão publicada = página | **feito** — site e README dizem "0.2.0, em preparação"; no lançamento, `PUBLICADO = True` (`website/README.md`) |
+| Correção / retirada | release no GitHub (apagar ou marcar como pré-release); site: novo commit em `website/` e deploy |
+
+| Camada | O que falta |
+|---|---|
+| 1. Candidato publicável | **autor:** a escuta; o ícone (proposta em `packaging/icon/proposta/`); a decisão do Batruc. **falta:** INSTALL em inglês. Decisão menor: as gravações vão para `~/Music/Rasgo Synth Performance/` (nome antigo, mantido em 27/10 por causa do link para `AUDIOS_RASGO`); trocar para "Rasgo Synth Asterismus" pede migração |
+| 2. Release | **autor:** a primeira CI (tag `v0.2.0` ou o botão; ~160 min cobrados) — ela monta Windows (.exe), macOS (.dmg) e Linux (.deb/.tar.gz); depois conferir os nomes dos pacotes no site. AppImage e testes de arranque em outras distribuições: **falta** (o Trioio e o Aquorbium têm) |
+| 3. Página editorial | **feito** em preparação: `website/` (4 idiomas, noindex); **autor:** ativar o GitHub Pages; o card no portal RASGO (`RASGO_WEBSITE/`) |
+| 4. Publicação | release + site + card juntos; anúncio |
+
+---
+
+## Levantamento anterior (2026-10-30), preservado
+
 
 Pergunta do autor: "o que falta para a publicação?"; "verifique também em
 relação ao rasgo synth studio". Referências: o padrão de distribuição RASGO
