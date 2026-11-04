@@ -6589,6 +6589,11 @@ private:
     void audioDeviceIOCallbackWithContext(const float* const*, int,
                                           float* const* outputChannelData, int numOutputChannels,
                                           int numSamples, const juce::AudioIODeviceCallbackContext&) override {
+        // Números desnormalizados zerados no bloco (FTZ/DAZ; 4/11): nas caudas
+        // e na coda os filtros e ressonadores decaem para ~1e-38 e o motor
+        // ficava 3–4× mais lento (média 7 ms, picos de 34–65 ms em 10,67 ms) —
+        // os atrasos da escuta guiada. Com eles zerados, ~2 ms. Inaudível.
+        const juce::ScopedNoDenormals noDenormals;
         // The JUCE/ALSA audio thread starts as SCHED_OTHER; promote it once,
         // from inside itself, so the GUI cannot preempt the block deadline.
         if (!realtimeAsked_.exchange(true, std::memory_order_acq_rel))
