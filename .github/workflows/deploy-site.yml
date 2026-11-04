@@ -1,0 +1,44 @@
+name: Deploy public site
+
+# The Asterismus page on GitHub Pages
+# (https://lucioaraujo.github.io/rasgo-synth-asterismus/). Copied from the
+# Trioio workflow (lucioaraujo/trioio, commit cfbd744,
+# .github/workflows/deploy-site.yml, same author and licence; itself from the
+# Antitotem) on 2026-11-04. The pages are generated locally
+# (website/gerar_paginas.py && website/seo.py) and committed.
+#
+# MANUAL ONLY until the first release: the site is "in preparation" and must
+# not go live before it (website/README.md). At publication, restore the
+# trigger the Trioio uses:
+#   push: { branches: [main], paths: [website/**, .github/workflows/deploy-site.yml] }
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: website
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

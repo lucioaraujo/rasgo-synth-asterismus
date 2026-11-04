@@ -28,3 +28,4 @@ _CPack_Packages/
 # privado do RASGO — citam outros projetos e caminhos locais.
 /CONTINUIDADE.md
 /TAREFAS.md
+__pycache__/

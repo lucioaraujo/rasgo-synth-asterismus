@@ -2306,6 +2306,12 @@ public:
                             && safe->ready_.load(std::memory_order_acquire))
                             safe->startTimedTake(kTakeDurations[0]);
                     });
+        // Gancho de teste (4/11): com RASGO_ASTERISMUS_SNAPSHOT=1 as dicas não
+        // aparecem — para os instantâneos do site, sem que o ponteiro do
+        // autor (que não é movido) deixe uma dica na imagem. Sem a variável,
+        // nada muda.
+        if (juce::SystemStats::getEnvironmentVariable("RASGO_ASTERISMUS_SNAPSHOT", {}) == "1")
+            tooltipWindow_.setMillisecondsBeforeTipAppears(24 * 60 * 60 * 1000);
         if (juce::SystemStats::getEnvironmentVariable("RASGO_ASTERISMUS_AUTOPLAY", {}) == "1")
             juce::Timer::callAfterDelay(2000, [safe = juce::Component::SafePointer<PerformanceHostComponent>(this)] {
                 if (safe != nullptr && !safe->playingRequested_) safe->togglePlaying();
