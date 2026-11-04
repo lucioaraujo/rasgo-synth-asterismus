@@ -2422,7 +2422,9 @@ public:
         // during normal realtime fluctuations; warnings remain explicit in
         // the text (ATENÇÃO, SOBRECARGA, SAFE).
         graphics.setColour(juce::Colour(0xffe7e3d5));
-        auto statusArea = bounds.reduced(34).withTrimmedTop(66).withTrimmedRight(410);
+        // y = 62 (4/11): a 2ª linha (máquina) em y = 118 ficava sob a faixa das
+        // CENAS; entre o título (até y = 60) e as CENAS há lugar para as duas.
+        auto statusArea = bounds.reduced(34).withTrimmedTop(28).withTrimmedRight(410);
         auto musicLine = statusArea.removeFromTop(18);
         graphics.drawFittedText(status, musicLine, juce::Justification::topLeft, 1);
         if (machine.isNotEmpty()) {
@@ -3564,6 +3566,9 @@ private:
             relationLabels_[index].setColour(juce::Label::textColourId, juce::Colour(0xff8aa99b));
             relationLabels_[index].setFont(interfaceFont(10.0f, juce::Font::bold));
             relationLabels_[index].setJustificationType(juce::Justification::centred);
+            // Com o ato da trama ("· ATRITO") o rótulo ficava cortado (4/11):
+            // encolher até 65 % antes de cortar; o texto inteiro vai na dica.
+            relationLabels_[index].setMinimumHorizontalScale(0.65f);
             auto& slider = relationSliders_[index];
             slider.setSliderStyle(juce::Slider::LinearBar);
             slider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 42, 16);
@@ -4024,8 +4029,10 @@ private:
         const auto stars = displayedAsterism(identitySeed_);
         for (std::size_t index = 0U; index < relationLabels_.size(); ++index) {
             const auto text = relationDisplayNames_[index] + cableActSuffix(index, stars);
-            if (relationLabels_[index].getText() != text)
+            if (relationLabels_[index].getText() != text) {
                 relationLabels_[index].setText(text, juce::dontSendNotification);
+                relationLabels_[index].setTooltip(text);
+            }
         }
     }
 
