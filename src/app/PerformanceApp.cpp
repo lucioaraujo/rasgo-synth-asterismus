@@ -6592,6 +6592,11 @@ private:
             const auto totalMicros = static_cast<std::uint32_t>(std::min(elapsedSeconds * 1.0e6, 4.0e9));
             const auto engineMicros = static_cast<std::uint32_t>(std::min(
                 juce::Time::highResolutionTicksToSeconds(engineTicks) * 1.0e6, 4.0e9));
+            // A média do segundo (4/11): a guarda olha a carga real, não só o
+            // pior bloco (um soluço do sistema não é sobrecarga).
+            cpuWorkMicros_.fetch_add(totalMicros, std::memory_order_relaxed);
+            cpuBlockMicros_.fetch_add(static_cast<std::uint32_t>(std::min(blockSeconds * 1.0e6, 4.0e9)),
+                                      std::memory_order_relaxed);
             auto worst = worstBlockMicros_.load(std::memory_order_relaxed);
             while (totalMicros > worst
                    && !worstBlockMicros_.compare_exchange_weak(worst, totalMicros, std::memory_order_relaxed)) {}
@@ -6612,6 +6617,9 @@ private:
         std::uint32_t samples = 0U;
     };
     std::atomic<std::uint32_t> worstBlockMicros_{0U};
+    std::atomic<std::uint64_t> cpuWorkMicros_{0U};   // tempo de callback somado no segundo
+    std::atomic<std::uint64_t> cpuBlockMicros_{0U};  // prazo somado no segundo
+    std::uint32_t lastXrunsSeen_ = 0U;
     std::array<MissEvent, 256> missRing_{};
     std::atomic<std::uint32_t> missWrite_{0U};
     std::uint32_t missRead_ = 0U;
@@ -6651,7 +6659,7 @@ private:
             if (diagnosticLog_ != nullptr && diagnosticLog_->failedToOpen()) diagnosticLog_.reset();
             if (diagnosticLog_ != nullptr) diagnosticUnavailable_ = false;
             if (diagnosticLog_ != nullptr) diagnosticLog_->writeText("tipo,hora,ms_desde_inicio,pior_bloco_ms,motor_ms,amostras,cpu_bloco_pct,"
-                                      "tocando,gravando,stems_soando,virada_seed,atrasos_total,capacidade\n", false, false, nullptr);
+                                      "tocando,gravando,stems_soando,virada_seed,atrasos_total,capacidade,cpu_media_pct\n", false, false, nullptr);
             diagnosticLastMs_ = now;
         }
         const auto stamp = juce::Time::getCurrentTime().formatted("%H:%M:%S");
@@ -6671,7 +6679,13 @@ private:
             sounding += telemetry.stemPeakMicros[stem] > 1000U ? 1U : 0U;
         const auto worstMs = worstBlockMicros_.exchange(0U, std::memory_order_relaxed) / 1000.0;
         worstShownMs_ = worstMs;
-        updateStarCapacity(worstMs, telemetry.playing);
+        const auto workMicros = cpuWorkMicros_.exchange(0U, std::memory_order_relaxed);
+        const auto blockMicros = cpuBlockMicros_.exchange(0U, std::memory_order_relaxed);
+        const double averagePercent = blockMicros > 0U ? 100.0 * static_cast<double>(workMicros)
+                                                             / static_cast<double>(blockMicros) : 0.0;
+        const bool newXruns = telemetry.xrunCount > lastXrunsSeen_;
+        lastXrunsSeen_ = telemetry.xrunCount;
+        updateStarCapacity(worstMs, averagePercent, newXruns, telemetry.playing);
         if (diagnosticLog_ == nullptr) return;
         diagnosticLog_->writeText("segundo," + stamp + "," + juce::String(now, 1) + ","
             + juce::String(worstMs, 2) + ",,,"
@@ -6679,7 +6693,7 @@ private:
             + (telemetry.playing ? "1" : "0") + "," + (recorder_.recording() ? "1" : "0") + ","
             + juce::String(sounding) + "," + juce::String(telemetry.narrativeTurn) + ","
             + juce::String(telemetry.xrunCount) + "," + juce::String(static_cast<int>(controller_.starCapacity()))
-            + "\n", false, false, nullptr);
+            + "," + juce::String(averagePercent, 1) + "\n", false, false, nullptr);
         diagnosticLog_->flush();
     }
 
@@ -6776,17 +6790,24 @@ private:
                              "AUDIO REABIERTO · el sistema de sonido dejó de llamar al instrumento");
     }
 
-    // Guarda de capacidade (auditoria 4.4; lista L2519/L2522): dois segundos
-    // seguidos com o pior bloco acima de 75% do prazo tiram uma estrela da
-    // capacidade (mínimo 3); 30 s tocando abaixo de 45% devolvem uma. A
-    // variação do mixer respeita a capacidade; os faders não são bloqueados.
-    void updateStarCapacity(double worstMs, bool playing) {
+    // Guarda de capacidade (auditoria 4.4; lista L2519/L2522; revista em
+    // 4/11). Tira uma estrela (mínimo 3) depois de 2 s seguidos de
+    // sobrecarga REAL: um atraso (bloco que estourou o prazo), a média do
+    // segundo acima de 70 % ou um pico acima de 95 % do prazo. Antes bastava
+    // um bloco acima de 75 % — um soluço do sistema sem atraso nenhum — e,
+    // numa escuta de 4/11, o céu caiu de 8 para 3 estrelas com a média em
+    // 16–28 % e 0 atrasos (o motor sozinho, 8 corpos, blocos de 512: média
+    // 2 ms, pior 4,8 ms em 10,67). Devolve uma estrela depois de 20 s calmos
+    // (média < 45 %, pico < 85 %, nenhum atraso). A variação do mixer
+    // respeita a capacidade; os faders não são bloqueados.
+    void updateStarCapacity(double worstMs, double averagePercent, bool newXruns, bool playing) {
         const auto rate = sampleRate_.load(std::memory_order_acquire);
         auto* device = deviceManager_ != nullptr ? deviceManager_->getCurrentAudioDevice() : nullptr;
         if (rate <= 0.0 || device == nullptr) return;
         const double budgetMs = device->getCurrentBufferSizeSamples() / rate * 1000.0;
         auto capacity = controller_.starCapacity();
-        if (worstMs > budgetMs * 0.75) {
+        const bool overload = newXruns || averagePercent > 70.0 || worstMs > budgetMs * 0.95;
+        if (overload) {
             calmSeconds_ = 0U;
             if (++overloadSeconds_ >= 2U && capacity > 3U) {
                 controller_.setStarCapacity(capacity - 1U);
@@ -6800,7 +6821,8 @@ private:
             }
         } else {
             overloadSeconds_ = 0U;
-            if (playing && worstMs < budgetMs * 0.45 && ++calmSeconds_ >= 30U && capacity < 8U) {
+            if (playing && averagePercent < 45.0 && worstMs < budgetMs * 0.85
+                && ++calmSeconds_ >= 20U && capacity < 8U) {
                 controller_.setStarCapacity(capacity + 1U);
                 calmSeconds_ = 0U;
             }

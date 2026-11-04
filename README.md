@@ -76,9 +76,9 @@ Linux (.deb, .tar.gz), Windows and macOS built by continuous integration.
 | Windows x86-64 | not yet (continuous integration prepared) | not yet | not yet |
 | macOS (Universal 2) | not yet (continuous integration prepared) | not yet | not yet |
 
-Measured on an Intel Core i5-6500 (2015, 4 cores), 48 kHz, 256-sample
-blocks: about 0.55 ms of audio work per block of 5.33 ms (about 10 % of one
-core), with no block over the budget in 200 seeds × 20 s.
+Measured on an Intel Core i5-6500 (2015, 4 cores), eight stars, 48 kHz,
+512-sample blocks: about 2 ms of audio work per block of 10.67 ms (about
+18 % of one core); the worst block of 21 seeds (13 minutes) took 4.8 ms.
 
 ### Build from source
 
@@ -154,9 +154,10 @@ Linux (.deb, .tar.gz), Windows e macOS montados pela integração contínua.
 | Windows x86-64 | ainda não (integração contínua preparada) | ainda não | ainda não |
 | macOS (Universal 2) | ainda não (integração contínua preparada) | ainda não | ainda não |
 
-Medido num Intel Core i5-6500 (2015, 4 núcleos), 48 kHz, blocos de 256
-amostras: cerca de 0,55 ms de trabalho de áudio por bloco de 5,33 ms (cerca
-de 10 % de um núcleo), sem nenhum bloco acima do prazo em 200 seeds × 20 s.
+Medido num Intel Core i5-6500 (2015, 4 núcleos), oito estrelas, 48 kHz,
+blocos de 512 amostras: cerca de 2 ms de trabalho de áudio por bloco de
+10,67 ms (cerca de 18 % de um núcleo); o pior bloco em 21 seeds (13 minutos)
+levou 4,8 ms.
 
 ### Compilar a partir do código
 
@@ -235,9 +236,10 @@ l'intégration continue.
 | Windows x86-64 | pas encore (intégration continue prête) | pas encore | pas encore |
 | macOS (Universal 2) | pas encore (intégration continue prête) | pas encore | pas encore |
 
-Mesuré sur un Intel Core i5-6500 (2015, 4 cœurs), 48 kHz, blocs de 256
-échantillons : environ 0,55 ms de travail audio par bloc de 5,33 ms (environ
-10 % d'un cœur), aucun bloc au-delà du délai sur 200 seeds × 20 s.
+Mesuré sur un Intel Core i5-6500 (2015, 4 cœurs), huit étoiles, 48 kHz,
+blocs de 512 échantillons : environ 2 ms de travail audio par bloc de
+10,67 ms (environ 18 % d'un cœur) ; le pire bloc sur 21 seeds (13 minutes) a
+pris 4,8 ms.
 
 ### Compiler depuis les sources
 
@@ -315,10 +317,10 @@ integración continua.
 | Windows x86-64 | todavía no (integración continua preparada) | todavía no | todavía no |
 | macOS (Universal 2) | todavía no (integración continua preparada) | todavía no | todavía no |
 
-Medido en un Intel Core i5-6500 (2015, 4 núcleos), 48 kHz, bloques de 256
-muestras: cerca de 0,55 ms de trabajo de audio por bloque de 5,33 ms (cerca
-del 10 % de un núcleo), sin ningún bloque por encima del plazo en 200 seeds
-× 20 s.
+Medido en un Intel Core i5-6500 (2015, 4 núcleos), ocho estrellas, 48 kHz,
+bloques de 512 muestras: cerca de 2 ms de trabajo de audio por bloque de
+10,67 ms (cerca del 18 % de un núcleo); el peor bloque en 21 seeds (13
+minutos) tardó 4,8 ms.
 
 ### Compilar desde el código
 
