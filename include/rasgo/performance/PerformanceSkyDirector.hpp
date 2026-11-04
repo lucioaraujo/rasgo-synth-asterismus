@@ -1027,11 +1027,17 @@ private:
             * (((word >> 16U) & 1U) != 0U ? 1.0 : -1.0);
     }
 
-    // O contraste troca boa parte das estrelas acesas por outras; o retorno
-    // reacende as estrelas da abertura.
+    // O contraste troca boa parte das estrelas acesas por outras e quem
+    // liderava (o corpo 1, o chão) recua; o retorno reacende as estrelas da
+    // abertura.
     void reshapeForSection() noexcept {
         if (section_ == Section::Contrast) {
-            for (std::size_t slot = 0U; slot < kBodies; ++slot) {
+            const bool leaderStepsBack = bodies_[0].presence > 0.0 && heldBars_[0] == 0U && !pinned_[0];
+            if (leaderStepsBack) {
+                brightnessTarget_[0] = 0.0;
+                restBars_[0] = sectionBarsLeft_;
+            }
+            for (std::size_t slot = leaderStepsBack ? 1U : 0U; slot < kBodies; ++slot) {
                 if (bodies_[slot].presence <= 0.0 || heldBars_[slot] > 0U) continue;
                 const bool lit = brightnessTarget_[slot] > 0.5;
                 if (lit && (mix(seed_ ^ static_cast<std::uint32_t>(slot * 41U + sectionOrdinal_)) & 1U) == 0U) {
@@ -1443,9 +1449,11 @@ private:
             availableCount += available[slot] ? 1U : 0U;
         }
         if (!brightnessReady_) {
-            // Abertura: os corpos 1–3 (chão, atrito, pulso) acesos; entre os
-            // demais, a seed escolhe de um a quatro.
-            const auto extra = 1U + mix(seed_ ^ 0x51ed270bU) % 4U;
+            // Abertura: só os corpos 1–3 (chão, atrito, pulso) acesos — o céu
+            // se apresenta com poucas estrelas (orquestração por partes, 4/11;
+            // antes a seed acendia mais uma a quatro e a abertura já vinha
+            // cheia, e as partes soavam parecidas na escuta do autor).
+            const auto extra = 0U;
             std::uint32_t lit = 0U;
             for (std::size_t step = 0U; step < kBodies; ++step) {
                 const auto slot = 3U + (mix(seed_ ^ 0xa3c59ac3U) + step) % (kBodies - 3U);
@@ -1453,10 +1461,6 @@ private:
                 const bool on = lit < extra && (mix(seed_ ^ static_cast<std::uint32_t>(slot * 31U)) & 1U) == 0U;
                 brightnessTarget_[slot] = on ? 1.0 : 0.0;
                 lit += on ? 1U : 0U;
-            }
-            for (std::size_t slot = 3U; slot < kBodies && lit == 0U; ++slot) {
-                brightnessTarget_[slot] = 1.0;
-                lit = 1U;
             }
             for (std::size_t slot = 0U; slot < kBodies; ++slot) {
                 if (slot < 3U) brightnessTarget_[slot] = 1.0;
@@ -1475,8 +1479,22 @@ private:
         std::size_t litCount = 0U;
         for (std::size_t slot = 0U; slot < kBodies; ++slot)
             litCount += available[slot] && brightnessTarget_[slot] > 0.5 ? 1U : 0U;
-        const std::size_t maxLit = std::min({std::size_t{6U}, availableCount, starCapacity_});
-        const std::size_t minLit = std::min({std::size_t{3U}, availableCount, maxLit});
+        // Orquestração por partes (4/11, aprovada pelo autor): a forma muda
+        // quantas estrelas soam — abertura 2–3, desenvolvimento 4–6 (o céu vai
+        // enchendo), contraste 3–5, retorno 4–7. A capacidade medida da
+        // máquina continua sendo o teto.
+        std::size_t sectionMin = 3U, sectionMax = 6U;
+        switch (section_) {
+        case Section::Opening: sectionMin = 2U; sectionMax = 3U; break;
+        case Section::Development: sectionMin = 4U; sectionMax = 6U; break;
+        case Section::Contrast: sectionMin = 3U; sectionMax = 5U; break;
+        case Section::Return: sectionMin = 4U; sectionMax = 7U; break;
+        default: break;
+        }
+        const std::size_t maxLit = std::min({sectionMax, availableCount, starCapacity_});
+        const std::size_t minLit = std::min({sectionMin, availableCount, maxLit});
+        // No máximo uma estrela entra por compasso: o céu enche aos poucos.
+        bool enteredThisBar = false;
         // Acima da capacidade medida, apaga já quem tem menos vida pela frente.
         while (litCount > maxLit) {
             std::size_t weakest = kBodies;
@@ -1501,7 +1519,8 @@ private:
                 }
             } else {
                 if (restBars_[slot] > 0U) --restBars_[slot];
-                if ((restBars_[slot] == 0U || litCount < minLit) && litCount < maxLit) {
+                if ((restBars_[slot] == 0U || litCount < minLit) && litCount < maxLit && !enteredThisBar) {
+                    enteredThisBar = true;
                     brightnessTarget_[slot] = 1.0;
                     ++litCount;
                     litBars_[slot] = lifeBars(slot, bar + 7U);

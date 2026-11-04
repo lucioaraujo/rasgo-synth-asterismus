@@ -226,8 +226,10 @@ int main() {
     }
 
     // Mixer variation: the seed opens a figure, stars fade, go out and
-    // re-ignite, between three and six stay lit, and the mix follows the
-    // Constellation's movement; switched off, every star shines fully.
+    // re-ignite, and the mix follows the Constellation's movement; switched
+    // off, every star shines fully. Since 4/11 the form orchestrates: the
+    // opening keeps 2–3 lit, the development fills to 4–6, the contrast 3–5
+    // (and the leader, body 1, steps back), the return 4–7.
     {
         PerformanceSkyDirector director;
         director.prepare(kRate);
@@ -236,6 +238,9 @@ int main() {
         auto bodies = opening();
         std::array<bool, 8> wentOut{}, cameBack{};
         std::size_t minLit = 8U, maxLit = 0U;
+        using SectionV = PerformanceSkyDirector::Section;
+        std::array<std::size_t, 4> sectionMin{{8U, 8U, 8U, 8U}}, sectionMax{};
+        bool leaderBackInContrast = false;
         double minLevel = 1.0, maxLevel = 0.0;
         const auto samples = static_cast<std::uint64_t>(kRate * 240.0);
         for (std::uint64_t sample = 0U; sample < samples; ++sample) {
@@ -265,12 +270,27 @@ int main() {
             }
             minLit = std::min(minLit, lit);
             maxLit = std::max(maxLit, lit);
+            const auto section = static_cast<std::size_t>(director.section());
+            if (section < 4U) {
+                sectionMin[section] = std::min(sectionMin[section], lit);
+                sectionMax[section] = std::max(sectionMax[section], lit);
+            }
+            if (director.section() == SectionV::Contrast && director.brightnessTarget(0U) < 0.5)
+                leaderBackInContrast = true;
         }
         std::size_t returns = 0U;
         for (const bool back : cameBack) returns += back ? 1U : 0U;
         std::cout << "variation: lit " << minLit << ".." << maxLit << ", stars that re-ignited "
                   << returns << ", level " << minLevel << ".." << maxLevel << '\n';
-        ok = expect(minLit >= 3U && maxLit <= 6U, "between three and six stars stay lit") && ok;
+        std::cout << "orchestration: opening " << sectionMin[0] << ".." << sectionMax[0]
+                  << ", development " << sectionMin[1] << ".." << sectionMax[1]
+                  << ", contrast " << sectionMin[2] << ".." << sectionMax[2]
+                  << ", return " << sectionMin[3] << ".." << sectionMax[3] << '\n';
+        ok = expect(minLit >= 2U && maxLit <= 7U, "between two and seven stars stay lit") && ok;
+        ok = expect(sectionMax[0] <= 3U, "the opening shows few stars") && ok;
+        ok = expect(sectionMax[1] >= 4U, "the development fills the sky") && ok;
+        ok = expect(sectionMax[2] <= 5U, "the contrast keeps at most five") && ok;
+        ok = expect(leaderBackInContrast, "in the contrast the leader steps back") && ok;
         ok = expect(returns >= 2U, "stars go out and re-ignite") && ok;
         ok = expect(maxLevel - minLevel > 0.2, "the mix follows the Constellation's movement") && ok;
 
