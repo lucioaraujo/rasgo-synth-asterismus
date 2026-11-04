@@ -111,6 +111,10 @@ public:
         sectionOrdinal_ = 0U;
         sectionBarsLeft_ = 0U;
         characterReady_ = false;
+        sectionEnergy_.fill(0.0);
+        recedeSlot_ = kBodies;
+        recedeGain_ = 1.0;
+        openingLeader_ = kBodies;
         openingLit_ = {};
         brightnessTarget_.fill(1.0);
         litBars_ = {};
@@ -396,7 +400,13 @@ public:
         std::size_t litTarget() const noexcept {
             return static_cast<std::size_t>(std::lround(2.0 + 5.0 * v[0]));
         }
-        double activity() const noexcept { return 0.35 + 0.65 * v[1]; }
+        // A atividade vai de 0,35 a 1,6 (4/11): abaixo de 1 a porta rareia os
+        // ataques; acima de 1, o céu chama as estrelas acesas a tocar mais.
+        double rawActivity() const noexcept { return 0.35 + 1.25 * v[1]; }
+        double activity() const noexcept { return std::min(1.0, rawActivity()); }
+        double densify() const noexcept { return std::max(0.0, rawActivity() - 1.0); }
+        // A energia de uma parte: quantas estrelas soam e quanto tocam.
+        double energy() const noexcept { return 0.5 * (v[0] + v[1]); }
         // ±6 %, a mesma ordem da variação antiga (0,95–1,05): a faixa com
         // duração calcula os compassos pelo BPM do controle.
         double tempo() const noexcept { return 0.94 + 0.12 * v[2]; }
@@ -406,6 +416,16 @@ public:
         }
     };
     const SectionCharacter& character() const noexcept { return character_; }
+    // A liderança que gira (4/11, "meio homogêneo": uma estrela levava 66–90 %
+    // da energia em todas as partes). A ecologia soma aqui a energia de cada
+    // estrela; ao trocar de parte, quem liderou a parte que acabou recua na
+    // proporção do salto do caráter (muito no contraste, pouco num
+    // desenvolvimento curto); no retorno, o líder da abertura volta.
+    void addStemEnergy(std::size_t slot, double energy) noexcept {
+        if (slot < kBodies && std::isfinite(energy)) sectionEnergy_[slot] += energy;
+    }
+    std::size_t recedingLeader() const noexcept { return recedeSlot_; }
+    double recedeGain() const noexcept { return recedeGain_; }
     // Quanto as estrelas tocam agora (a fração de ataques que passa), com a
     // trama; sem ela, tudo passa.
     double activity() const noexcept { return influence_ > 0.0 ? character_.activity() : 1.0; }
@@ -575,6 +595,11 @@ public:
         const double fade = std::min(1.0, beatsPerSample * 0.5);
         for (std::size_t slot = 0U; slot < kBodies; ++slot) {
             double target = mixerVariation_ ? brightnessTarget_[slot] * level_[slot] : 1.0;
+            // O plano de cada parte (4/11, "meio homogêneo"): a família forte no
+            // caráter da parte vem para a frente, as outras recuam (até 45 %);
+            // muda de parte para parte, então quem lidera também muda.
+            if (mixerVariation_ && characterReady_ && influence_ > 0.0) target *= foregroundOf(slot);
+            if (mixerVariation_ && influence_ > 0.0 && slot == recedeSlot_) target *= recedeGain_;
             // O sol encoberto escurece durante o eclipse.
             if (mixerVariation_ && eclipseBeatsLeft_ > 0U && slot == eclipseSun_) target *= 0.15;
             if (pinned_[slot]) target = 1.0;
@@ -596,6 +621,7 @@ public:
             barTurn = (beat_ % 4U) == 0U;
             if (eclipseBeatsLeft_ > 0U) --eclipseBeatsLeft_;
             if (influence_ > 0.0) watchTheMoon();
+            if (influence_ > 0.0 && brightnessReady_) densifyBeat();
         }
         // O anel de semicolcheias do Fourier do ritmo: ao entrar numa nova
         // casa, esquece o que estava nela há três compassos.
@@ -954,6 +980,19 @@ private:
     std::uint32_t sectionOrdinal_ = 0U;
     std::uint32_t sectionBarsLeft_ = 0U;
     SectionCharacter character_{};
+    std::array<double, kBodies> sectionEnergy_{};
+    std::size_t recedeSlot_ = kBodies;
+    double recedeGain_ = 1.0;
+    std::size_t openingLeader_ = kBodies;
+    std::size_t energyLeader() const noexcept {
+        std::size_t best = kBodies;
+        double total = 0.0;
+        for (std::size_t slot = 0U; slot < kBodies; ++slot) {
+            total += sectionEnergy_[slot];
+            if (sectionEnergy_[slot] > 0.0 && (best == kBodies || sectionEnergy_[slot] > sectionEnergy_[best])) best = slot;
+        }
+        return total > 0.0 ? best : kBodies;
+    }
     SectionCharacter openingCharacter_{};
     SectionCharacter contrastCharacter_{};
     bool characterReady_ = false;
@@ -966,6 +1005,20 @@ private:
         while (x < 0.0 || x > 1.0) x = x < 0.0 ? -x : 2.0 - x;
         return x;
     }
+    // Sobe a energia de uma parte até `target`, repartindo entre as estrelas
+    // que soam e a atividade.
+    static void raiseEnergy(SectionCharacter& c, double target) noexcept {
+        double missing = std::clamp(target, 0.0, 1.0) - c.energy();
+        for (int pass = 0; pass < 2 && missing > 1.0e-6; ++pass) {
+            for (std::size_t i = 0U; i < 2U; ++i) {
+                const double room = 1.0 - c.v[i];
+                const double add = std::min(room, missing);
+                c.v[i] += add;
+                missing -= add * 0.5;
+            }
+        }
+    }
+    bool peakInDevelopment_ = true;
     // O próximo ponto do caminho, ao entrar numa parte.
     void stepCharacter() noexcept {
         SectionCharacter next = character_;
@@ -978,6 +1031,7 @@ private:
             const double r = 0.1 + 0.35 * characterUnit(211U);
             for (std::size_t i = 0U; i < kCharacterDims; ++i)
                 next.v[i] = openingCharacter_.v[i] + r * (contrastCharacter_.v[i] - openingCharacter_.v[i]);
+            raiseEnergy(next, openingCharacter_.energy());
         } else {
             // Uma direção qualquer (soma de três sorteios: perto de uma normal).
             std::array<double, kCharacterDims> d{};
@@ -996,6 +1050,15 @@ private:
             // o que mais se ouve — quantas estrelas soam e quanto tocam. A
             // direção segue a da seed (o contraste pode ser mais cheio ou mais
             // vazio); só a distância nessas duas dimensões tem um mínimo.
+            // A peça não murcha (4/11, "a peça pareceu murchar"): em cada ciclo
+            // a seed escolhe onde fica o pico — no desenvolvimento ou no
+            // contraste — e ele passa da abertura; o retorno (abaixo) também
+            // não cai abaixo dela. O resto do caminho segue livre.
+            const double floorEnergy = openingCharacter_.energy();
+            if (!contrast) {
+                peakInDevelopment_ = characterUnit(501U) < 0.5;
+                raiseEnergy(next, peakInDevelopment_ ? floorEnergy + 0.2 : floorEnergy - 0.05);
+            }
             if (contrast) {
                 const double audible = std::hypot(next.v[0] - character_.v[0], next.v[1] - character_.v[1]);
                 if (audible < 0.45) {
@@ -1008,6 +1071,7 @@ private:
                         next.v[i] = reflect(want);
                     }
                 }
+                if (!peakInDevelopment_) raiseEnergy(next, std::max(floorEnergy, character_.energy()) + 0.15);
                 contrastCharacter_ = next;
             }
         }
@@ -1034,7 +1098,21 @@ private:
         section_ = section_ == Section::Opening || section_ == Section::Return ? Section::Development
                  : section_ == Section::Development ? Section::Contrast : Section::Return;
         sectionBarsLeft_ = sectionLength(sectionOrdinal_);
+        const auto previousLeader = energyLeader();
+        const auto previousCharacter = character_;
         stepCharacter();
+        // A liderança que gira: quem levou a energia da parte que acabou recua
+        // na proporção do salto; no retorno, o líder da abertura volta.
+        if (section_ == Section::Development && sectionOrdinal_ == 1U) openingLeader_ = previousLeader;
+        const double jump = characterDistance(character_, previousCharacter);
+        recedeSlot_ = previousLeader;
+        // Um salto de 0,8 ou mais (o contraste, em geral) tira o líder de cena;
+        // um passo curto (o desenvolvimento) só o faz recuar um pouco. O
+        // líder natural costuma estar 10–20 dB acima das outras estrelas: um
+        // recuo pela metade não muda quem lidera.
+        recedeGain_ = 1.0 - std::clamp(jump / 0.8, 0.0, 1.0);
+        if (section_ == Section::Return && recedeSlot_ == openingLeader_) recedeGain_ = 1.0;
+        sectionEnergy_.fill(0.0);
         if (mixerVariation_ && brightnessReady_) reshapeForSection();
         chooseDrift();
         reshapeMotion();
@@ -1122,6 +1200,33 @@ private:
         }
         driftRatio_ = (1.01 + 0.05 * static_cast<double>((word >> 8U) & 255U) / 255.0)
             * (((word >> 16U) & 1U) != 0U ? 1.0 : -1.0);
+    }
+
+    // O quanto uma estrela fica na frente na parte atual: o peso da família
+    // dela relativo à família mais forte do caráter (de 0,45 a 1).
+    double foregroundOf(std::size_t slot) const noexcept {
+        double strongest = 1.0e-6;
+        for (std::size_t f = 0U; f < 4U; ++f) strongest = std::max(strongest, character_.v[4U + f]);
+        const auto function = performanceStarFunction(bodies_[slot].star);
+        if (function == PerformanceStarFunction::Control) return 1.0;
+        return 0.45 + 0.55 * std::clamp(character_.family(function) / strongest, 0.0, 1.0);
+    }
+
+    // O adensamento (4/11): numa parte de atividade acima de 1, a cada tempo
+    // cada estrela acesa (que soa) tem a chance de ser chamada a tocar de
+    // novo, num lugar do tempo e com uma força que a seed escolhe.
+    void densifyBeat() noexcept {
+        const double extra = character_.densify();
+        if (extra <= 0.0) return;
+        for (std::size_t slot = 0U; slot < kBodies; ++slot) {
+            if (!bodies_[slot].lit || bodies_[slot].presence <= 0.0 || brightnessTarget_[slot] < 0.5) continue;
+            if (performanceStarFunction(bodies_[slot].star) == PerformanceStarFunction::Control) continue;
+            const auto word = mix(seed_ ^ static_cast<std::uint32_t>(beat_ * 0x27d4eb2dU) ^ static_cast<std::uint32_t>(slot * 0x165667b1U));
+            if (static_cast<double>(word & 0xffffU) / 65536.0 >= extra) continue;
+            static constexpr std::array<double, 4> places{{0.0, 0.5, 0.25, 0.75}};
+            const double strength = 0.45 + 0.35 * static_cast<double>((word >> 16U) & 255U) / 255.0;
+            schedule(slot, 0.0, strength, places[(word >> 24U) & 3U], kMaxChainDepth);
+        }
     }
 
     // O elenco de cada parte (4/11): ao entrar numa parte, as estrelas que

@@ -1775,6 +1775,8 @@ public:
                     + voice.localControls[2] * 0.38;
             }
             stem.mono *= macroEnergyCompensation_ * director_.brightness(index);
+            // A energia de cada estrela vai ao diretor (a liderança que gira).
+            director_.addStemEnergy(index, stem.mono * stem.mono);
         }
         if (stutterRemainingSamples_ > 0U && --stutterRemainingSamples_ == 0U) {
             stutterIntensity_ = 0.0;
