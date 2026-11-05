@@ -179,7 +179,35 @@ public:
         // nessa escolha em vez de começarem sempre zerados.
         if (distribution.audibleStemCount >= 8U)
             document = makeExpandedEnsemble(seed, playing);
+        seedPhenomena(document, seed);
         return document;
+    }
+
+    // A seed escolhe os fenômenos (5/11, auditoria da seed, item B). Antes,
+    // todo cabo nascia ATRAIR, sem fenômeno ligado, e cada cena tinha o seu
+    // fenômeno de população fixo (ESPIRAL girar, RASGO fragmentar, BALANÇO
+    // alinhar). Agora, por cena: cada cabo tem uma chance de nascer com um
+    // dos 23 fenômenos relacionais (menor na abertura, que reúne devagar), e
+    // as cenas 2–4 tiram o fenômeno de população entre os 10. O músico
+    // continua trocando ou desligando qualquer um.
+    static void seedPhenomena(PerformanceSessionDocument& document, std::uint32_t seed) noexcept {
+        constexpr auto relational = static_cast<std::uint32_t>(PerformanceRelationalPhenomenon::Count);
+        constexpr auto population = static_cast<std::uint32_t>(PerformancePopulationPhenomenon::Count);
+        for (std::size_t sceneIndex = 0U; sceneIndex < document.sceneCount; ++sceneIndex) {
+            auto& scene = document.scenes[sceneIndex];
+            const double chance = sceneIndex == 0U ? 0.35 : 0.6;
+            for (std::size_t index = 0U; index < scene.constellation.relationCount; ++index) {
+                auto& relation = scene.constellation.relations[index];
+                const auto salt = 0xB000U + static_cast<std::uint32_t>(sceneIndex * 64U + index * 2U);
+                if (unit(seed, salt) >= chance) continue;
+                relation.phenomenon = static_cast<PerformanceRelationalPhenomenon>(
+                    mix((static_cast<std::uint64_t>(seed) << 32U) | (salt + 1U)) % relational);
+                relation.phenomenonEnabled = true;
+            }
+            if (sceneIndex > 0U && scene.session.populationPhenomenonEnabled)
+                scene.session.populationPhenomenon = static_cast<PerformancePopulationPhenomenon>(
+                    mix((static_cast<std::uint64_t>(seed) << 32U) | (0xB800U + sceneIndex)) % population);
+        }
     }
 
     // The ModalResonator is the next audited matter. This function declares

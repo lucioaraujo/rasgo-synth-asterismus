@@ -137,7 +137,7 @@ public:
         eclipseSun_ = kBodies;
         eclipseBeatsLeft_ = 0U;
         eclipseCount_ = 0U;
-        dance_ = choreographyFor(Section::Opening);
+        dance_ = seededChoreography(Section::Opening);
         motionTime_ = 0.0;
         rotationSign_ = (mix(seed_ ^ 0x601AU) & 1U) != 0U ? 1.0 : -1.0;
         spin_ = {};
@@ -157,7 +157,7 @@ public:
                                          / 511.5 - 1.0);
     }
 
-    void setSeed(std::uint32_t seed) noexcept { seed_ = seed; reset(); }
+    void setSeed(std::uint32_t seed) noexcept { seed_ = seed; chooseSeedMotion(); reset(); }
     // Centro tonal da seed (a fundamental da escala com que os corpos são
     // afinados), usado pela cadência.
     void setTonalCenter(double hz) noexcept {
@@ -453,6 +453,9 @@ public:
         if (slot >= kBodies) return PerformanceMotionFamily::Free;
         if (bodyFamily_[slot] != PerformanceMotionFamily::Count) return bodyFamily_[slot];
         if (collectiveFamily_ != PerformanceMotionFamily::Count) return collectiveFamily_;
+        // Sem escolha do músico, a família de cada parte vem da seed (5/11).
+        if (fieldFamily_[slot] == PerformanceMotionFamily::Free && influence_ > 0.0)
+            return sectionFamily_[std::min<std::size_t>(static_cast<std::size_t>(section_), 3U)];
         return fieldFamily_[slot];
     }
     // O que cada família faz às forças da estrela (multiplicadores sobre a
@@ -745,6 +748,30 @@ private:
         double epicycle = 0.04;  // raio do passeio do lugar de repouso
         double distortion = 0.2; // a matriz móvel que deforma o espaço
     };
+    // A seed escolhe a física de cada parte (5/11, auditoria da seed, item
+    // B): uma família de movimento por parte (antes, só o músico, pela DANÇA)
+    // e um desvio da coreografia em torno da tabela (cada peso ×0,7–1,35) —
+    // a tabela vira centro, não regra; o contraste deixa de ser sempre o
+    // mesmo bilhar no estádio.
+    void chooseSeedMotion() noexcept {
+        constexpr auto families = static_cast<std::uint32_t>(PerformanceMotionFamily::Count);
+        for (std::size_t section = 0U; section < sectionFamily_.size(); ++section) {
+            sectionFamily_[section] = static_cast<PerformanceMotionFamily>(
+                performanceSeedStream(seed_, 0xF000U + static_cast<std::uint32_t>(section)) % families);
+            for (std::size_t weight = 0U; weight < choreographyScale_[section].size(); ++weight)
+                choreographyScale_[section][weight] = 0.7 + 0.65 * static_cast<double>(
+                    performanceSeedStream(seed_, 0xF100U + static_cast<std::uint32_t>(section * 16U + weight))
+                    & 0xffffU) / 65535.0;
+        }
+    }
+    Choreography seededChoreography(Section section) const noexcept {
+        auto c = choreographyFor(section);
+        const auto& k = choreographyScale_[std::min<std::size_t>(static_cast<std::size_t>(section), 3U)];
+        c.anchor *= k[0]; c.damping *= k[1]; c.flow *= k[2]; c.magnet *= k[3]; c.stadium *= k[4];
+        c.bands *= k[5]; c.kick *= k[6]; c.spin *= k[7]; c.foam *= k[8]; c.epicycle *= k[9];
+        c.distortion *= k[10];
+        return c;
+    }
     static Choreography choreographyFor(Section section) noexcept {
         switch (section) {
         case Section::Opening: return {3.2, 1.3, 0.35, 0.0, 0.0, 0.6, 0.6, 0.4, 0.6, 0.04, 0.2};
@@ -796,6 +823,10 @@ private:
     std::array<bool, kChainLength> pendulumOver_{};
     std::array<double, kBodies> charge_{};
     PerformanceMotionFamily collectiveFamily_ = PerformanceMotionFamily::Count;
+    std::array<PerformanceMotionFamily, 4> sectionFamily_{};
+    std::array<std::array<double, 11>, 4> choreographyScale_{{
+        {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}, {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}},
+        {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}, {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}}};
     PerformanceConstellationMotion constellationMotion_ = PerformanceConstellationMotion::Still;
     double rotationAngle_ = 0.0;
     double rotationSign_ = 1.0;
@@ -1353,7 +1384,7 @@ private:
     // Um passo do movimento: forças → velocidades → posições (Euler
     // semi-implícito, estável para molas), depois os choques e as paredes.
     void stepGravity(double dt) noexcept {
-        const auto target = choreographyFor(section_);
+        const auto target = seededChoreography(section_);
         const double blend = std::min(1.0, dt * 0.6);
         dance_.anchor += (target.anchor - dance_.anchor) * blend;
         dance_.damping += (target.damping - dance_.damping) * blend;

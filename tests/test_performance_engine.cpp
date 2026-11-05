@@ -1996,7 +1996,38 @@ void testSeedTrajectoryReachesModuleAudio() {
 
 } // namespace
 
+// Auditoria da seed, item B (5/11): a seed liga e escolhe os fenômenos dos
+// cabos e o fenômeno de população das cenas 2–4 — não mais todo cabo ATRAIR e
+// cada cena com o mesmo fenômeno.
+void testSeedChoosesPhenomena() {
+    std::array<bool, static_cast<std::size_t>(PerformanceRelationalPhenomenon::Count)> seenRelational{};
+    std::array<bool, static_cast<std::size_t>(PerformancePopulationPhenomenon::Count)> seenPopulation{};
+    std::size_t enabled = 0U, total = 0U;
+    for (std::uint32_t seed = 1U; seed <= 24U; ++seed) {
+        const auto document = PerformanceTerritoryFactory::makeForReleasedStems(seed, kPerformanceSafeBodyLimit, true);
+        expect(document.valid(), "a seeded document with phenomena stays valid");
+        for (std::size_t scene = 0U; scene < document.sceneCount; ++scene) {
+            const auto& constellation = document.scenes[scene].constellation;
+            for (std::size_t index = 0U; index < constellation.relationCount; ++index) {
+                ++total;
+                if (!constellation.relations[index].phenomenonEnabled) continue;
+                ++enabled;
+                seenRelational[static_cast<std::size_t>(constellation.relations[index].phenomenon)] = true;
+            }
+            if (scene > 0U && document.scenes[scene].session.populationPhenomenonEnabled)
+                seenPopulation[static_cast<std::size_t>(document.scenes[scene].session.populationPhenomenon)] = true;
+        }
+    }
+    const auto count = [](const auto& seen) { return static_cast<std::size_t>(std::count(seen.begin(), seen.end(), true)); };
+    std::cout << "phenomena: " << enabled << "/" << total << " cables enabled, " << count(seenRelational)
+              << " relational and " << count(seenPopulation) << " population phenomena across 24 seeds\n";
+    expect(enabled > total / 4U && enabled < total, "the seed enables a part of the cables, not all nor none");
+    expect(count(seenRelational) >= 15U, "the seed reaches most of the 23 relational phenomena");
+    expect(count(seenPopulation) >= 7U, "the seed reaches most of the 10 population phenomena");
+}
+
 int main() {
+    testSeedChoosesPhenomena();
     testLiveStemReconstruction();
     testLiveStemMixer();
     testEngineLifecycleAndGestures();
