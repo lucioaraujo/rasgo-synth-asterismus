@@ -59,6 +59,21 @@ Pasta: `~/Music/Rasgo Synth Performance/albuns/<data hora> <nome>/`. Com um
 álbum ativo, o REC grava ali como `FAIXA_nn_<data hora>.wav` (com o
 manifesto e os stems de sempre).
 
+### MASTERIZAR O ÁLBUM, com limitador (5/11)
+
+`include/rasgo/performance/PerformanceAlbumMaster.hpp`. Pedido do autor: "se
+precisar desenvolva o limitador". Só com ganho, o álbum de 5/11 (8 faixas)
+saía com a mediana em −21 LUFS, não em −16: o ganho comum era barrado pela
+faixa de pico mais alto. Agora cada faixa vai em direção à mediana (±3 dB,
+o limite do Studio), o álbum sobe até −16 LUFS, e as cópias passam por um
+limitador de true peak com antecipação (3 ms, liberação 150 ms, mínimo
+deslizante + média: o ataque termina no pico, sem clique), no teto de
+−1 dBTP com 0,3 dB de margem, até 6 dB de redução prevista. No álbum de 5/11
+(sonda offline): mediana −16,4 LUFS, faixas de −13,6 a −19,6, true peak
+−1,3 dBTP em todas, limitador de 1,4 a 5,6 dB. O `master.json` registra a
+redução por faixa. Enquanto roda, o botão mostra MASTERIZANDO k/N…; no fim,
+ÁLBUM · MASTERIZADO (verde). Os originais nunca mudam.
+
 ## 4. PERCURSO (seguindo a forma do céu)
 
 Botão **PERCURSO** na caixa FORMA · PERCURSO / ÁLBUM do cabeçalho, à esquerda de FAIXA · DURAÇÃO (desde 5/11; antes na faixa de título das cenas). As cenas seguem a forma do

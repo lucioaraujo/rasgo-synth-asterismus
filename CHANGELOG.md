@@ -36,6 +36,9 @@ synthesis module is a star. The internal development versions went up to
   JSON manifest, in one folder per take; TRACK · DURATION (1, 2, 3 or 5 min)
   fits the form into the chosen length; when the coda ends only the recording
   closes — the sound goes on and a new piece opens; ▶ LISTEN opens the last take.
+- **Album.** Tracks with seeds derived from the album seed; the next track
+  comes in by itself; MASTER THE ALBUM brings the album to −16 LUFS with a
+  look-ahead true-peak limiter at −1 dBTP (copies only, the takes never change).
 - **Memory and sessions.** Eight named places; SAVE SESSION / OPEN SESSION as
   `.asterismus` files (parameters only, never audio).
 - **Output** in the common RASGO standard: fixed gain, limiter with 4×

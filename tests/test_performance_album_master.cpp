@@ -72,6 +72,48 @@ int main() {
     PerformanceTrackLevel silent;
     const auto silentPlan = planAlbumMaster({silent, before[1]});
     ok = expect(silentPlan.gainDb[0] == 0.0, "a silent take keeps its level") && ok;
+    // O limitador (5/11): uma faixa baixa com picos raros (um estalo de 0,9, de uma
+    // amostra, a cada segundo). Só com ganho, o estalo barra a subida; com até 6 dB de
+    // limitador, a faixa sobe ~6 dB e nenhum true peak passa de −1 dBTP.
+    {
+        const std::string spiky = "album_master_test_spiky.wav", spikyMaster = "album_master_test_spiky_master.wav";
+        {
+            const std::uint32_t rate = 48000U, frames = rate * 6U;
+            std::ofstream out(spiky, std::ios::binary);
+            out.write("RIFF", 4); put32(out, 36U + frames * 8U); out.write("WAVEfmt ", 8); put32(out, 16U);
+            put16(out, 3U); put16(out, 2U); put32(out, rate); put32(out, rate * 8U); put16(out, 8U); put16(out, 32U);
+            out.write("data", 4); put32(out, frames * 8U);
+            for (std::uint32_t i = 0U; i < frames; ++i) {
+                float v = static_cast<float>(0.05 * std::sin(6.283185307179586 * 440.0 * i / rate));
+                if (i % rate == 0U) v = 0.9F;  // um estalo de uma amostra: pico alto, quase sem loudness
+                out.write(reinterpret_cast<const char*>(&v), 4);
+                out.write(reinterpret_cast<const char*>(&v), 4);
+            }
+        }
+        const auto level = measureWavLevel(spiky);
+        ok = expect(level.has_value(), "the spiky track is read") && ok;
+        if (level) {
+            const auto gainOnly = planAlbumMaster({*level});
+            const auto limited = planAlbumMaster({*level}, -16.0, -1.0, 6.0);
+            ok = expect(limited.gainDb[0] > gainOnly.gainDb[0] + 5.5, "the limiter lets the track rise ~6 dB more") && ok;
+            double reduction = 0.0;
+            ok = expect(writeMasteredWav(spiky, spikyMaster, limited.gainDb[0], 7U, true, -1.0, &reduction),
+                        "the limited master is written") && ok;
+            const auto after = measureWavLevel(spikyMaster);
+            ok = expect(after.has_value(), "the limited master is read") && ok;
+            if (after) {
+                std::cout << "limitador: " << level->integratedLufs << " LUFS, TP " << level->maxTruePeakDbtp << " → ganho "
+                          << limited.gainDb[0] << " dB → " << after->integratedLufs << " LUFS, TP " << after->maxTruePeakDbtp
+                          << " dBTP, redução " << reduction << " dB, " << after->seconds << " s\n";
+                ok = expect(after->maxTruePeakDbtp <= -0.95, "the limited master stays under −1 dBTP") && ok;
+                ok = expect(std::fabs(after->integratedLufs - (level->integratedLufs + limited.gainDb[0])) < 1.0,
+                            "the limiter leaves the body of the track at its planned gain") && ok;
+                ok = expect(std::fabs(after->seconds - level->seconds) < 1.0e-6, "the limited master keeps its length") && ok;
+            }
+        }
+        std::remove(spiky.c_str());
+        std::remove(spikyMaster.c_str());
+    }
     for (const auto& file : sources) std::remove(file.c_str());
     for (const auto& file : masters) std::remove(file.c_str());
     if (!ok) return EXIT_FAILURE;

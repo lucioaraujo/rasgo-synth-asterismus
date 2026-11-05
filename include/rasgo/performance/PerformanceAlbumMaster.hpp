@@ -12,6 +12,15 @@
 // true peak passar de −1 dBTP. A medição é a do próprio Asterismus
 // (PerformanceLoudnessMeter: BS.1770-4 com portas, true peak 4×).
 //
+// LIMITADOR (5/11/2026). Pedido do autor: "se precisar desenvolva o
+// limitador". Só com ganho, o álbum de 5/11 ficou em −21 LUFS (mediana), não
+// em −16: o ganho comum é barrado pela faixa de pico mais alto. Agora, com
+// `maxLimiterDb` > 0, o ganho comum pode passar do teto até essa redução de
+// pico prevista (6 dB no app), e a cópia passa por um limitador de true peak
+// com antecipação (PerformanceTruePeakLimiter, abaixo): os picos ficam no
+// teto, o resto da dinâmica não muda. maxLimiterDb = 0 é o comportamento
+// antigo (só ganho).
+//
 // Leitura e escrita em pedaços (memória fixa, qualquer duração). As tomadas
 // originais nunca são alteradas: as cópias masterizadas são arquivos novos.
 // Só fora do callback de áudio (numa thread de trabalho ou ferramenta).
@@ -124,6 +133,86 @@ inline std::size_t readWavFrames(std::ifstream& in, const PerformanceWavInfo& in
     return got;
 }
 
+// Limitador de true peak, offline, com antecipação. Desenho clássico de
+// "mínimo e média": o ganho necessário em cada amostra (teto ÷ pico 4×) passa
+// por um mínimo deslizante de L+1 amostras e por uma média de L amostras; o
+// áudio sai atrasado L (+ a latência do detector), então a rampa de ataque
+// termina exatamente no pico, sem clique. A liberação é um polo de 150 ms.
+// Memória fixa (anéis de L amostras), sem alocação no laço.
+class PerformanceTruePeakLimiter {
+public:
+    void prepare(double sampleRate, double ceilingDbtp, double lookaheadMs = 3.0, double releaseMs = 150.0) {
+        ceiling_ = std::pow(10.0, ceilingDbtp / 20.0);
+        lookahead_ = std::max<std::size_t>(8U, static_cast<std::size_t>(std::lround(sampleRate * lookaheadMs / 1000.0)));
+        delay_ = lookahead_ + kDetectorLatency;
+        release_ = 1.0 - std::exp(-1.0 / std::max(1.0, sampleRate * releaseMs / 1000.0));
+        minIndex_.assign(lookahead_ + 2U, 0U);
+        minValue_.assign(lookahead_ + 2U, 1.0);
+        head_ = tail_ = 0U;
+        average_.assign(lookahead_, 1.0);
+        averageSum_ = static_cast<double>(lookahead_);
+        averagePos_ = 0U;
+        delayLeft_.assign(delay_ + 1U, 0.0);
+        delayRight_.assign(delay_ + 1U, 0.0);
+        delayPos_ = 0U;
+        envelope_ = 1.0;
+        counter_ = 0U;
+        maxReduction_ = 1.0;
+        detectors_[0].reset();
+        detectors_[1].reset();
+    }
+
+    // Uma amostra entra, a amostra de `latency()` atrás sai, limitada.
+    void process(double left, double right, double& outLeft, double& outRight) noexcept {
+        const double peak = std::max({detectors_[0].process(left), detectors_[1].process(right),
+                                      std::fabs(left), std::fabs(right)});
+        const double target = peak > ceiling_ ? ceiling_ / peak : 1.0;
+        // mínimo deslizante (fila monotônica) das últimas L+1 metas
+        const auto capacity = minIndex_.size();
+        while (head_ != tail_) {
+            const auto last = (tail_ + capacity - 1U) % capacity;
+            if (minValue_[last] < target) break;
+            tail_ = last;
+        }
+        minIndex_[tail_] = counter_;
+        minValue_[tail_] = target;
+        tail_ = (tail_ + 1U) % capacity;
+        while (counter_ - minIndex_[head_] > lookahead_) head_ = (head_ + 1U) % capacity;
+        const double windowMin = minValue_[head_];
+        // média de L mínimos
+        averageSum_ += windowMin - average_[averagePos_];
+        average_[averagePos_] = windowMin;
+        averagePos_ = (averagePos_ + 1U) % lookahead_;
+        const double smooth = std::min(1.0, averageSum_ / static_cast<double>(lookahead_));
+        envelope_ = smooth < envelope_ ? smooth : envelope_ + (smooth - envelope_) * release_;
+        envelope_ = std::min(envelope_, smooth);
+        maxReduction_ = std::min(maxReduction_, envelope_);
+        ++counter_;
+        // atraso do áudio
+        const double delayedLeft = delayLeft_[delayPos_];
+        const double delayedRight = delayRight_[delayPos_];
+        delayLeft_[delayPos_] = left;
+        delayRight_[delayPos_] = right;
+        delayPos_ = (delayPos_ + 1U) % delayLeft_.size();
+        // a última proteção: nenhuma amostra passa do teto
+        outLeft = std::clamp(delayedLeft * envelope_, -ceiling_, ceiling_);
+        outRight = std::clamp(delayedRight * envelope_, -ceiling_, ceiling_);
+    }
+
+    std::size_t latency() const noexcept { return delayLeft_.size(); }
+    double maxReductionDb() const noexcept { return 20.0 * std::log10(std::max(1.0e-9, maxReduction_)); }
+
+private:
+    // O detector 4× responde ~8 amostras depois (16 taps por fase / 2).
+    static constexpr std::size_t kDetectorLatency = PerformanceTruePeakDetector::kTapsPerPhase / 2U;
+    std::array<PerformanceTruePeakDetector, 2> detectors_{};
+    double ceiling_ = 1.0, release_ = 0.001, envelope_ = 1.0, averageSum_ = 0.0, maxReduction_ = 1.0;
+    std::size_t lookahead_ = 8U, delay_ = 16U, head_ = 0U, tail_ = 0U, averagePos_ = 0U, delayPos_ = 0U;
+    std::uint64_t counter_ = 0U;
+    std::vector<std::uint64_t> minIndex_;
+    std::vector<double> minValue_, average_, delayLeft_, delayRight_;
+};
+
 struct PerformanceTrackLevel {
     double integratedLufs = -70.0;
     double maxTruePeakDbtp = -70.0;
@@ -165,7 +254,8 @@ struct PerformanceAlbumMasterPlan {
 // teto de true peak em nenhuma faixa. Faixas silenciosas (≤ −69 LUFS) ficam
 // com ganho 0.
 inline PerformanceAlbumMasterPlan planAlbumMaster(const std::vector<PerformanceTrackLevel>& levels,
-                                                  double targetLufs = -16.0, double ceilingDbtp = -1.0) {
+                                                  double targetLufs = -16.0, double ceilingDbtp = -1.0,
+                                                  double maxLimiterDb = 0.0) {
     PerformanceAlbumMasterPlan plan;
     plan.targetLufs = targetLufs;
     plan.ceilingDbtp = ceilingDbtp;
@@ -181,7 +271,10 @@ inline PerformanceAlbumMasterPlan planAlbumMaster(const std::vector<PerformanceT
     for (std::size_t index = 0U; index < levels.size(); ++index) {
         if (levels[index].integratedLufs <= -69.0) continue;
         relative[index] = std::clamp(plan.medianLufs - levels[index].integratedLufs, -3.1, 2.9);
-        album = std::min(album, ceilingDbtp - levels[index].maxTruePeakDbtp - relative[index]);
+        // Sem limitador, nenhum pico passa do teto; com ele, até maxLimiterDb
+        // de redução prevista no pico mais alto da faixa.
+        album = std::min(album, ceilingDbtp + std::max(0.0, maxLimiterDb)
+                                    - levels[index].maxTruePeakDbtp - relative[index]);
     }
     plan.albumGainDb = album;
     for (std::size_t index = 0U; index < levels.size(); ++index)
@@ -190,8 +283,11 @@ inline PerformanceAlbumMasterPlan planAlbumMaster(const std::vector<PerformanceT
 }
 
 // Uma cópia com ganho, em WAV estéreo de 24 bits com dither TPDF de ±1 LSB.
+// Com `limit`, a cópia passa pelo PerformanceTruePeakLimiter no teto
+// `ceilingDbtp` (com 0,3 dB de margem para o dither e a reconstrução).
 inline bool writeMasteredWav(const std::string& source, const std::string& destination, double gainDb,
-                             std::uint32_t ditherSeed = 0x5EEDu) {
+                             std::uint32_t ditherSeed = 0x5EEDu, bool limit = false, double ceilingDbtp = -1.0,
+                             double* limiterReductionDb = nullptr) {
     using namespace album_master_detail;
     std::ifstream in(source, std::ios::binary);
     PerformanceWavInfo info;
@@ -223,14 +319,44 @@ inline bool writeMasteredWav(const std::string& source, const std::string& desti
     std::vector<unsigned char> scratch, bytes;
     std::array<double, 4096> left{}, right{};
     std::uint64_t written = 0U;
+    PerformanceTruePeakLimiter limiter;
+    if (limit) limiter.prepare(info.sampleRate, ceilingDbtp - 0.3);
+    std::uint64_t pending = limit ? limiter.latency() : 0U;   // amostras de atraso a descartar
+    std::uint64_t consumed = 0U;
+    bool sourceDone = false;
     for (;;) {
-        const auto got = readWavFrames(in, info, left.size(), scratch, left.data(), right.data());
+        std::size_t got = 0U;
+        if (!sourceDone) {
+            got = readWavFrames(in, info, left.size(), scratch, left.data(), right.data());
+            consumed += got;
+            if (got < left.size()) sourceDone = true;
+        }
+        // Depois do fim da fonte, o atraso do limitador é esvaziado com zeros.
+        if (sourceDone && limit && written + got < info.frames) {
+            const auto missing = std::min<std::uint64_t>(left.size() - got, info.frames + limiter.latency() - consumed);
+            for (std::size_t i = 0U; i < missing; ++i) { left[got + i] = 0.0; right[got + i] = 0.0; }
+            got += static_cast<std::size_t>(missing);
+            consumed += missing;
+        }
+        if (limit) {
+            std::size_t kept = 0U;
+            for (std::size_t frame = 0U; frame < got; ++frame) {
+                double outLeft = 0.0, outRight = 0.0;
+                limiter.process(left[frame] * gain, right[frame] * gain, outLeft, outRight);
+                if (pending > 0U) { --pending; continue; }
+                left[kept] = outLeft;
+                right[kept] = outRight;
+                ++kept;
+            }
+            got = std::min<std::uint64_t>(kept, info.frames - written);
+        }
+        const double frameGain = limit ? 1.0 : gain;
         bytes.resize(got * 6U);
         for (std::size_t frame = 0U; frame < got; ++frame) {
-            const double values[2] = {left[frame], right[frame]};
+            const double values[2] = {left[frame] * frameGain, right[frame] * frameGain};
             for (std::size_t channel = 0U; channel < 2U; ++channel) {
                 const double dither = uniform() - uniform();  // TPDF, ±1 LSB
-                const double scaled = std::clamp(values[channel] * gain * 8388607.0 + dither, -8388608.0, 8388607.0);
+                const double scaled = std::clamp(values[channel] * 8388607.0 + dither, -8388608.0, 8388607.0);
                 const auto sample = static_cast<std::int32_t>(std::lround(scaled));
                 unsigned char* b = bytes.data() + frame * 6U + channel * 3U;
                 b[0] = static_cast<unsigned char>(sample);
@@ -240,8 +366,9 @@ inline bool writeMasteredWav(const std::string& source, const std::string& desti
         }
         out.write(reinterpret_cast<const char*>(bytes.data()), static_cast<std::streamsize>(bytes.size()));
         written += got;
-        if (got < left.size()) break;
+        if (written >= info.frames || (sourceDone && (!limit || consumed >= info.frames + limiter.latency()))) break;
     }
+    if (limiterReductionDb != nullptr) *limiterReductionDb = limit ? limiter.maxReductionDb() : 0.0;
     return static_cast<bool>(out) && written == info.frames;
 }
 

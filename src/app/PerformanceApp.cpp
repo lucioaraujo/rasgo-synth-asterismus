@@ -4583,10 +4583,10 @@ private:
                                true, track == current);
             menu.addSubMenu(uiText(supportLanguage_, "IR PARA A FAIXA", "GO TO TRACK", "ALLER À LA PISTE", "IR A LA PISTA"), tracks);
             menu.addSeparator();
-            menu.addItem(7, uiText(supportLanguage_, "MASTERIZAR O ÁLBUM (só ganho, −16 LUFS, −1 dBTP)",
-                                   "MASTER THE ALBUM (gain only, −16 LUFS, −1 dBTP)",
-                                   "MASTERISER L’ALBUM (gain seul, −16 LUFS, −1 dBTP)",
-                                   "MASTERIZAR EL ÁLBUM (solo ganancia, −16 LUFS, −1 dBTP)"),
+            menu.addItem(7, uiText(supportLanguage_, "MASTERIZAR O ÁLBUM (−16 LUFS, limitador em −1 dBTP)",
+                                   "MASTER THE ALBUM (−16 LUFS, limiter at −1 dBTP)",
+                                   "MASTERISER L’ALBUM (−16 LUFS, limiteur à −1 dBTP)",
+                                   "MASTERIZAR EL ÁLBUM (−16 LUFS, limitador en −1 dBTP)"),
                          !album_.takes().empty() && !albumMastering_.load());
             menu.addItem(5, uiText(supportLanguage_, "ABRIR A PASTA DO ÁLBUM", "OPEN THE ALBUM FOLDER",
                                    "OUVRIR LE DOSSIER DE L’ALBUM", "ABRIR LA CARPETA DEL ÁLBUM"));
@@ -4749,23 +4749,29 @@ private:
                 ok = ok && level.has_value();
                 levels.push_back(level.value_or(PerformanceTrackLevel{}));
             }
-            const auto plan = planAlbumMaster(levels);
+            // Com o limitador (5/11): até 6 dB de redução no pico mais alto,
+            // para a mediana chegar de fato a −16 LUFS.
+            constexpr double kAlbumMaxLimiterDb = 6.0;
+            const auto plan = planAlbumMaster(levels, -16.0, -1.0, kAlbumMaxLimiterDb);
             juce::String report = "{\n  \"schema\": \"rasgo-asterismus-album-master\",\n  \"targetLufs\": "
                 + juce::String(plan.targetLufs, 1) + ",\n  \"ceilingDbtp\": " + juce::String(plan.ceilingDbtp, 1)
                 + ",\n  \"medianLufsBefore\": " + juce::String(plan.medianLufs, 2) + ",\n  \"albumGainDb\": "
                 + juce::String(plan.albumGainDb, 2)
-                + ",\n  \"method\": \"só ganho, sem limitador; cada faixa em direção à mediana (−3,1…+2,9 dB, o limite do Studio), depois um ganho comum\",\n  \"tracks\": [";
+                + ",\n  \"method\": \"cada faixa em direção à mediana (−3,1…+2,9 dB, o limite do Studio), depois um ganho comum até −16 LUFS; limitador de true peak com antecipação (3 ms, liberação 150 ms) no teto, até 6 dB de redução prevista\",\n  \"tracks\": [";
             for (std::size_t index = 0U; ok && index < latest.size(); ++index) {
                 progress();
                 const auto target = folder.getChildFile(latest[index].second.getFileNameWithoutExtension() + "_master.wav");
+                double reduction = 0.0;
                 ok = writeMasteredWav(latest[index].second.getFullPathName().toStdString(), target.getFullPathName().toStdString(),
-                                      plan.gainDb[index], static_cast<std::uint32_t>(index + 1U) * 0x9E3779B9U);
+                                      plan.gainDb[index], static_cast<std::uint32_t>(index + 1U) * 0x9E3779B9U,
+                                      true, plan.ceilingDbtp, &reduction);
                 const auto after = measureWavLevel(target.getFullPathName().toStdString()).value_or(PerformanceTrackLevel{});
                 report += juce::String(index > 0U ? "," : "") + "\n    {\"track\": " + juce::String(static_cast<int>(latest[index].first))
                     + ", \"source\": \"" + latest[index].second.getFileName() + "\", \"master\": \"" + target.getFileName()
                     + "\", \"lufsBefore\": " + juce::String(levels[index].integratedLufs, 2) + ", \"gainDb\": "
                     + juce::String(plan.gainDb[index], 2) + ", \"lufsAfter\": " + juce::String(after.integratedLufs, 2)
-                    + ", \"truePeakAfterDbtp\": " + juce::String(after.maxTruePeakDbtp, 2) + "}";
+                    + ", \"truePeakAfterDbtp\": " + juce::String(after.maxTruePeakDbtp, 2)
+                    + ", \"limiterMaxReductionDb\": " + juce::String(-reduction, 2) + "}";
             }
             report += "\n  ]\n}\n";
             if (ok) ok = folder.getChildFile("master.json").replaceWithText(report);
