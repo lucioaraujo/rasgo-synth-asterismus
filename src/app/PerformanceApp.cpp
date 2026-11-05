@@ -4514,8 +4514,21 @@ private:
     void followPercurso(const PerformanceTelemetrySnapshot& telemetry) {
         if (!percurso_ || !telemetry.playing) return;
         const auto section = static_cast<std::uint8_t>(std::min<unsigned>(telemetry.skySection, 3U));
+        if (percursoSection_ == 255U) {
+            // Um percurso que começa adota a volta em que a forma está, e a
+            // tomada registra a gramática.
+            percursoPass_ = telemetry.skyFormPass;
+            if (recorder_.recording())
+                appendTakeTrace(juce::String("forma:") + PerformanceSkyDirector::grammarName(telemetry.skyGrammar));
+        }
+        if (section == percursoSection_ && telemetry.skyFormPass == percursoPass_) return;
+        // A forma terminou uma passagem da sua gramática (5/11: ciclo, arco,
+        // rondó, ondas, kishōtenketsu, choque) — antes, "o retorno acabou"
+        // (retorno → desenvolvimento), que no rondó e nas ondas acontece no
+        // meio da peça.
+        const bool returnEnded = telemetry.skyFormPass != percursoPass_;
+        percursoPass_ = telemetry.skyFormPass;
         if (section == percursoSection_) return;
-        const bool returnEnded = percursoSection_ == 3U && section == 1U;
         // Numa faixa com duração, a forma termina no retorno: se o tempo
         // elástico do céu a fizer acabar antes do alvo, fica no BALANÇO até a
         // coda (no app, 3/11, ela recomeçava o desenvolvimento nos últimos
@@ -7103,6 +7116,7 @@ private:
     juce::TextButton percursoButton_;
     bool percurso_ = false;
     std::uint8_t percursoSection_ = 255U;
+    std::uint8_t percursoPass_ = 0U;
     bool takePercurso_ = false;
     bool takeStartedWithPlay_ = true;
     // A FAIXA com duração (2/11): 1/2/3/5 min, como no Antitotem; 0 = sem

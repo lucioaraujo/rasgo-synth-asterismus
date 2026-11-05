@@ -1925,11 +1925,14 @@ void testSceneRecallKeepsTheSkyForm() {
     std::array<float, 512> left{}, right{};
     auto section = [&] { return engine.readTelemetry().skySection; };
     int blocks = 0;
-    while (section() != 1U && blocks < 94 * 30) { engine.processBlock(left.data(), right.data(), 512U); ++blocks; }
-    expect(section() == 1U, "the form reaches DEVELOPMENT");
+    // Desde 5/11 a parte seguinte depende da gramática da seed (o choque vai
+    // direto ao contraste): basta sair da abertura.
+    while (section() == 0U && blocks < 94 * 30) { engine.processBlock(left.data(), right.data(), 512U); ++blocks; }
+    const auto reached = section();
+    expect(reached != 0U, "the form leaves OPENING");
     expect(engine.recallScene(document.scenes[1], document.territory), "another scene is recalled");
     for (int block = 0; block < 94; ++block) engine.processBlock(left.data(), right.data(), 512U);
-    expect(section() == 1U, "a scene recall keeps the sky's form (no jump back to OPENING)");
+    expect(section() == reached, "a scene recall keeps the sky's form (no jump back to OPENING)");
     expect(engine.setTerritoryScene(document.scenes[0], document.territory), "the same territory is installed again");
     for (int block = 0; block < 8; ++block) engine.processBlock(left.data(), right.data(), 512U);
     expect(section() == 0U, "a new territory starts the piece over");

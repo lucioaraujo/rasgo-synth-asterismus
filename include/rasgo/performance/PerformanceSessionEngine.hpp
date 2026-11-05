@@ -1118,6 +1118,8 @@ private:
             snapshot.skyFocusPacked = director.influence() > 0.0 ? packed : 0U;
             snapshot.skyTensionMicros = toMicros(director.tension());
             snapshot.skySection = static_cast<std::uint8_t>(director.section());
+            snapshot.skyGrammar = director.grammar();
+            snapshot.skyFormPass = director.formPass();
             snapshot.skyTempoMillis = static_cast<std::uint16_t>(std::lround(director.tempoFactor() * 1000.0));
             snapshot.skySwingPercent = static_cast<std::uint8_t>(std::lround(director.swing() * 100.0));
             snapshot.skyGroupingMask = ecology_.skyGroupingMask();

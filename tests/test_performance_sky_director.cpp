@@ -190,23 +190,20 @@ int main() {
         auto bodies = opening();
         // Contado em tempos, pelo andamento que o próprio céu toca (desde 4/11
         // o andamento de cada parte vem do caráter dela).
-        std::array<double, 4> entered{{0.0, -1.0, -1.0, -1.0}};
-        auto last = director.section();
+        // Desde 5/11 (gramáticas da forma): a abertura fica com os 2
+        // compassos do plano, e a primeira passagem da gramática da seed
+        // termina nos 12 compassos da faixa.
+        double leftOpening = -1.0, passEnded = -1.0;
         double beats = 0.0;
         for (std::uint64_t sample = 0U; sample < static_cast<std::uint64_t>(kRate * 30.0); ++sample) {
             director.advance(bodies, 120.0);
             beats += director.tempoFactor() * 2.0 / kRate;
-            const auto now = director.section();
-            if (now != last) {
-                const auto index = static_cast<std::size_t>(now);
-                if (index < entered.size() && entered[index] < 0.0) entered[index] = beats / 4.0;
-                last = now;
-            }
+            if (leftOpening < 0.0 && director.section() != PerformanceSkyDirector::Section::Opening) leftOpening = beats / 4.0;
+            if (passEnded < 0.0 && director.formPass() > 0U) passEnded = beats / 4.0;
         }
-        std::cout << "form plan 2/4/3/3 bars: development at bar " << entered[1] << ", contrast at bar " << entered[2]
-                  << ", return at bar " << entered[3] << "\n";
-        ok = expect(director.formPlanned() && std::fabs(entered[1] - 2.0) < 0.3 && std::fabs(entered[2] - 6.0) < 0.3
-                        && std::fabs(entered[3] - 9.0) < 0.3,
+        std::cout << "form plan 2/4/3/3 bars, grammar " << PerformanceSkyDirector::grammarName(director.grammar())
+                  << ": opening ends at bar " << leftOpening << ", the first pass at bar " << passEnded << "\n";
+        ok = expect(director.formPlanned() && std::fabs(leftOpening - 2.0) < 0.3 && std::fabs(passEnded - 12.0) < 0.3,
                     "the form follows the planned bars") && ok;
         director.setFormPlan({{0U, 0U, 0U, 0U}});
         ok = expect(!director.formPlanned(), "clearing the plan gives the seed's lengths back") && ok;
@@ -544,17 +541,32 @@ int main() {
                 }
             }
         }
-        bool orderOk = sections.size() >= 4U && sections[1].first == Section::Development
-            && sections[2].first == Section::Contrast && sections[3].first == Section::Return;
+        // A ordem é a da gramática da seed (5/11); partes iguais em sequência
+        // (o arco tem dois desenvolvimentos) aparecem como uma só aqui.
+        std::vector<Section> expected;
+        {
+            const auto g = director.grammar();
+            std::size_t step = 0U;
+            expected.push_back(PerformanceSkyDirector::grammarPart(g, 0U));
+            for (int part = 0; part < 40; ++part) {
+                ++step;
+                if (step >= PerformanceSkyDirector::grammarCount(g)) step = PerformanceSkyDirector::grammarLoop(g);
+                const auto next = PerformanceSkyDirector::grammarPart(g, step);
+                if (next != expected.back()) expected.push_back(next);
+            }
+        }
+        bool orderOk = sections.size() >= 4U;
+        for (std::size_t index = 0U; orderOk && index < sections.size() && index < expected.size(); ++index)
+            orderOk = sections[index].first == expected[index];
         bool lengthsOk = true;
         const double bar = 4.0;
         for (std::size_t index = 1U; index + 1U < sections.size(); ++index) {
             const double bars = (sections[index + 1U].second - sections[index].second) / bar;
-            if (bars < 7.5 || bars > 20.5) lengthsOk = false;
+            if (bars < 2.5 || bars > 56.5) lengthsOk = false;  // 3–28 compassos; duas partes iguais somam
         }
         std::cout << "form: " << sections.size() << " sections in 400 s\n";
-        ok = expect(orderOk, "sections follow opening, development, contrast, return") && ok;
-        ok = expect(lengthsOk, "each section lasts 8 to 20 bars") && ok;
+        ok = expect(orderOk, "sections follow the seed's grammar") && ok;
+        ok = expect(lengthsOk, "each section lasts 3 to 28 bars") && ok;
         ok = expect(!openingTooBusy, "the opening keeps a single relation in focus") && ok;
         ok = expect(sawReturn && returnRelit, "the return brings back some of the opening's stars") && ok;
     }

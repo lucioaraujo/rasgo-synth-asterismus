@@ -516,6 +516,9 @@ struct PerformanceTelemetrySnapshot {
     std::uint32_t skyTensionMicros = 0U;
     // Seção da forma (0 abertura, 1 desenvolvimento, 2 contraste, 3 retorno).
     std::uint8_t skySection = 0U;
+    // A gramática da forma (5/11) e as voltas que ela já completou.
+    std::uint8_t skyGrammar = 0U;
+    std::uint8_t skyFormPass = 0U;
     // Tempo maleável: fator de andamento (em milésimos) e swing (% da
     // primeira colcheia, 50 = reto).
     std::uint16_t skyTempoMillis = 1000U;
@@ -642,6 +645,8 @@ public:
         skyFocusPacked_.store(snapshot.skyFocusPacked, std::memory_order_relaxed);
         skyTensionMicros_.store(std::min(snapshot.skyTensionMicros, 1000000U), std::memory_order_relaxed);
         skySection_.store(snapshot.skySection < 4U ? snapshot.skySection : 0U, std::memory_order_relaxed);
+        skyGrammar_.store(snapshot.skyGrammar, std::memory_order_relaxed);
+        skyFormPass_.store(snapshot.skyFormPass, std::memory_order_relaxed);
         skyTempoMillis_.store(snapshot.skyTempoMillis, std::memory_order_relaxed);
         skySwingPercent_.store(snapshot.skySwingPercent, std::memory_order_relaxed);
         skyGroupingMask_.store(snapshot.skyGroupingMask, std::memory_order_relaxed);
@@ -723,6 +728,8 @@ public:
         out.skyFocusPacked = skyFocusPacked_.load(std::memory_order_relaxed);
         out.skyTensionMicros = skyTensionMicros_.load(std::memory_order_relaxed);
         out.skySection = skySection_.load(std::memory_order_relaxed);
+        out.skyGrammar = skyGrammar_.load(std::memory_order_relaxed);
+        out.skyFormPass = skyFormPass_.load(std::memory_order_relaxed);
         out.skyTempoMillis = skyTempoMillis_.load(std::memory_order_relaxed);
         out.skySwingPercent = skySwingPercent_.load(std::memory_order_relaxed);
         out.skyGroupingMask = skyGroupingMask_.load(std::memory_order_relaxed);
@@ -786,6 +793,8 @@ private:
     std::atomic<std::uint32_t> skyFocusPacked_{0U};
     std::atomic<std::uint32_t> skyTensionMicros_{0U};
     std::atomic<std::uint8_t> skySection_{0U};
+    std::atomic<std::uint8_t> skyGrammar_{0U};
+    std::atomic<std::uint8_t> skyFormPass_{0U};
     std::atomic<std::uint16_t> skyTempoMillis_{1000U};
     std::atomic<std::uint8_t> skySwingPercent_{50U};
     std::atomic<std::uint16_t> skyGroupingMask_{0U};

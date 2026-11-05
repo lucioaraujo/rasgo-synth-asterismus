@@ -109,6 +109,8 @@ public:
         groove_ = 0.0;
         section_ = Section::Opening;
         sectionOrdinal_ = 0U;
+        formStep_ = 0U;
+        formPass_ = 0U;
         sectionBarsLeft_ = 0U;
         characterReady_ = false;
         sectionEnergy_.fill(0.0);
@@ -157,7 +159,20 @@ public:
                                          / 511.5 - 1.0);
     }
 
-    void setSeed(std::uint32_t seed) noexcept { seed_ = seed; chooseSeedMotion(); reset(); }
+    void setSeed(std::uint32_t seed) noexcept {
+        seed_ = seed;
+        grammar_ = static_cast<std::uint8_t>(performanceSeedStream(seed, 0xF200U) % kGrammars.size());
+        chooseSeedMotion();
+        reset();
+    }
+    // A gramática da forma desta seed (0 ciclo, 1 arco, 2 rondó, 3 ondas,
+    // 4 kishōtenketsu, 5 choque inicial) e quantas voltas ela já completou.
+    std::uint8_t grammar() const noexcept { return grammar_; }
+    std::uint8_t formPass() const noexcept { return static_cast<std::uint8_t>(formPass_ & 0xffU); }
+    static const char* grammarName(std::uint8_t grammar) noexcept {
+        static constexpr std::array<const char*, 6> names{{"ciclo", "arco", "rondo", "ondas", "kishotenketsu", "choque"}};
+        return grammar < names.size() ? names[grammar] : "ciclo";
+    }
     // Centro tonal da seed (a fundamental da escala com que os corpos são
     // afinados), usado pela cadência.
     void setTonalCenter(double hz) noexcept {
@@ -170,6 +185,17 @@ public:
 
     // A forma (passo 4 da trama): seções vivas que dão direção à peça.
     enum class Section : std::uint8_t { Opening, Development, Contrast, Return, Count };
+    // A gramática por dentro (para os testes e o registro da tomada).
+    static Section grammarPart(std::uint8_t grammar, std::size_t index) noexcept {
+        const auto& g = kGrammars[grammar < kGrammars.size() ? grammar : 0U];
+        return g.parts[std::min<std::size_t>(index, 7U)];
+    }
+    static std::size_t grammarCount(std::uint8_t grammar) noexcept {
+        return kGrammars[grammar < kGrammars.size() ? grammar : 0U].count;
+    }
+    static std::size_t grammarLoop(std::uint8_t grammar) noexcept {
+        return kGrammars[grammar < kGrammars.size() ? grammar : 0U].loop;
+    }
     Section section() const noexcept { return section_; }
     // A métrica das contagens: a de casa (0) na abertura, no desenvolvimento
     // e no retorno; uma nova a cada contraste (modulação métrica).
@@ -374,9 +400,12 @@ public:
         formPlanned_ = bars[0] + bars[1] + bars[2] + bars[3] > 0U;
         formPlan_ = bars;
         if (!formPlanned_) return;
+        planGrammar(bars[0] + bars[1] + bars[2] + bars[3]);
         section_ = Section::Opening;
         sectionOrdinal_ = 0U;
-        sectionBarsLeft_ = std::max<std::uint32_t>(1U, formPlan_[0]);
+        formStep_ = 0U;
+        formPass_ = 0U;
+        sectionBarsLeft_ = sectionLength(0U);
         characterReady_ = false;
         stepCharacter();
     }
@@ -918,6 +947,11 @@ private:
     std::size_t eclipseSun_ = kBodies;
     std::array<bool, kBodies> pinned_{};
     std::array<std::uint32_t, 4> formPlan_{};
+    std::uint8_t grammar_ = 0U;
+    std::uint8_t formStep_ = 0U;
+    std::uint32_t formPass_ = 0U;
+    std::array<std::uint32_t, 8> plannedBars_{};
+    std::uint8_t plannedParts_ = 0U;
     bool formPlanned_ = false;
     std::uint32_t eclipseBeatsLeft_ = 0U;
     std::uint32_t eclipseCount_ = 0U;
@@ -1057,6 +1091,9 @@ private:
             for (std::size_t i = 0U; i < kCharacterDims; ++i) next.v[i] = characterUnit(101U + static_cast<std::uint32_t>(i));
             next.v[8] *= 0.4;  // o controle (que não soa) pesa menos no elenco
             openingCharacter_ = next;
+            // Um retorno antes de qualquer contraste (rondó, 5/11) volta perto
+            // da própria abertura.
+            contrastCharacter_ = next;
             characterReady_ = true;
         } else if (section_ == Section::Return) {
             const double r = 0.1 + 0.35 * characterUnit(211U);
@@ -1110,9 +1147,71 @@ private:
     }
     std::array<bool, kBodies> openingLit_{};
 
+    // As gramáticas da forma (5/11, auditoria da seed, item C). Antes havia
+    // uma só (abertura, depois desenvolvimento → contraste → retorno em
+    // ciclo). Cada gramática é uma sequência de partes, o ponto para onde ela
+    // volta depois da primeira passagem e o peso de cada parte na duração.
+    // O caráter de cada parte continua gerado (stepCharacter): a gramática dá
+    // a ordem e as proporções, não o som. Conceito do "morceau/arc" do
+    // rasgo-synth (arco, Freytag, kishōtenketsu), sem código.
+    struct Grammar {
+        std::array<Section, 8> parts;
+        std::uint8_t count;
+        std::uint8_t loop;
+        std::array<double, 8> weight;
+    };
+    static constexpr Section O = Section::Opening, D = Section::Development, C = Section::Contrast,
+                             R = Section::Return;
+    static constexpr std::array<Grammar, 6> kGrammars{{
+        // ciclo: a forma de antes
+        {{{O, D, C, R, O, O, O, O}}, 4U, 1U, {{1.0, 1.0, 1.0, 1.0, 1, 1, 1, 1}}},
+        // arco: subida longa em dois desenvolvimentos, clímax no contraste
+        {{{O, D, D, C, R, O, O, O}}, 5U, 1U, {{0.8, 1.0, 1.1, 1.3, 1.0, 1, 1, 1}}},
+        // rondó: o retorno volta entre os episódios (A B A C A)
+        {{{O, D, R, C, R, O, O, O}}, 5U, 1U, {{0.9, 1.0, 0.7, 1.1, 0.9, 1, 1, 1}}},
+        // ondas: duas subidas, a segunda chega ao contraste
+        {{{O, D, R, D, C, R, O, O}}, 6U, 1U, {{0.8, 0.9, 0.6, 1.0, 1.2, 0.9, 1, 1}}},
+        // kishōtenketsu: apresentar, desenvolver, a virada curta, concluir
+        {{{O, D, C, R, O, O, O, O}}, 4U, 1U, {{1.0, 1.3, 0.5, 1.4, 1, 1, 1, 1}}},
+        // choque inicial: o contraste logo depois da abertura, depois o caminho
+        {{{O, C, D, C, R, O, O, O}}, 5U, 2U, {{0.7, 0.6, 1.1, 1.0, 1.1, 1, 1, 1}}},
+    }};
+
+    // Numa faixa com duração, os compassos da faixa repartidos pela primeira
+    // passagem da gramática, cada parte com ao menos 2 compassos; se a faixa
+    // for curta demais para a gramática, o ciclo de sempre com o plano dado.
+    // A abertura fica com os compassos que o plano lhe dá; o resto da faixa
+    // se reparte pelas outras partes da gramática.
+    void planGrammar(std::uint32_t totalBars) noexcept {
+        const auto& g = kGrammars[grammar_];
+        plannedParts_ = 0U;
+        const auto opening = std::max<std::uint32_t>(1U, formPlan_[0]);
+        if (totalBars < opening + 2U * (g.count - 1U)) return;
+        plannedBars_[0] = opening;
+        totalBars -= opening;
+        double weights = 0.0;
+        for (std::size_t i = 1U; i < g.count; ++i) weights += g.weight[i];
+        std::uint32_t used = 0U;
+        for (std::size_t i = 1U; i < g.count; ++i) {
+            const auto bars = i + 1U == g.count
+                ? std::max<std::uint32_t>(2U, totalBars > used ? totalBars - used : 2U)
+                : std::max<std::uint32_t>(2U, static_cast<std::uint32_t>(std::lround(
+                      static_cast<double>(totalBars) * g.weight[i] / weights)));
+            plannedBars_[i] = bars;
+            used += bars;
+        }
+        plannedParts_ = g.count;
+    }
+
     std::uint32_t sectionLength(std::uint32_t ordinal) const noexcept {
-        if (formPlanned_ && ordinal < formPlan_.size()) return std::max<std::uint32_t>(1U, formPlan_[ordinal]);
-        return 8U + mix(seed_ ^ (ordinal * 0x632be5abU)) % 13U;
+        if (formPlanned_) {
+            if (plannedParts_ > 0U && formPass_ == 0U && formStep_ < plannedParts_) return plannedBars_[formStep_];
+            if (plannedParts_ == 0U && ordinal < formPlan_.size()) return std::max<std::uint32_t>(1U, formPlan_[ordinal]);
+        }
+        const auto& g = kGrammars[grammar_];
+        const double weight = g.weight[std::min<std::size_t>(formStep_, 7U)];
+        const auto base = 8U + mix(seed_ ^ (ordinal * 0x632be5abU)) % 13U;
+        return std::clamp<std::uint32_t>(static_cast<std::uint32_t>(std::lround(base * weight)), 3U, 28U);
     }
 
     // A cada compasso: quando a seção acaba, a seguinte começa. Abertura uma
@@ -1126,8 +1225,16 @@ private:
         if (--sectionBarsLeft_ > 0U) return;
         if (section_ == Section::Opening) rememberOpening();
         ++sectionOrdinal_;
-        section_ = section_ == Section::Opening || section_ == Section::Return ? Section::Development
-                 : section_ == Section::Development ? Section::Contrast : Section::Return;
+        {
+            // A parte seguinte vem da gramática da seed; no fim de uma
+            // passagem, a forma volta ao ponto de retorno dela e conta a volta.
+            const bool cycleOnly = formPlanned_ && plannedParts_ == 0U;
+            const auto& g = kGrammars[cycleOnly ? 0U : grammar_];
+            auto next = static_cast<std::uint32_t>(formStep_) + 1U;
+            if (next >= g.count) { next = g.loop; ++formPass_; }
+            formStep_ = static_cast<std::uint8_t>(next);
+            section_ = g.parts[formStep_];
+        }
         sectionBarsLeft_ = sectionLength(sectionOrdinal_);
         const auto previousLeader = energyLeader();
         const auto previousCharacter = character_;
