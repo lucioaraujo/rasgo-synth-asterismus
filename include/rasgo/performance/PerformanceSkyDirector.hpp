@@ -162,6 +162,16 @@ public:
     void setSeed(std::uint32_t seed) noexcept {
         seed_ = seed;
         grammar_ = static_cast<std::uint8_t>(performanceSeedStream(seed, 0xF200U) % kGrammars.size());
+        // As regiões harmônicas (5/11, auditoria da seed, item D): o contraste
+        // vai para outra região (subdominante, dominante, relativa, mediantes,
+        // trítono, vizinhas), o desenvolvimento às vezes para uma vizinha, a
+        // abertura e o retorno ficam na tônica. A escala da seed é a mesma; o
+        // centro se move. Era o que a especificação de setembro pedia
+        // ("regiões, progressões, pivôs") e o código não tinha.
+        static constexpr std::array<int, 9> kContrastRegions{{5, 7, -3, 4, -4, 6, -5, 2, 3}};
+        static constexpr std::array<int, 6> kDevelopmentRegions{{0, 0, 0, 2, -2, 5}};
+        contrastRegion_ = kContrastRegions[performanceSeedStream(seed, 0xF300U) % kContrastRegions.size()];
+        developmentRegion_ = kDevelopmentRegions[performanceSeedStream(seed, 0xF301U) % kDevelopmentRegions.size()];
         chooseSeedMotion();
         reset();
     }
@@ -169,6 +179,15 @@ public:
     // 4 kishōtenketsu, 5 choque inicial) e quantas voltas ela já completou.
     std::uint8_t grammar() const noexcept { return grammar_; }
     std::uint8_t formPass() const noexcept { return static_cast<std::uint8_t>(formPass_ & 0xffU); }
+    // A região harmônica da parte que soa, em semitons sobre a raiz da seed.
+    double regionSemitones() const noexcept {
+        if (influence_ <= 0.0) return 0.0;
+        switch (section_) {
+        case Section::Contrast: return static_cast<double>(contrastRegion_);
+        case Section::Development: return static_cast<double>(developmentRegion_);
+        default: return 0.0;
+        }
+    }
     static const char* grammarName(std::uint8_t grammar) noexcept {
         static constexpr std::array<const char*, 6> names{{"ciclo", "arco", "rondo", "ondas", "kishotenketsu", "choque"}};
         return grammar < names.size() ? names[grammar] : "ciclo";
@@ -948,6 +967,8 @@ private:
     std::array<bool, kBodies> pinned_{};
     std::array<std::uint32_t, 4> formPlan_{};
     std::uint8_t grammar_ = 0U;
+    int contrastRegion_ = 0;
+    int developmentRegion_ = 0;
     std::uint8_t formStep_ = 0U;
     std::uint32_t formPass_ = 0U;
     std::array<std::uint32_t, 8> plannedBars_{};
@@ -2157,7 +2178,8 @@ private:
         case RelationKind::Repair: {
             // A cadência: a fundamental (ou a quinta, em alternância) na
             // oitava mais próxima do que ouviu; a tensão se desfaz.
-            const double target = tonalCenterHz_ * (attackCount_[a] % 2U == 0U ? 1.0 : 1.5);
+            const double target = tonalCenterHz_ * std::pow(2.0, regionSemitones() / 12.0)
+                * (attackCount_[a] % 2U == 0U ? 1.0 : 1.5);
             const double octaves = std::round(std::log2(std::max(heard, 1.0) / target));
             schedule(b, target * std::pow(2.0, octaves), strength, lightBeats, depth);
             tension_ = std::max(0.0, tension_ - 0.35);

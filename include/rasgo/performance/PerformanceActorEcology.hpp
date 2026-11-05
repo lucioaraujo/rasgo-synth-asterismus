@@ -1305,9 +1305,11 @@ public:
                 const double localRegister = index >= 4U
                     ? (localControl[0] - 0.5) * 24.0
                         + (localControl[2] - 0.5) * 12.0 : 0.0;
+                // A região harmônica da parte (5/11): o centro muda na
+                // renovação da frase, com o deslize de sempre.
                 voice.liveTargetFrequency = voice.targetFrequency
                     * std::pow(2.0, (seedPitchContour + voice.phrasePitchSemitones
-                                      + localRegister) / 12.0);
+                                      + localRegister + director_.regionSemitones()) / 12.0);
             }
             const double codaRegister = !codaActive_ ? 1.0
                 : codaGesture_ == CodaGesture::Gather ? 0.992
@@ -2177,7 +2179,7 @@ public:
         const double tonal = seedTonalScale();
         const double midi = 69.0 + 12.0 * std::log2(hz / (440.0 * tonal));
         const auto& scale = seedScale();
-        const int root = seedRootMidi();
+        const int root = seedRootMidi() + static_cast<int>(std::lround(director_.regionSemitones()));
         double best = midi;
         double bestDistance = 1.0e9;
         const int octaveBase = static_cast<int>(std::floor((midi - root) / 12.0));

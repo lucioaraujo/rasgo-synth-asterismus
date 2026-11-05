@@ -177,6 +177,36 @@ int main() {
                     "reciprocal relations stay bounded") && ok;
     }
 
+    // Regiões harmônicas (5/11, item D da auditoria da seed): o contraste
+    // muda de região, a abertura e o retorno ficam na tônica.
+    {
+        std::size_t moved = 0U;
+        bool tonicOk = true;
+        for (std::uint32_t seed = 1U; seed <= 6U; ++seed) {
+            PerformanceSkyDirector director;
+            director.prepare(kRate);
+            director.setSeed(seed);
+            director.setMixerVariation(true);
+            director.setFormPlan({{2U, 3U, 3U, 3U}});
+            auto bodies = opening();
+            bool sawContrast = false;
+            for (std::uint64_t sample = 0U; sample < static_cast<std::uint64_t>(kRate * 30.0); ++sample) {
+                director.advance(bodies, 120.0);
+                const auto section = director.section();
+                if (section == PerformanceSkyDirector::Section::Contrast && !sawContrast) {
+                    sawContrast = true;
+                    if (director.regionSemitones() != 0.0) ++moved;
+                }
+                if ((section == PerformanceSkyDirector::Section::Opening
+                     || section == PerformanceSkyDirector::Section::Return) && director.regionSemitones() != 0.0)
+                    tonicOk = false;
+            }
+        }
+        std::cout << "harmonic regions: the contrast moved in " << moved << " of 6 seeds\n";
+        ok = expect(moved == 6U, "every contrast goes to another region") && ok;
+        ok = expect(tonicOk, "opening and return stay on the tonic") && ok;
+    }
+
     // A form fitted to a duration (2/11, the 1/2/3/5 min device): with a plan
     // of 2, 4, 3 and 3 bars, the sky passes OPENING → DEVELOPMENT → CONTRAST
     // → RETURN at exactly those bar lines (120 BPM: one bar = 2 s); clearing
