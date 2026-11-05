@@ -205,6 +205,13 @@ public:
     }
 
     PerformanceMorceauState morceauState() const noexcept { return morceau_.state(); }
+    // A coda na proporção da faixa (5/11): o envelope do morceau e o gesto da
+    // ecologia com a mesma duração.
+    bool setCodaSeconds(double seconds) noexcept {
+        if (!morceau_.setCodaSeconds(seconds)) return false;
+        ecology_.setCodaSeconds(seconds);
+        return true;
+    }
 
     bool setPanicSafe(bool enabled) noexcept {
         if (!prepared_) return false;

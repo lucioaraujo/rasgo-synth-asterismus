@@ -312,10 +312,18 @@ void testMorceauContinuesAfterCodaWithoutStop() {
     session.playing = true;
     expect(engine.setSessionSnapshot(session), "continuation session plays");
     expect(!engine.continueAfterMorceau(), "a piece still playing is not restarted");
+    // A coda na proporção da faixa (5/11, item G): 9 s de coda + 1,2 s de cauda.
+    expect(engine.setCodaSeconds(9.0), "the coda length follows the track");
     expect(engine.beginMorceauCoda(), "the take asks for its coda");
     std::array<float, 512> left{}, right{};
-    for (int block = 0; block < 2000 && engine.morceauState() != PerformanceMorceauState::Finalized; ++block)
+    int codaBlocks = 0;
+    for (int block = 0; block < 2000 && engine.morceauState() != PerformanceMorceauState::Finalized; ++block) {
         engine.processBlock(left.data(), right.data(), 512U);
+        ++codaBlocks;
+    }
+    const double codaSeconds = codaBlocks * 512.0 / 48000.0;
+    std::cout << "coda of 9 s + tail: " << codaSeconds << " s\n";
+    expect(std::fabs(codaSeconds - 10.2) < 0.1, "a 9 s coda and its tail last 10.2 s");
     expect(engine.morceauState() == PerformanceMorceauState::Finalized, "the coda and tail reach the end of the piece");
     expect(engine.continueAfterMorceau()
                && engine.morceauState() == PerformanceMorceauState::Opening,

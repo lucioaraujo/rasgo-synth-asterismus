@@ -4548,12 +4548,23 @@ private:
         // segundos).
         if (returnEnded && takeTargetSeconds_ > 0.0 && recorder_.recording()) return;
         percursoSection_ = section;
-        recallScene(static_cast<std::uint16_t>(section + 1U));
+        recallScene(percursoScene(section));
         appendTakeTrace("percurso:" + juce::String(static_cast<int>(section)));
         if (returnEnded && recorder_.recording() && takeTargetSeconds_ <= 0.0)
             requestMorceauCoda("coda:percurso", uiText(supportLanguage_, "PERCURSO · o retorno acabou · CODA",
                                                        "PATH · the return ended · CODA", "PARCOURS · le retour est fini · CODA",
                                                        "RECORRIDO · el retorno terminó · CODA"));
+    }
+    // A cena de cada parte no PERCURSO (5/11, auditoria da seed, item G): a
+    // abertura fica no NASCENTE; desenvolvimento, contraste e retorno tiram
+    // ESPIRAL, RASGO e BALANÇO numa das 6 ordens, pela seed — antes, sempre a
+    // mesma cena para a mesma parte.
+    std::uint16_t percursoScene(std::uint8_t section) const noexcept {
+        if (section == 0U) return 1U;
+        static constexpr std::array<std::array<std::uint16_t, 3>, 6> kOrders{{
+            {{2U, 3U, 4U}}, {{2U, 4U, 3U}}, {{3U, 2U, 4U}}, {{3U, 4U, 2U}}, {{4U, 2U, 3U}}, {{4U, 3U, 2U}}}};
+        const auto order = performanceSeedStream(startupDocument_.territory.seed, 0x5CE0U) % kOrders.size();
+        return kOrders[order][std::min<std::size_t>(section, 3U) - 1U];
     }
     void refreshAlbumButtons() {
         percursoButton_.setButtonText(percurso_ ? uiText(supportLanguage_, "PERCURSO · ON", "PATH · ON", "PARCOURS · ON",
@@ -5444,7 +5455,11 @@ private:
             return;
         }
         const double bpm = std::max(20.0, tempoSlider_.getValue());
-        const double bars = std::max(4.0, (seconds - kCodaLeadSeconds) * bpm / 240.0);
+        // A coda na proporção da faixa (5/11, item G): 5 % da duração, entre 4
+        // e 12 s (1 min: 4 s; 2 min: 6 s; 3 min: 9 s; 5 min: 12 s).
+        takeCodaSeconds_ = std::clamp(seconds * 0.05, 4.0, 12.0);
+        controller_.setCodaSeconds(takeCodaSeconds_);
+        const double bars = std::max(4.0, (seconds - codaLeadSeconds()) * bpm / 240.0);
         std::array<std::uint32_t, 4> plan{{
             static_cast<std::uint32_t>(std::max(1.0, std::round(bars * 0.15))),
             static_cast<std::uint32_t>(std::max(1.0, std::round(bars * 0.35))),
@@ -5737,6 +5752,8 @@ private:
             controller_.setFormPlan({{0U, 0U, 0U, 0U}});
             takeTargetSeconds_ = 0.0;
             for (auto& button : durationButtons_) button.setToggleState(false, juce::dontSendNotification);
+            takeCodaSeconds_ = 4.0;
+            controller_.setCodaSeconds(takeCodaSeconds_);
         }
         lastAction_ = prefix + utf8(" · ")
             + juce::String(rate > 0.0 ? static_cast<double>(acceptedSamples) / rate : 0.0, 1)
@@ -6164,10 +6181,10 @@ private:
                          " min : REC démarre aussitôt ; la forme du ciel s’ajuste à la durée et la coda arrive à la fin.",
                          " min: REC empieza ya; la forma del cielo se ajusta a la duración y la coda llega al final."));
         percursoButton_.setTooltip(uiText(l,
-            "As cenas seguem a forma do céu: NASCENTE (abertura), ESPIRAL (desenvolvimento), RASGO (contraste), BALANÇO (retorno). Gravando, o fim do retorno pede a coda.",
-            "Scenes follow the sky's form: NASCENTE (opening), ESPIRAL (development), RASGO (contrast), BALANÇO (return). While recording, the end of the return asks for the coda.",
-            "Les scènes suivent la forme du ciel : NASCENTE (ouverture), ESPIRAL (développement), RASGO (contraste), BALANÇO (retour). En enregistrement, la fin du retour demande la coda.",
-            "Las escenas siguen la forma del cielo: NASCENTE (apertura), ESPIRAL (desarrollo), RASGO (contraste), BALANÇO (retorno). Grabando, el fin del retorno pide la coda."));
+            "As cenas seguem a forma do céu: NASCENTE na abertura; ESPIRAL, RASGO e BALANÇO nas outras partes, numa ordem da seed. A forma segue uma gramática da seed (ciclo, arco, rondó, ondas, kishōtenketsu, choque); gravando, o fim da primeira volta pede a coda.",
+            "Scenes follow the sky's form: NASCENTE in the opening; ESPIRAL, RASGO and BALANÇO in the other parts, in an order chosen by the seed. The form follows a grammar of the seed (cycle, arc, rondo, waves, kishōtenketsu, shock); while recording, the end of the first pass asks for the coda.",
+            "Les scènes suivent la forme du ciel : NASCENTE à l’ouverture ; ESPIRAL, RASGO et BALANÇO dans les autres parties, dans un ordre choisi par la seed. La forme suit une grammaire de la seed (cycle, arc, rondo, vagues, kishōtenketsu, choc) ; en enregistrement, la fin du premier passage demande la coda.",
+            "Las escenas siguen la forma del cielo: NASCENTE en la apertura; ESPIRAL, RASGO y BALANÇO en las otras partes, en un orden elegido por la seed. La forma sigue una gramática de la seed (ciclo, arco, rondó, ondas, kishōtenketsu, choque); grabando, el fin de la primera vuelta pide la coda."));
         albumButton_.setTooltip(uiText(l,
             "Um álbum: a seed do álbum deriva a seed e o andamento de cada faixa; cada tomada gravada entra no registro (album.json).",
             "An album: the album seed derives each track's seed and tempo; each recorded take enters the register (album.json).",
@@ -6591,7 +6608,7 @@ private:
         // A faixa com duração: a coda chega 5,2 s antes do alvo (coda 4 s +
         // cauda 1,2 s), e o arquivo fecha em torno do tempo escolhido.
         if (takeTargetSeconds_ > 0.0 && recorder_.recording() && !codaRequested_ && takeSampleRate_ > 0.0
-            && static_cast<double>(recorder_.acceptedSamples()) / takeSampleRate_ >= takeTargetSeconds_ - kCodaLeadSeconds)
+            && static_cast<double>(recorder_.acceptedSamples()) / takeSampleRate_ >= takeTargetSeconds_ - codaLeadSeconds())
             requestMorceauCoda("coda:duracao", uiText(supportLanguage_, "FAIXA · o tempo chegou · CODA",
                                                       "TRACK · time is up · CODA", "PISTE · le temps est écoulé · CODA",
                                                       "PISTA · se acabó el tiempo · CODA"));
@@ -7136,7 +7153,10 @@ private:
     // A FAIXA com duração (2/11): 1/2/3/5 min, como no Antitotem; 0 = sem
     // limite (o REC de sempre).
     static constexpr std::array<double, 4> kTakeDurations{{60.0, 120.0, 180.0, 300.0}};
-    static constexpr double kCodaLeadSeconds = 5.2;  // coda 4 s + cauda 1,2 s
+    // A coda e a cauda (1,2 s) antes do fim da faixa; a coda é proporcional
+    // à duração desde 5/11 (sem duração, os 4 s de sempre).
+    double takeCodaSeconds_ = 4.0;
+    double codaLeadSeconds() const noexcept { return takeCodaSeconds_ + 1.2; }
     std::array<juce::TextButton, 4> durationButtons_;
     double takeTargetSeconds_ = 0.0;
     std::atomic<bool> albumMastering_{false};

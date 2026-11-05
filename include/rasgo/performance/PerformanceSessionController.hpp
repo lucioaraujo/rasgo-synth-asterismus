@@ -390,6 +390,8 @@ public:
 
     // Variação do mixer, ligada ou desligada pelo músico (qualquer thread);
     // o áudio a aplica no começo do bloco seguinte.
+    // A duração da próxima coda, em segundos (qualquer thread; 5/11).
+    void setCodaSeconds(double seconds) noexcept { codaSeconds_.store(seconds, std::memory_order_release); }
     void setMixerVariation(bool enabled) noexcept {
         mixerVariation_.store(enabled, std::memory_order_release);
     }
@@ -411,6 +413,10 @@ public:
 
     void processBlock(float* left, float* right, std::uint32_t samples) noexcept {
         engine_.setMixerVariation(mixerVariation_.load(std::memory_order_acquire));
+        {
+            const auto coda = codaSeconds_.load(std::memory_order_acquire);
+            if (coda != appliedCodaSeconds_ && engine_.setCodaSeconds(coda)) appliedCodaSeconds_ = coda;
+        }
         engine_.setStarCapacity(starCapacity_.load(std::memory_order_acquire));
         engine_.setSkyInfluence(skyWeb_.load(std::memory_order_acquire) ? 1.0 : 0.0);
         // Territory replacement is the boundary transaction. Commands queued
@@ -695,6 +701,8 @@ private:
     std::atomic<std::uint16_t> currentSceneId_{kNoScene};
     bool loaded_ = false;
     std::atomic<bool> mixerVariation_{false};
+    std::atomic<double> codaSeconds_{4.0};
+    double appliedCodaSeconds_ = 4.0;
     std::atomic<std::uint8_t> starCapacity_{8U};
     std::atomic<bool> skyWeb_{true};
 };

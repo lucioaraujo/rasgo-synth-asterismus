@@ -76,6 +76,16 @@ public:
         return true;
     }
 
+    // A duração da coda (5/11, auditoria da seed, item G): proporcional à
+    // faixa. Vale para a próxima coda; uma coda em curso não muda.
+    bool setCodaSeconds(double seconds) noexcept {
+        if (!finite(seconds) || seconds < 0.25 || seconds > 30.0) return false;
+        if (state_ == PerformanceMorceauState::Coda) return false;
+        plan_.codaSeconds = seconds;
+        codaSamples_ = samplesFor(seconds);
+        return true;
+    }
+
     void interrupt() noexcept {
         state_ = PerformanceMorceauState::Interrupted;
         phaseSamples_ = 0U;

@@ -433,6 +433,9 @@ public:
     }
 
     CodaGesture codaGesture() const noexcept { return codaGesture_; }
+    void setCodaSeconds(double seconds) noexcept {
+        if (!codaActive_ && finite(seconds) && seconds >= 0.25 && seconds <= 30.0) codaSeconds_ = seconds;
+    }
 
     bool setSeedCollage(std::uint32_t sourceSeed, double amount) noexcept {
         if (!finite(amount) || amount < 0.0 || amount > 1.0) return false;
@@ -1205,7 +1208,7 @@ public:
             }
         }
         if (codaActive_)
-            codaProgress_ = clampUnit(codaProgress_ + 1.0 / std::max(sampleRate * 4.0, 1.0));
+            codaProgress_ = clampUnit(codaProgress_ + 1.0 / std::max(sampleRate * codaSeconds_, 1.0));
         if (!holding_) {
             orchestrationPhase_ += (0.018 + autonomy_ * 0.020 + density_ * 0.014) / sampleRate;
             if (orchestrationPhase_ >= 1.0)
@@ -2194,6 +2197,7 @@ private:
     double orchestrationPhase_ = 0.0;
     double collageAmount_ = 0.0;
     bool codaActive_ = false;
+    double codaSeconds_ = 4.0;
     double codaProgress_ = 0.0;
     std::size_t codaLeaderIndex_ = 0U;
     CodaGesture codaGesture_ = CodaGesture::Gather;
