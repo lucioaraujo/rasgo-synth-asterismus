@@ -54,16 +54,28 @@ struct PerformanceCompositionProfile {
     double collectiveAffinity = 0.5;
 };
 
+// Um fluxo da seed por domínio (5/11, auditoria da seed): a mesma mistura
+// splitmix64 da fábrica de territórios, com o domínio no lugar do sal. Antes
+// o perfil lia fatias de bits do próprio número — toda seed abaixo de 256
+// ficava com extensão melódica, impulso, brilho, eventos e coletividade no
+// mínimo, e as fatias se sobrepunham (genes correlacionados). Agora cada gene
+// tem o seu fluxo, independente, para qualquer seed.
+inline constexpr std::uint32_t performanceSeedStream(std::uint32_t seed, std::uint32_t domain) noexcept {
+    std::uint64_t value = ((static_cast<std::uint64_t>(seed) << 32U) | domain) + 0x9e3779b97f4a7c15ULL;
+    value = (value ^ (value >> 30U)) * 0xbf58476d1ce4e5b9ULL;
+    value = (value ^ (value >> 27U)) * 0x94d049bb133111ebULL;
+    return static_cast<std::uint32_t>((value ^ (value >> 31U)) >> 16U);
+}
+
 inline constexpr PerformanceCompositionProfile compositionProfileForSeed(
     std::uint32_t seed) noexcept {
-    const auto fold = seed ^ (seed >> 9U) ^ (seed >> 17U);
-    const auto unitFrom = [](std::uint32_t value) constexpr {
-        return 0.12 + static_cast<double>(value & 0xffU) / 255.0 * 0.76;
+    const auto gene = [seed](std::uint32_t domain) constexpr {
+        return 0.12 + static_cast<double>(performanceSeedStream(seed, domain) & 0xffffU) / 65535.0 * 0.76;
     };
-    return {static_cast<PerformanceCompositionStyle>(fold % 5U),
-            static_cast<std::uint8_t>((fold >> 5U) % 6U),
-            unitFrom(fold >> 8U), unitFrom(fold >> 12U), unitFrom(fold >> 16U),
-            unitFrom(fold >> 20U), unitFrom(fold >> 4U), unitFrom(fold >> 24U)};
+    return {static_cast<PerformanceCompositionStyle>(performanceSeedStream(seed, 0x51A1U) % 5U),
+            static_cast<std::uint8_t>(performanceSeedStream(seed, 0x51A2U) % 6U),
+            gene(0x51A3U), gene(0x51A4U), gene(0x51A5U),
+            gene(0x51A6U), gene(0x51A7U), gene(0x51A8U)};
 }
 
 } // namespace rasgo::performance

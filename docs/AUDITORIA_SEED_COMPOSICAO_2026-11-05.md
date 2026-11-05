@@ -130,3 +130,19 @@ sequência, ao vivo, faixa após faixa, sem tocar em nada.
 O autor escolhe por onde começar. Recomendação: **A** (sem ela, B–G
 continuam pobres nas seeds pequenas), depois **B** e **C**, que mais mudam a
 composição das faixas, e **H** quando o álbum for o foco.
+
+## 6. Feito
+
+**A (5/11, "pode começar").** `performanceSeedStream(seed, domínio)`
+(ModuleTypes.hpp): splitmix64 com o domínio, um fluxo por gene. Perfil (8
+genes), raiz, escala, grau de cada corpo, timbre das estrelas do céu (bumbo,
+caixa, chimbal, rungler, gendyn, vosim, spectral, harmonaig, passos iniciais) e
+o verbo e o líder da coda saem de fluxos próprios; as fatias em tempo de
+execução da Sky usam `seedMix_`. Desafinação em cents (0–16), não em Hz. As
+seeds da escuta passaram de perfil no mínimo para, por exemplo, seed 1: ritmo
+0,59, brilho 0,74; seed 84: melodia 0,70, coletivo 0,84. Achado no caminho: a
+SPECTRAL com parciais ímpares passava de 1 (o ganho da biblioteca entrava
+depois do tanh) — corrigido. A tabela de nível das estrelas foi remedida
+(48 seeds 5000–5047 × 90 s): de 8,6 dB de diferença para a nova mediana;
+loudness média −18,1 LUFS com MASTER −6. Suíte 37/37. **Toda seed soa
+diferente do que soava antes de 5/11** (é outra peça com o mesmo número).

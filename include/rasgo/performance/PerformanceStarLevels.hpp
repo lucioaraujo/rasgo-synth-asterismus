@@ -16,6 +16,11 @@
 // cadeia do stem (depois de tanh e profundidade), então não muda timbre nem
 // saturação; os stems gravados saem já corrigidos.
 //
+// 2ª medida (5/11, depois do conserto da seed — auditoria da seed: o timbre
+// de cada estrela passou a variar de verdade com a seed): 48 seeds (5000–5047)
+// × 90 s com a tabela anterior; cada correção somou a distância à nova
+// mediana. Comentário de cada linha: 1ª medida · 2ª medida com a correção antiga.
+//
 // As estrelas de controle não soam: correção zero. Numa estrela nova,
 // medir com a sonda e acrescentar aqui (sem medida, 0 dB).
 
@@ -25,31 +30,31 @@ namespace rasgo::performance {
 
 inline constexpr double performanceStarLevelTrimDb(PerformanceModuleBody star) noexcept {
     switch (star) {
-    case PerformanceModuleBody::Theremin: return -7.1; // -42.6 dB
-    case PerformanceModuleBody::Galo: return -3.9; // -45.8 dB
-    case PerformanceModuleBody::BassFallback: return -3.8; // -45.9 dB
-    case PerformanceModuleBody::Walsh: return -3.8; // -45.9 dB
-    case PerformanceModuleBody::Vosim: return -3.1; // -46.6 dB
-    case PerformanceModuleBody::Core: return -2.9; // -46.8 dB
-    case PerformanceModuleBody::FmFlute: return -2.8; // -46.9 dB
-    case PerformanceModuleBody::AtariPunk: return -2.5; // -47.2 dB
-    case PerformanceModuleBody::ThermalStatic: return -2.4; // -47.3 dB
-    case PerformanceModuleBody::HardSync: return -1.9; // -47.8 dB
-    case PerformanceModuleBody::Choir: return -1.4; // -48.3 dB
-    case PerformanceModuleBody::Bloom: return -0.7; // -49.0 dB
-    case PerformanceModuleBody::Footnote: return +0.0; // -49.7 dB
-    case PerformanceModuleBody::Gendyn: return +0.4; // -50.1 dB
-    case PerformanceModuleBody::DejaVu: return +0.7; // -50.4 dB
-    case PerformanceModuleBody::Spectral: return +1.6; // -51.3 dB
-    case PerformanceModuleBody::Tuba: return +1.9; // -51.6 dB
-    case PerformanceModuleBody::Harmonaig: return +2.4; // -52.1 dB
-    case PerformanceModuleBody::Scat: return +2.6; // -52.3 dB
-    case PerformanceModuleBody::Atropelo: return +4.1; // -53.9 dB
-    case PerformanceModuleBody::Texture: return +5.3; // -55.0 dB
-    case PerformanceModuleBody::Percussion: return +5.3; // -55.0 dB
-    case PerformanceModuleBody::Acid: return +5.5; // -55.2 dB
-    case PerformanceModuleBody::Bluff: return +5.5; // -55.2 dB
-    case PerformanceModuleBody::ModalResonator: return +9.0; // -60.0 dB
+    case PerformanceModuleBody::Theremin: return -6.3; // -42.6 dB (5/11 2ª medida: -49.9 com -7.1)
+    case PerformanceModuleBody::Galo: return -5.6; // -45.8 dB (5/11 2ª medida: -47.3 com -3.9)
+    case PerformanceModuleBody::BassFallback: return -5.1; // -45.9 dB (5/11 2ª medida: -47.8 com -3.8)
+    case PerformanceModuleBody::Walsh: return -3.9; // -45.9 dB (5/11 2ª medida: -48.9 com -3.8)
+    case PerformanceModuleBody::Vosim: return -3.6; // -46.6 dB (5/11 2ª medida: -48.6 com -3.1)
+    case PerformanceModuleBody::Core: return -3.9; // -46.8 dB (5/11 2ª medida: -48.0 com -2.9)
+    case PerformanceModuleBody::FmFlute: return -7.4; // -46.9 dB (5/11 2ª medida: -44.5 com -2.8)
+    case PerformanceModuleBody::AtariPunk: return -2.4; // -47.2 dB (5/11 2ª medida: -49.1 com -2.5)
+    case PerformanceModuleBody::ThermalStatic: return -0.8; // -47.3 dB (5/11 2ª medida: -50.6 com -2.4)
+    case PerformanceModuleBody::HardSync: return -2.8; // -47.8 dB (5/11 2ª medida: -48.2 com -1.9)
+    case PerformanceModuleBody::Choir: return -1.3; // -48.3 dB (5/11 2ª medida: -49.2 com -1.4)
+    case PerformanceModuleBody::Bloom: return +0.9; // -49.0 dB (5/11 2ª medida: -50.7 com -0.7)
+    case PerformanceModuleBody::Footnote: return +0.0; // -49.7 dB (5/11 2ª medida: -49.1 com +0.0)
+    case PerformanceModuleBody::Gendyn: return +0.5; // -50.1 dB (5/11 2ª medida: -49.1 com +0.4)
+    case PerformanceModuleBody::DejaVu: return +0.4; // -50.4 dB (5/11 2ª medida: -48.8 com +0.7)
+    case PerformanceModuleBody::Spectral: return +1.2; // -51.3 dB (5/11 2ª medida: -48.7 com +1.6)
+    case PerformanceModuleBody::Tuba: return +0.7; // -51.6 dB (5/11 2ª medida: -47.9 com +1.9)
+    case PerformanceModuleBody::Harmonaig: return -0.7; // -52.1 dB (5/11 2ª medida: -46.0 com +2.4)
+    case PerformanceModuleBody::Scat: return +2.5; // -52.3 dB (5/11 2ª medida: -49.0 com +2.6)
+    case PerformanceModuleBody::Atropelo: return +5.3; // -53.9 dB (5/11 2ª medida: -50.2 com +4.1)
+    case PerformanceModuleBody::Texture: return +5.3; // -55.0 dB (5/11 2ª medida: -49.1 com +5.3)
+    case PerformanceModuleBody::Percussion: return +5.8; // -55.0 dB (5/11 2ª medida: -49.6 com +5.3)
+    case PerformanceModuleBody::Acid: return +8.4; // -55.2 dB (5/11 2ª medida: -52.0 com +5.5)
+    case PerformanceModuleBody::Bluff: return +7.5; // -55.2 dB (5/11 2ª medida: -51.1 com +5.5)
+    case PerformanceModuleBody::ModalResonator: return +9.0; // -60.0 dB (5/11 2ª medida: -53.1 com +9.0)
     default: return 0.0;
     }
 }

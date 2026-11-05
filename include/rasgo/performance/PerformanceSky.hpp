@@ -365,6 +365,7 @@ public:
 
     void setSeed(std::uint32_t seed) noexcept {
         seed_ = seed;
+        seedMix_ = performanceSeedStream(seed, 0x5EEDU);
 #if defined(RASGO_PERFORMANCE_SKY_AVAILABLE)
         if (prepared_) configureSeed(seed_);
 #endif
@@ -774,6 +775,8 @@ private:
 
     double sampleRate_ = 48000.0;
     std::uint32_t seed_ = 181U;
+    // A seed misturada (5/11): as fatias de bits em tempo de execução saem daqui.
+    std::uint32_t seedMix_ = performanceSeedStream(181U, 0x5EEDU);
     std::array<StarControls, kStarCount> controls_{defaultControls()};
     std::array<double, kStarCount> lastOutput_{};
     std::uint32_t renderedMask_ = 0U;
@@ -1149,27 +1152,31 @@ private:
 
     void configureSeed(std::uint32_t seed) noexcept {
         profile_ = compositionProfileForSeed(seed);
-        const auto byte = static_cast<std::uint8_t>((seed ^ (seed >> 8U) ^ (seed >> 16U)) & 0xffU);
-        divider_.reset(seed & 15U);
+        // Cada parâmetro de timbre da seed num fluxo próprio (5/11, auditoria
+        // da seed): antes, fatias de bits do número — as seeds pequenas davam
+        // o mesmo bumbo, o mesmo chimbal, o mesmo rungler.
+        const auto v = [seed](std::uint32_t domain) { return performanceSeedStream(seed, domain); };
+        const auto byte = static_cast<std::uint8_t>(v(102U) & 0xffU);
+        divider_.reset((v(121U) & 15U));
         rungler_.reset(byte == 0U ? 0x5dU : byte);
-        rungler_.setRates(2.1 + static_cast<double>((seed >> 3U) & 7U) * 0.41,
-                          3.4 + static_cast<double>((seed >> 7U) & 7U) * 0.53);
+        rungler_.setRates(2.1 + static_cast<double>(v(103U) & 7U) * 0.41,
+                          3.4 + static_cast<double>(v(104U) & 7U) * 0.53);
         buchla_ = rasgo::BuchlaRandomSource(byte == 0U ? 0xb5U : byte);
         gendyn_.seed(seed ^ 0xa511e9b3U);
-        gendyn_.configure(5 + static_cast<int>(seed % 8U),
-                          0.00035 + static_cast<double>((seed >> 5U) & 3U) * 0.00008,
-                          0.0024 + static_cast<double>((seed >> 9U) & 7U) * 0.00024);
-        gendyn_.setDistribution(static_cast<rasgo::GendynOscillator::Distribution>((seed >> 13U) & 3U));
+        gendyn_.configure(5 + static_cast<int>(v(119U) % 8U),
+                          0.00035 + static_cast<double>(v(105U) & 3U) * 0.00008,
+                          0.0024 + static_cast<double>(v(106U) & 7U) * 0.00024);
+        gendyn_.setDistribution(static_cast<rasgo::GendynOscillator::Distribution>(v(107U) & 3U));
         snare_.seedNoise(seed ^ 0x7f4a7c15U);
-        kick_.setTuning(42.0 + static_cast<double>(seed % 17U),
-                        72.0 + static_cast<double>((seed >> 8U) % 67U));
-        snare_.setTone(145.0 + static_cast<double>((seed >> 4U) % 83U));
-        hat_.setFundamental(325.0 + static_cast<double>((seed >> 11U) % 190U));
+        kick_.setTuning(42.0 + static_cast<double>(v(120U) % 17U),
+                        72.0 + static_cast<double>(v(108U) % 67U));
+        snare_.setTone(145.0 + static_cast<double>(v(109U) % 83U));
+        hat_.setFundamental(325.0 + static_cast<double>(v(110U) % 190U));
         flute_.setGain(0.72F);
         theremin_.setGain(0.48F);
         scat_.seed(seed ^ 0x9e3779b9U);
         choir_.seed(seed ^ 0x85ebca6bU);
-        vosim_.setPulseCount(3 + static_cast<int>((seed >> 9U) & 3U));
+        vosim_.setPulseCount(3 + static_cast<int>(v(111U) & 3U));
         atropelo_.configureFormants(seed ^ 0x6d2b79f5U);
         static constexpr std::array<double, rasgo::ModalResonator::kNumModes> galoRatios{{
             1.0, 2.01, 3.06, 4.15, 5.35, 6.7}};
@@ -1179,18 +1186,18 @@ private:
             1.0, 0.72, 0.48, 0.32, 0.20, 0.12}};
         galo_.configure(seed ^ 0x9e3779b9U, galoRatios, galoDecays, galoGains);
         bluff_.configure(0.7, seed ^ 0xB10FF00DU);
-        spectral_.setPartialSet(static_cast<PerformanceSpectralObject::PartialSet>((seed >> 3U) % 3U));
+        spectral_.setPartialSet(static_cast<PerformanceSpectralObject::PartialSet>(v(112U) % 3U));
         bloom_.reseed(seed ^ 0xB100F5U);
-        harmonaigRoot_ = static_cast<int>((seed >> 5U) % 7U);
+        harmonaigRoot_ = static_cast<int>(v(113U) % 7U);
         configureStarControls();
 
         circuitPhase_ = 1.0; // a seed fala já na próxima amostra
         phrasePhase_ = 1.0;
         memoryPhase_ = 1.0;
         buchlaPhase_ = 0.0;
-        circuitStep_ = seed & 15U;
-        phraseStep_ = seed & 15U;
-        memoryStep_ = seed & 15U;
+        circuitStep_ = (v(122U) & 15U);
+        phraseStep_ = (v(123U) & 15U);
+        memoryStep_ = (v(124U) & 15U);
         mutateResponse_ = 0.0;
         tearResponse_ = 0.0;
         holdResponse_ = 0.0;
@@ -1199,12 +1206,12 @@ private:
         seedEventPending_ = false;
         seedEventPulse_ = 0.0;
         lastSeedEventOrdinal_ = std::numeric_limits<std::uint32_t>::max();
-        scorePhase_ = static_cast<double>((seed >> 4U) & 255U) / 256.0;
+        scorePhase_ = static_cast<double>(v(114U) & 255U) / 256.0;
         scoreRate_ = (0.004 + profile_.eventAffinity * 0.008)
-            + static_cast<double>((seed >> 12U) & 15U) * 0.00042;
-        scoreOffset_ = static_cast<double>((seed >> 20U) & 255U) / 256.0;
-        gendynPitchPhase_ = static_cast<double>((seed >> 16U) & 255U) / 256.0;
-        gendynTargetHz_ = std::max(35.0, 165.0 + static_cast<double>((seed >> 22U) & 63U));
+            + static_cast<double>(v(115U) & 15U) * 0.00042;
+        scoreOffset_ = static_cast<double>(v(116U) & 255U) / 256.0;
+        gendynPitchPhase_ = static_cast<double>(v(117U) & 255U) / 256.0;
+        gendynTargetHz_ = std::max(35.0, 165.0 + static_cast<double>(v(118U) & 63U));
         gendynPitchHz_ = gendynTargetHz_;
         fluteGateSamples_ = 0U;
         galoBeats_ = 0U;
@@ -1229,7 +1236,7 @@ private:
                          0.45 + fluteBrightness * 3.6,
                          0.08 + fluteBrightness * 0.34, 0.018, 0.24);
         const auto thereminDrift = controls_[starIndex(PerformanceModuleBody::Theremin)][2];
-        theremin_.configure(0.08 + static_cast<double>((seed_ >> 3U) & 7U) * 0.018,
+        theremin_.configure(0.08 + static_cast<double>((seedMix_ >> 3U) & 7U) * 0.018,
                             4.1 + thereminDrift * 3.2,
                             static_cast<float>(0.03 + thereminDrift * 0.48),
                             seed_ ^ 0x41c64e6dU);
@@ -1428,7 +1435,10 @@ private:
                     markAttack(spectral_.partialFrequency(0U));
                 }
             }
-            return std::tanh(spectral_.tick() * 0.55) * kLibraryTrim[2] * holdGain;
+            // O ganho da biblioteca entra antes da saturação (5/11): com os
+            // parciais ímpares (alinhados como uma onda quadrada) a saída
+            // passava de 1; assim o teto é o do tanh, para qualquer conjunto.
+            return std::tanh(spectral_.tick() * 0.55 * kLibraryTrim[2]) * holdGain;
         }
         case PerformanceModuleBody::Theremin:
             theremin_.setGain(static_cast<float>(0.18 + control[1] * 1.12));
@@ -1643,7 +1653,7 @@ private:
                 {{0, 5, 3, 7, 10, 7, 12, 10, 5, 3, 0, 3, 7, 12, 10, 5}},
                 {{0, 2, 3, 5, 8, 7, 5, 3, 0, 2, 5, 8, 10, 8, 5, 2}},
                 {{0, 4, 8, 6, 3, 7, 10, 12, 8, 6, 3, 0, -2, 3, 7, 5}}}};
-            const auto phraseIndex = static_cast<std::size_t>((seed_ ^ (seed_ >> 9U)
+            const auto phraseIndex = static_cast<std::size_t>((seedMix_ ^ (seedMix_ >> 9U)
                 ^ (seedVariation_ * 17U)) % phrases.size());
             const auto phraseStep = static_cast<std::size_t>((circuitStep_ + seedVariation_) & 15U);
             const auto melodicStep = (seed_ & 1U) != 0U ? 15U - phraseStep : phraseStep;
@@ -1680,7 +1690,7 @@ private:
                 {{0, 10, 7, 3, 5, 12, 8, 2}}, {{0, 5, 8, 12, 7, 10, 3, 6}}}};
             const auto word = scoreWord(seed_, circuitStep_ + seedVariation_ * 23U, 1U);
             const auto phrase = static_cast<std::size_t>((seed_ ^ (word >> 11U)) % phrases.size());
-            const auto degree = static_cast<std::size_t>((circuitStep_ + (seed_ >> 4U)
+            const auto degree = static_cast<std::size_t>((circuitStep_ + (seedMix_ >> 4U)
                 + seedVariation_ * 3U + (random_[0] > 0.0F ? 2U : 0U)) & 7U);
             const int contour = static_cast<int>((word >> 3U) % 7U) - 3;
             gendynTargetHz_ = std::clamp(frequency * std::pow(2.0,
@@ -1717,8 +1727,8 @@ private:
                 0b1010101010101010U, 0b1101010110101010U, 0b1011011010110110U,
                 0b1110101011101010U, 0b1010111010101110U, 0b1100110011001100U}};
             const auto cell = static_cast<std::uint32_t>((circuitStep_ + seedVariation_ * 3U
-                + ((seed_ >> 14U) & 3U)) & 15U);
-            const auto pattern = static_cast<std::size_t>((seed_ ^ (seed_ >> 6U)
+                + ((seedMix_ >> 14U) & 3U)) & 15U);
+            const auto pattern = static_cast<std::size_t>((seedMix_ ^ (seedMix_ >> 6U)
                 ^ (seedVariation_ * 11U)) % kickCells.size());
             const auto at = [cell](std::uint16_t bits) noexcept {
                 return (bits & static_cast<std::uint16_t>(1U << cell)) != 0U;

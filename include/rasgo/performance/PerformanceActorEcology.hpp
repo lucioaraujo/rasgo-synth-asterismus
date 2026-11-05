@@ -411,11 +411,13 @@ public:
         if (voiceCount_ == 0U) return false;
         codaActive_ = true;
         codaProgress_ = 0.0;
-        codaLeaderIndex_ = (static_cast<std::size_t>(seed_)
-                            + static_cast<std::size_t>(spatialGameTurn_)
-                            + relationCount_) % voiceCount_;
-        const auto choice = (seed_ + spatialGameTurn_ * 3U
-                             + static_cast<std::uint32_t>(relationCount_ * 5U)) % 4U;
+        // A coda por mistura (5/11, auditoria): seeds vizinhas davam verbos e
+        // líderes em sequência; agora cada combinação de seed, virada e cabos
+        // escolhe por um fluxo próprio.
+        const auto codaWord = performanceSeedStream(seed_ ^ (spatialGameTurn_ * 0x9E3779B9U),
+                                                    0xC0DAU + static_cast<std::uint32_t>(relationCount_));
+        codaLeaderIndex_ = static_cast<std::size_t>(codaWord % static_cast<std::uint32_t>(voiceCount_));
+        const auto choice = (codaWord >> 8U) % 4U;
         codaGesture_ = static_cast<CodaGesture>(choice);
         return true;
     }
@@ -2158,9 +2160,11 @@ private:
     }};
     const std::array<int, 8>& seedScale() const noexcept {
         return kSeedScales[static_cast<std::size_t>((composition_.harmonicDialect
-            + ((seed_ >> 7U) % kSeedScales.size())) % kSeedScales.size())];
+            + (performanceSeedStream(seed_, 0xA11AU) % kSeedScales.size())) % kSeedScales.size())];
     }
-    int seedRootMidi() const noexcept { return 36 + static_cast<int>((seed_ >> 3U) % 12U); }
+    // Raiz e escala num fluxo próprio da seed (5/11, auditoria): antes, fatias
+    // de bits — as seeds 0–7 tinham a mesma raiz, e 26 e 1086 também.
+    int seedRootMidi() const noexcept { return 36 + static_cast<int>(performanceSeedStream(seed_, 0xA11BU) % 12U); }
     double seedTonalScale() const noexcept { return 0.78 + territoryIdentity_.tonalVocabulary * 0.48; }
 
 public:
@@ -2193,7 +2197,7 @@ private:
         const auto& scale = seedScale();
         const auto roleNumber = static_cast<std::size_t>(role);
         const auto degree = static_cast<std::size_t>((actorId * 3U + roleNumber * 5U
-            + (seed_ >> 11U)) % 7U);
+            + performanceSeedStream(seed_, 0xA11CU)) % 7U);
         const int roleOctave = role == PerformanceRole::Chao ? 0
             : role == PerformanceRole::Vestigio ? 1
             : role == PerformanceRole::Corpo ? 2
@@ -2205,9 +2209,12 @@ private:
         const int midi = rootMidi + styleRegister + roleOctave * 12 + scale[degree];
         const double scaledFrequency = 440.0 * std::pow(2.0,
             (static_cast<double>(midi) - 69.0) / 12.0);
-        const double idDetune = static_cast<double>((actorId + seed_) % 9U) * 0.7;
+        // Desafinação de cada corpo em cents (5/11, auditoria): era 0–5,6 Hz
+        // somados — mais de um semitom no grave, quase nada no agudo. Agora
+        // 0–16 cents, iguais em todo o registro.
+        const double cents = static_cast<double>(performanceSeedStream(seed_ ^ actorId, 0xA11DU) % 9U) * 2.0;
         const double tonalScale = seedTonalScale();
-        return scaledFrequency * tonalScale + idDetune;
+        return scaledFrequency * tonalScale * std::pow(2.0, cents / 1200.0);
     }
 
     static std::uint32_t phraseWord(std::uint32_t seed, std::uint32_t step,
