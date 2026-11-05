@@ -2,8 +2,8 @@
 
 ![The Asterismus playing: the Axis of Forces on the left, the Constellation in the centre with the stars moved by physics and the pairs in focus, the mixer of the eight stars on the right, the form and the breathing tempo in the header](website/assets/interface.jpg)
 
-**Website:** lucioaraujo.github.io/rasgo-synth-asterismus (coming with the first release) ·
-**Download:** no release yet — v0.2.0 (preview) is in preparation ·
+**Website:** [lucioaraujo.github.io/rasgo-synth-asterismus](https://lucioaraujo.github.io/rasgo-synth-asterismus/) ·
+**Download:** [v0.2.0](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest) ·
 **Contact:** **rasgo.instruments@gmail.com**
 
 Languages:
@@ -23,7 +23,7 @@ seed proposes the sky; the musician plays it, swaps stars, draws relations
 and records the piece.
 
 **Authorship:** Lúcio de Araújo · **Family:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Version:** 0.2.0 (preview, not yet released) · **License:** GNU GPL-3.0-or-later (see
+**Version:** 0.2.0 (first public version) · **License:** GNU GPL-3.0-or-later (see
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) and
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -67,18 +67,20 @@ Portuguese, French or Spanish.
 
 ### Download
 
-No release yet. The first one (v0.2.0, preview) will bring packages for
-Linux (.deb, .tar.gz), Windows and macOS built by continuous integration.
+Packages for Linux (.deb, .tar.gz), Windows (installer and portable .zip) and
+macOS (.dmg) are on the [releases page](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest); installation steps in
+[`INSTALL.md`](INSTALL.md).
 
 | Platform | Built and tested | Opened | Played by the author |
 |---|---|---|---|
-| Linux x86-64 | yes (37 tests) | yes | yes, on real hardware |
-| Windows x86-64 | not yet (continuous integration prepared) | not yet | not yet |
-| macOS (Universal 2) | not yet (continuous integration prepared) | not yet | not yet |
+| Linux x86-64 | yes (38 tests) | yes | yes, on real hardware |
+| Windows x86-64 | by the release workflow (38 tests) | not yet | not yet |
+| macOS (Universal 2) | by the release workflow (38 tests) | not yet | not yet |
 
 Measured on an Intel Core i5-6500 (2015, 4 cores), eight stars, 48 kHz,
-512-sample blocks: about 2 ms of audio work per block of 10.67 ms (about
-18 % of one core); the worst block of 21 seeds (13 minutes) took 4.8 ms.
+512-sample blocks, VARIATION and WEB on: about 1.7 ms of audio work per block
+of 10.67 ms (about 16 % of one core); the worst block of 21 seeds (13 minutes)
+took 6.7 ms, none above 75 % of the deadline (2026-11-06).
 
 ### Build from source
 
@@ -99,7 +101,7 @@ e tocam. Uma seed propõe o céu; o músico o toca, troca estrelas, desenha
 relações e grava a peça.
 
 **Autoria:** Lúcio de Araújo · **Família:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Versão:** 0.2.0 (prévia, ainda não lançada) · **Licença:** GNU GPL-3.0-or-later (ver
+**Versão:** 0.2.0 (primeira versão pública) · **Licença:** GNU GPL-3.0-or-later (ver
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) e
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -145,19 +147,20 @@ francês ou espanhol.
 
 ### Download
 
-Ainda não há versão lançada. A primeira (v0.2.0, prévia) trará pacotes para
-Linux (.deb, .tar.gz), Windows e macOS montados pela integração contínua.
+Os pacotes para Linux (.deb, .tar.gz), Windows (instalador e .zip portátil) e
+macOS (.dmg) estão na [página de releases](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest); os passos de
+instalação, em [`INSTALL.md`](INSTALL.md).
 
 | Plataforma | Compilado e testado | Aberto | Tocado pelo autor |
 |---|---|---|---|
-| Linux x86-64 | sim (37 testes) | sim | sim, em hardware real |
-| Windows x86-64 | ainda não (integração contínua preparada) | ainda não | ainda não |
-| macOS (Universal 2) | ainda não (integração contínua preparada) | ainda não | ainda não |
+| Linux x86-64 | sim (38 testes) | sim | sim, em hardware real |
+| Windows x86-64 | pela integração contínua da publicação (38 testes) | ainda não | ainda não |
+| macOS (Universal 2) | pela integração contínua da publicação (38 testes) | ainda não | ainda não |
 
 Medido num Intel Core i5-6500 (2015, 4 núcleos), oito estrelas, 48 kHz,
-blocos de 512 amostras: cerca de 2 ms de trabalho de áudio por bloco de
-10,67 ms (cerca de 18 % de um núcleo); o pior bloco em 21 seeds (13 minutos)
-levou 4,8 ms.
+blocos de 512 amostras, VARIAÇÃO e TRAMA ligadas: cerca de 1,7 ms de trabalho
+de áudio por bloco de 10,67 ms (cerca de 16 % de um núcleo); o pior bloco em
+21 seeds (13 minutos) levou 6,7 ms, nenhum acima de 75 % do prazo (6/11/2026).
 
 ### Compilar a partir do código
 
@@ -178,7 +181,7 @@ propres cycles et jouent. Une seed propose le ciel ; le musicien le joue,
 échange des étoiles, dessine des relations et enregistre la pièce.
 
 **Auteur :** Lúcio de Araújo · **Famille :** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Version :** 0.2.0 (aperçu, pas encore publié) · **Licence :** GNU GPL-3.0-or-later (voir
+**Version :** 0.2.0 (première version publique) · **Licence :** GNU GPL-3.0-or-later (voir
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) et
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -226,20 +229,21 @@ portugais ou espagnol.
 
 ### Téléchargement
 
-Pas encore de version publiée. La première (v0.2.0, aperçu) apportera des
-paquets pour Linux (.deb, .tar.gz), Windows et macOS construits par
-l'intégration continue.
+Les paquets pour Linux (.deb, .tar.gz), Windows (installeur et .zip portable)
+et macOS (.dmg) sont sur la [page des versions](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest) ; les étapes
+d'installation, dans [`INSTALL.md`](INSTALL.md).
 
 | Plateforme | Compilé et testé | Ouvert | Joué par l'auteur |
 |---|---|---|---|
-| Linux x86-64 | oui (37 tests) | oui | oui, sur du vrai matériel |
-| Windows x86-64 | pas encore (intégration continue prête) | pas encore | pas encore |
-| macOS (Universal 2) | pas encore (intégration continue prête) | pas encore | pas encore |
+| Linux x86-64 | oui (38 tests) | oui | oui, sur du vrai matériel |
+| Windows x86-64 | par l'intégration continue de la publication (38 tests) | pas encore | pas encore |
+| macOS (Universal 2) | par l'intégration continue de la publication (38 tests) | pas encore | pas encore |
 
 Mesuré sur un Intel Core i5-6500 (2015, 4 cœurs), huit étoiles, 48 kHz,
-blocs de 512 échantillons : environ 2 ms de travail audio par bloc de
-10,67 ms (environ 18 % d'un cœur) ; le pire bloc sur 21 seeds (13 minutes) a
-pris 4,8 ms.
+blocs de 512 échantillons, VARIATION et TRAME actives : environ 1,7 ms de
+travail audio par bloc de 10,67 ms (environ 16 % d'un cœur) ; le pire bloc sur
+21 seeds (13 minutes) a pris 6,7 ms, aucun au-dessus de 75 % du délai
+(6/11/2026).
 
 ### Compiler depuis les sources
 
@@ -260,7 +264,7 @@ propios ciclos y tocan. Una seed propone el cielo; el músico lo toca,
 cambia estrellas, dibuja relaciones y graba la pieza.
 
 **Autoría:** Lúcio de Araújo · **Familia:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Versión:** 0.2.0 (avance, aún no publicada) · **Licencia:** GNU GPL-3.0-or-later (ver
+**Versión:** 0.2.0 (primera versión pública) · **Licencia:** GNU GPL-3.0-or-later (ver
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) y
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -307,20 +311,21 @@ portugués o francés.
 
 ### Descarga
 
-Todavía no hay versión publicada. La primera (v0.2.0, avance) traerá
-paquetes para Linux (.deb, .tar.gz), Windows y macOS construidos por la
-integración continua.
+Los paquetes para Linux (.deb, .tar.gz), Windows (instalador y .zip portátil)
+y macOS (.dmg) están en la [página de versiones](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest); los pasos
+de instalación, en [`INSTALL.md`](INSTALL.md).
 
 | Plataforma | Compilado y probado | Abierto | Tocado por el autor |
 |---|---|---|---|
-| Linux x86-64 | sí (37 pruebas) | sí | sí, en hardware real |
-| Windows x86-64 | todavía no (integración continua preparada) | todavía no | todavía no |
-| macOS (Universal 2) | todavía no (integración continua preparada) | todavía no | todavía no |
+| Linux x86-64 | sí (38 pruebas) | sí | sí, en hardware real |
+| Windows x86-64 | por la integración continua de la publicación (38 pruebas) | todavía no | todavía no |
+| macOS (Universal 2) | por la integración continua de la publicación (38 pruebas) | todavía no | todavía no |
 
 Medido en un Intel Core i5-6500 (2015, 4 núcleos), ocho estrellas, 48 kHz,
-bloques de 512 muestras: cerca de 2 ms de trabajo de audio por bloque de
-10,67 ms (cerca del 18 % de un núcleo); el peor bloque en 21 seeds (13
-minutos) tardó 4,8 ms.
+bloques de 512 muestras, VARIACIÓN y TRAMA activas: cerca de 1,7 ms de trabajo
+de audio por bloque de 10,67 ms (cerca del 16 % de un núcleo); el peor bloque
+en 21 seeds (13 minutos) tardó 6,7 ms, ninguno por encima del 75 % del plazo
+(6/11/2026).
 
 ### Compilar desde el código
 

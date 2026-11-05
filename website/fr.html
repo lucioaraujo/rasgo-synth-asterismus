@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="robots" content="noindex" />
 <title>Rasgo Synth Asterismus — un ciel d'étoiles qui joue</title>
 <meta name="description" content="Rasgo Synth Asterismus : un instrument de scène dans lequel chaque module de synthèse est une étoile. Les étoiles se relient, bougent selon la physique, comptent leurs cycles et jouent ; une seed propose le ciel, le musicien le joue et enregistre la pièce." />
 <link rel="icon" href="assets/identity/rasgo_logo_2026.svg" type="image/svg+xml" />
@@ -81,7 +80,7 @@
 
 <main id="conteudo">
 <section class="hero" id="top">
-  <span class="status-pill">Version 0.2.0 — en préparation</span>
+  <span class="status-pill">Version 0.2.0 — première version publique, pour Windows, macOS et Linux</span>
   <h1>Rasgo <b>Synth</b> Asterismus</h1>
   <p class="lead">Asterismus est un instrument de scène dans lequel chaque module de synthèse est une étoile. Les étoiles se relient, bougent selon la physique, comptent leurs propres cycles et jouent. Une seed propose le ciel ; le musicien le joue, échange des étoiles, dessine des relations et enregistre la pièce.</p>
 </section>
@@ -128,9 +127,16 @@
 
 <section class="section download" id="baixar">
   <h2>Télécharger</h2>
-  <p>La première version (0.2.0, aperçu) est en préparation : les paquets Windows, macOS et Linux seront construits par l'intégration continue. D'ici là, l'instrument peut être compilé depuis les sources.</p>
+  <p>La version 0.2.0 est la première version publique. L'instrument reste ouvert, en développement. Choisissez le paquet de votre système ; les étapes sont dans INSTALL.</p>
+  <ul class="steps downloads">
+    <li><h3>Windows</h3><p>Windows 10 ou 11, 64 bits — installateur (.exe)</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-win64.exe">exe</a></p></li>
+    <li><h3>macOS</h3><p>macOS 10.15 ou plus récent, Intel et Apple Silicon</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-Darwin.dmg">dmg</a></p></li>
+    <li><h3>Linux</h3><p>.deb pour Ubuntu et Debian ; .tar.gz pour les autres distributions</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-Linux.deb">deb</a> <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-Linux.tar.gz">tar.gz</a></p></li>
+  </ul>
+  <p class="example">Au premier lancement, Windows et macOS affichent un avertissement de sécurité : c'est attendu, car l'app n'a pas la signature payante des deux entreprises. Le guide d'installation indique où cliquer.</p>
   <div class="contact-row">
-    <a class="button button-primary" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/blob/main/INSTALL.md">Compiler depuis les sources</a>
+    <a class="button button-primary" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/blob/main/INSTALL.md">Guide d'installation</a>
+    <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/tag/v0.2.0">Tous les paquets et les notes de version</a>
   </div>
 </section>
 

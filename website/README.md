@@ -1,13 +1,13 @@
 # Site do Rasgo Synth Asterismus
 
-**Estado: em preparação** (2026-11-04), não publicado. Endereço previsto:
+**Estado: publicado** (2026-11-06), com a versão 0.2.0:
 <https://lucioaraujo.github.io/rasgo-synth-asterismus/> (GitHub Pages do
-repositório próprio). Enquanto `PUBLICADO = False` no `gerar_paginas.py`, as
-páginas levam `noindex`, o selo "em preparação" e, em **Baixar**, só o caminho
-de compilação. O workflow `.github/workflows/deploy-site.yml` está **só
-manual** (`workflow_dispatch`) até a publicação.
+repositório próprio). `PUBLICADO = True` no `gerar_paginas.py`: sem `noindex`,
+o selo da versão e os links de download do release. O workflow
+`.github/workflows/deploy-site.yml` publica a cada push que mude `website/**`
+(e pelo botão manual).
 
-## Publicar, junto com a primeira release
+## Numa versão nova
 
 1. Conferir, na release, os nomes reais dos pacotes e ajustar `PACOTES` no
    `gerar_paginas.py` (os de hoje são os nomes padrão do CPack).

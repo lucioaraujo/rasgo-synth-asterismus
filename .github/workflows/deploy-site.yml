@@ -7,11 +7,14 @@ name: Deploy public site
 # Antitotem) on 2026-11-04. The pages are generated locally
 # (website/gerar_paginas.py && website/seo.py) and committed.
 #
-# MANUAL ONLY until the first release: the site is "in preparation" and must
-# not go live before it (website/README.md). At publication, restore the
-# trigger the Trioio uses:
-#   push: { branches: [main], paths: [website/**, .github/workflows/deploy-site.yml] }
+# Published with the first release (2026-11-06): the trigger the Trioio uses
+# — a push to main that changes the site, and the manual button.
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - '.github/workflows/deploy-site.yml'
   workflow_dispatch:
 
 permissions:

@@ -5,7 +5,7 @@
 Pelas camadas de `RASGO_DOCUMENTATION/ESTRATEGIA_DE_PUBLICACAO.md`: o
 Asterismus está entre a **camada 0 (pesquisa local)** e a **1 (candidato
 publicável)**. Tem repositório próprio e público desde 2/11, mas nenhuma
-release nem página no ar. Legenda: **feito** · **falta** (técnico) ·
+release nem página no ar. **Atualização 6/11/2026:** publicação da 0.2.0 pedida pelo autor ("já faça a publicação"): tag `v0.2.0`, uma execução da CI (a da própria release), site publicado. Legenda: **feito** · **falta** (técnico) ·
 **autor** (decisão ou ação dele).
 
 | Gate editorial comum | Estado |

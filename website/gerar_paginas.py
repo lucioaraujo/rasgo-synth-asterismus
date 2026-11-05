@@ -24,7 +24,7 @@ BLOB = REPO + "/blob/main"
 # a versão e os pacotes do release (a CI: .github/workflows/package.yml);
 # os nomes são os do CPack (CPACK_PACKAGE_NAME) — conferir na primeira release
 VERSAO = "0.2.0"
-PUBLICADO = False
+PUBLICADO = True
 RELEASE = REPO + "/releases/tag/v" + VERSAO
 DL = REPO + "/releases/download/v" + VERSAO + "/"
 PACOTES = [
@@ -43,7 +43,7 @@ T = {
         "strip": "RASGO — família de instrumentos e pesquisa sonora",
         "skip": "Pular para o conteúdo",
         "langnav": "Idioma",
-        "pill": "Versão 0.2.0 — em preparação" if not PUBLICADO else "Versão 0.2.0 — prévia, para Windows, macOS e Linux",
+        "pill": "Versão 0.2.0 — em preparação" if not PUBLICADO else "Versão 0.2.0 — primeira versão pública, para Windows, macOS e Linux",
         "lead": "O Asterismus é um instrumento ao vivo em que cada módulo de síntese é uma estrela. As estrelas se relacionam, se movem por física, contam os seus próprios ciclos e tocam. Uma seed propõe o céu; o músico o toca, troca estrelas, desenha relações e grava a peça.",
         "s_shot": "A interface",
         "shot_alt": "O Asterismus tocando: o Eixo de Forças à esquerda, a Constelação no centro com as estrelas movidas pela física e os pares em foco, o mixer das oito estrelas à direita, a forma e o tempo que respira no cabeçalho.",
@@ -73,7 +73,7 @@ T = {
         "tutorial": "O botão TUTORIAL do app explica tudo passo a passo, em português, inglês, francês ou espanhol.",
         "s_dl": "Baixar",
         "dl_pending": "A primeira versão (0.2.0, prévia) está em preparação: os pacotes para Windows, macOS e Linux serão montados pela integração contínua. Até lá, o instrumento pode ser compilado a partir do código.",
-        "dl_intro": "A versão 0.2.0 é uma prévia: o instrumento faz o essencial e continua aberto, em desenvolvimento. Escolha o pacote do seu sistema.",
+        "dl_intro": "A versão 0.2.0 é a primeira versão pública. O instrumento continua aberto, em desenvolvimento. Escolha o pacote do seu sistema; os passos estão no INSTALL.",
         "dl_os": {"Windows": "Windows 10 ou 11, 64 bits — instalador (.exe)", "macOS": "macOS 10.15 ou mais novo, Intel e Apple Silicon", "Linux": ".deb para Ubuntu e Debian; .tar.gz para as outras distribuições"},
         "dl_warn": "Na primeira abertura, o Windows e o macOS mostram um aviso de segurança: é esperado, porque o app não tem a assinatura paga das duas empresas. O guia de instalação diz onde clicar.",
         "dl_install": "Guia de instalação",
@@ -101,7 +101,7 @@ T = {
         "strip": "RASGO — a family of instruments and sound research",
         "skip": "Skip to content",
         "langnav": "Language",
-        "pill": "Version 0.2.0 — in preparation" if not PUBLICADO else "Version 0.2.0 — preview, for Windows, macOS and Linux",
+        "pill": "Version 0.2.0 — in preparation" if not PUBLICADO else "Version 0.2.0 — first public version, for Windows, macOS and Linux",
         "lead": "Asterismus is a live instrument in which every synthesis module is a star. The stars relate to each other, move by physics, count their own cycles and play. A seed proposes the sky; the musician plays it, swaps stars, draws relations and records the piece.",
         "s_shot": "The interface",
         "shot_alt": "Asterismus playing: the Axis of Forces on the left, the Constellation in the centre with the stars moved by physics and the pairs in focus, the mixer of the eight stars on the right, the form and the breathing tempo in the header.",
@@ -131,7 +131,7 @@ T = {
         "tutorial": "The app's TUTORIAL button explains everything step by step, in English, Portuguese, French or Spanish.",
         "s_dl": "Download",
         "dl_pending": "The first version (0.2.0, preview) is in preparation: the Windows, macOS and Linux packages will be built by continuous integration. Until then, the instrument can be built from source.",
-        "dl_intro": "Version 0.2.0 is a preview: the instrument does the essential and remains open, in development. Choose the package for your system.",
+        "dl_intro": "Version 0.2.0 is the first public version. The instrument remains open, in development. Choose the package for your system; the steps are in INSTALL.",
         "dl_os": {"Windows": "Windows 10 or 11, 64-bit — installer (.exe)", "macOS": "macOS 10.15 or later, Intel and Apple Silicon", "Linux": ".deb for Ubuntu and Debian; .tar.gz for other distributions"},
         "dl_warn": "On first launch, Windows and macOS show a security warning: it is expected, because the app does not carry the two companies' paid signature. The installation guide says where to click.",
         "dl_install": "Installation guide",
@@ -159,7 +159,7 @@ T = {
         "strip": "RASGO — famille d'instruments et de recherche sonore",
         "skip": "Aller au contenu",
         "langnav": "Langue",
-        "pill": "Version 0.2.0 — en préparation" if not PUBLICADO else "Version 0.2.0 — aperçu, pour Windows, macOS et Linux",
+        "pill": "Version 0.2.0 — en préparation" if not PUBLICADO else "Version 0.2.0 — première version publique, pour Windows, macOS et Linux",
         "lead": "Asterismus est un instrument de scène dans lequel chaque module de synthèse est une étoile. Les étoiles se relient, bougent selon la physique, comptent leurs propres cycles et jouent. Une seed propose le ciel ; le musicien le joue, échange des étoiles, dessine des relations et enregistre la pièce.",
         "s_shot": "L'interface",
         "shot_alt": "Asterismus en jeu : l'Axe des forces à gauche, la Constellation au centre avec les étoiles mues par la physique et les paires en focus, le mixeur des huit étoiles à droite, la forme et le tempo qui respire dans l'en-tête.",
@@ -189,7 +189,7 @@ T = {
         "tutorial": "Le bouton TUTORIEL de l'app explique tout pas à pas, en français, anglais, portugais ou espagnol.",
         "s_dl": "Télécharger",
         "dl_pending": "La première version (0.2.0, aperçu) est en préparation : les paquets Windows, macOS et Linux seront construits par l'intégration continue. D'ici là, l'instrument peut être compilé depuis les sources.",
-        "dl_intro": "La version 0.2.0 est un aperçu : l'instrument fait l'essentiel et reste ouvert, en développement. Choisissez le paquet de votre système.",
+        "dl_intro": "La version 0.2.0 est la première version publique. L'instrument reste ouvert, en développement. Choisissez le paquet de votre système ; les étapes sont dans INSTALL.",
         "dl_os": {"Windows": "Windows 10 ou 11, 64 bits — installateur (.exe)", "macOS": "macOS 10.15 ou plus récent, Intel et Apple Silicon", "Linux": ".deb pour Ubuntu et Debian ; .tar.gz pour les autres distributions"},
         "dl_warn": "Au premier lancement, Windows et macOS affichent un avertissement de sécurité : c'est attendu, car l'app n'a pas la signature payante des deux entreprises. Le guide d'installation indique où cliquer.",
         "dl_install": "Guide d'installation",
@@ -217,7 +217,7 @@ T = {
         "strip": "RASGO — familia de instrumentos e investigación sonora",
         "skip": "Saltar al contenido",
         "langnav": "Idioma",
-        "pill": "Versión 0.2.0 — en preparación" if not PUBLICADO else "Versión 0.2.0 — vista previa, para Windows, macOS y Linux",
+        "pill": "Versión 0.2.0 — en preparación" if not PUBLICADO else "Versión 0.2.0 — primera versión pública, para Windows, macOS y Linux",
         "lead": "Asterismus es un instrumento en vivo en el que cada módulo de síntesis es una estrella. Las estrellas se relacionan, se mueven por física, cuentan sus propios ciclos y tocan. Una seed propone el cielo; el músico lo toca, cambia estrellas, dibuja relaciones y graba la pieza.",
         "s_shot": "La interfaz",
         "shot_alt": "Asterismus tocando: el Eje de fuerzas a la izquierda, la Constelación en el centro con las estrellas movidas por la física y los pares en foco, el mezclador de las ocho estrellas a la derecha, la forma y el tempo que respira en la cabecera.",
@@ -247,7 +247,7 @@ T = {
         "tutorial": "El botón TUTORIAL de la app lo explica todo paso a paso, en español, inglés, portugués o francés.",
         "s_dl": "Descargar",
         "dl_pending": "La primera versión (0.2.0, vista previa) está en preparación: los paquetes para Windows, macOS y Linux se construirán en la integración continua. Mientras tanto, el instrumento puede compilarse desde el código.",
-        "dl_intro": "La versión 0.2.0 es una vista previa: el instrumento hace lo esencial y sigue abierto, en desarrollo. Elige el paquete de tu sistema.",
+        "dl_intro": "La versión 0.2.0 es la primera versión pública. El instrumento sigue abierto, en desarrollo. Elige el paquete de tu sistema; los pasos están en INSTALL.",
         "dl_os": {"Windows": "Windows 10 u 11, 64 bits — instalador (.exe)", "macOS": "macOS 10.15 o más reciente, Intel y Apple Silicon", "Linux": ".deb para Ubuntu y Debian; .tar.gz para las demás distribuciones"},
         "dl_warn": "En la primera apertura, Windows y macOS muestran un aviso de seguridad: es lo esperado, porque la app no lleva la firma de pago de las dos empresas. La guía de instalación dice dónde hacer clic.",
         "dl_install": "Guía de instalación",

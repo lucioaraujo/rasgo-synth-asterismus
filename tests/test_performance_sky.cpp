@@ -372,7 +372,8 @@ int main() {
             if (sky.attacked(PerformanceModuleBody::Acid)) ++ticks;
             if (sky.attacked(PerformanceModuleBody::Percussion)) ++attacks;
         }
-        std::cout << "drums count E(" << pulses << "," << length << "): " << attacks << " attacks\n";
+        std::cout << "drums count E(" << pulses << "," << length << "): " << attacks << " attacks (acid "
+                  << ticks << ")\n";
         ok = expect(length >= 8U && pulses >= 1U && pulses < length, "drums count a dense cycle") && ok;
         ok = expect(attacks > 0U, "a counting star still plays") && ok;
 
@@ -380,7 +381,8 @@ int main() {
         // on the downbeat; a contrast always picks a grouping other than the
         // home one, and the return restores it; no counting, no grouping.
         for (const auto mask : PerformanceSky::kGroupings)
-            ok = expect((mask & 1U) != 0U && mask < (1U << 16U), "a grouping starts on the downbeat") && ok;
+            // (a máscara é de 16 bits: cabe no compasso de 16 pulsos pelo tipo)
+            ok = expect((mask & 1U) != 0U, "a grouping starts on the downbeat") && ok;
         const auto home = sky.groupingMask();
         bool contrastDiffers = true;
         for (std::uint32_t ordinal = 1U; ordinal < 12U; ++ordinal) {

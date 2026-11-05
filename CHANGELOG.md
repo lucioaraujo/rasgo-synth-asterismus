@@ -4,7 +4,7 @@ What changed between the published versions of Rasgo Synth Asterismus. The
 development notes, in Portuguese, are in [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md)
 and [`docs/`](docs/).
 
-## 0.2.0 — first public version (preview, not yet released)
+## 0.2.0 — first public version (2026-11-06)
 
 The first public version of the Asterismus, a live instrument in which every
 synthesis module is a star. The internal development versions went up to
@@ -43,6 +43,9 @@ synthesis module is a star. The internal development versions went up to
   contrast, a few sky gestures (STUTTER, DISPLACE), guest stars from outside
   the sky in the contrast, the order of the PATH scenes and a coda in
   proportion to the track.
+- **POLYPHONY.** The seed's density (how many stars light, how much they play,
+  how often the sky calls them) is a set of genes; the POLYPHONY slider moves
+  it from soloist to choral, and its label shows the seed's index (1–10).
 - **Album.** Tracks with seeds derived from the album seed; the next track
   comes in by itself; RENDER THE WHOLE ALBUM renders every track faster than real
   time; MASTER THE ALBUM brings the album to −16 LUFS with a
