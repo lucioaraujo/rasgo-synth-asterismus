@@ -10,6 +10,7 @@
 #include "PerformanceRelationalPhenomena.hpp"
 #include "PerformanceSky.hpp"
 #include "PerformanceSkyDirector.hpp"
+#include "PerformanceStarLevels.hpp"
 #include "PerformanceStemFrame.hpp"
 #include "PerformanceSpatialGame.hpp"
 #include "PerformanceSeedTrajectory.hpp"
@@ -1774,7 +1775,14 @@ public:
                     + voice.localControls[1] * 0.46
                     + voice.localControls[2] * 0.38;
             }
-            stem.mono *= macroEnergyCompensation_ * director_.brightness(index);
+            // O nível de referência da estrela (PerformanceStarLevels.hpp):
+            // nenhuma estrela 15 dB acima das outras. Guardado por voz e
+            // recalculado só quando a estrela da voz muda (troca, recall).
+            if (voice.levelTrimStar != voice.star) {
+                voice.levelTrimStar = voice.star;
+                voice.levelTrim = std::pow(10.0, performanceStarLevelTrimDb(voice.star) / 20.0);
+            }
+            stem.mono *= voice.levelTrim * macroEnergyCompensation_ * director_.brightness(index);
             // A energia de cada estrela vai ao diretor (a liderança que gira).
             director_.addStemEnergy(index, stem.mono * stem.mono);
         }
@@ -1879,6 +1887,8 @@ private:
     struct Voice {
         std::uint16_t actorId = kInvalidActorId;
         PerformanceModuleBody star = PerformanceModuleBody::Count;
+        PerformanceModuleBody levelTrimStar = PerformanceModuleBody::Count;
+        double levelTrim = 1.0;
         PerformanceSeedEvent localSeed{};
         std::uint32_t localSeedTurn = 0U;
         std::uint32_t localSeedVersion = 0U;

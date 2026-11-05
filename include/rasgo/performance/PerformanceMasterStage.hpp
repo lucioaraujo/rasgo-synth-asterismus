@@ -131,10 +131,15 @@ private:
     double previousInLeft_ = 0.0, previousInRight_ = 0.0, previousOutLeft_ = 0.0, previousOutRight_ = 0.0;
     double envelope_ = 0.0, limiterGain_ = 1.0;
     double master_ = 1.0;
-    // +26 dB: o motor somava ~−44 LUFS com o MASTER em −6 dB; com +26 dB a
-    // peça típica fica perto de −18 LUFS e os picos medidos (−33 dBTP)
-    // chegam a ~−7 dBTP — o limitador só age em excessos.
-    double makeup_ = 19.952623149688797;
+    // +26 dB (30/10): o motor somava ~−44 LUFS com o MASTER em −6 dB; com
+    // +26 dB a peça típica ficava perto de −18 LUFS e os picos medidos
+    // (−33 dBTP) chegavam a ~−7 dBTP — o limitador só age em excessos.
+    // +35 dB (5/11): a forma por partes, a atividade e o nível de referência
+    // por estrela (PerformanceStarLevels.hpp) deixaram a peça mais rala — as
+    // tomadas da escuta guiada saíam entre −36 e −30 LUFS, o limitador sem
+    // agir; a sonda `niveis` (48 seeds × 90 s, MASTER −6 dB) media −28,0
+    // LUFS de média. +9 dB a devolve à faixa de −19 LUFS.
+    double makeup_ = 56.234132519034908;
     std::array<double, kMaxLookahead> delayLeft_{};
     std::array<double, kMaxLookahead> delayRight_{};
     std::size_t position_ = 0U;

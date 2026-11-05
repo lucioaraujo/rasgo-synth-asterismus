@@ -46,7 +46,7 @@ Legenda: **feito** · **falta** (trabalho técnico) · **decisão** (do autor).
 
 | Item | Estado |
 |---|---|
-| Saída na arquitetura comum RASGO (ganho fixo, limitador true peak, teto −1,41 dBTP, dither TPDF, sem normalização ao vivo) | **feito** em 30/10 — −18 a −20 LUFS com MASTER −6 dB (`docs/SAIDA_DE_AUDIO.md`) |
+| Saída na arquitetura comum RASGO (ganho fixo, limitador true peak, teto −1,41 dBTP, dither TPDF, sem normalização ao vivo) | **feito** em 30/10; nível por estrela e ganho fixo +35 dB em 5/11 — −19 LUFS de média com MASTER −6 dB (48 seeds; `docs/SAIDA_DE_AUDIO.md` §7) |
 | Masterização de entrega (álbum/streaming), offline | **falta** — fluxo separado, como o TRACK/ALBUM MASTER do Navalha 2 |
 | Medidor de loudness/true peak no rodapé | **feito** (30/10, BS.1770, EBU 3341) |
 | Detector de true peak 4× no limitador (como o Navalha 2) | **feito** (30/10) — teto de −1,41 dBTP garantido também entre amostras |

@@ -102,5 +102,43 @@ três peças de referência, loudness e picos não mudaram (o nivelador já deix
 folga; o limitador quase nunca age). Referência A/B da trama desligada:
 `778aee1d5c2f9cbb` (o detector muda arredondamentos mínimos).
 
-## 7. Próximo
-- Escuta do autor: alvo de loudness e quanto o nivelador pode subir.
+## 7. Nível por estrela e ganho fixo +35 dB (5/11)
+
+Pedido do autor, na escuta guiada (bloco 3): "verifique as saídas, se não está
+muito baixo o volume"; com a proposta, "sim, faça as duas".
+
+**Medido.** As tomadas de 1 min de 5/11 (seeds 26, 1086, 628, 84) saíram entre
+−36 e −30 LUFS, true peak de −21 a −10 dBTP, o limitador sem agir — 10 a 15 dB
+abaixo do §4. Em cada tomada uma estrela levava quase toda a energia (WALSH
+97 % na 628, HARMONAIG 87 % na 84, GALO 70 % na 1086, BASS 62 % na 26). A
+cadeia de saída não tinha mudado: a peça ficou mais rala com a forma por
+partes, a atividade e a liderança que gira (sonda antes/depois nas mesmas
+seeds: as estrelas soam tanto ou mais, mas a mistura perdeu ~3 dB nas seeds 1
+e 628).
+
+**1 · Nível de referência por estrela**
+(`include/rasgo/performance/PerformanceStarLevels.hpp`). Sonda `niveis` (como
+o app: 8 corpos, blocos de 512, trama e VARIAÇÃO ligadas, MASTER −6 dB), 48
+seeds × 90 s: o nível de cada estrela *quando soa* ia de −42,6 dB (THEREMIN) a
+−60,0 dB (MODAL), 17 dB de diferença. Uma correção fixa leva cada uma à
+mediana (−49,7 dB), limitada a ±9 dB, no fim da cadeia do stem (não muda
+timbre nem saturação; não é nivelador). Depois: todas entre −48,2 e −52,4 dB,
+e MODAL em −54,6 (limitado a +9). A faixa entre seeds caiu de 14,3 para
+11 LU. Os stems gravados já saem corrigidos.
+
+**2 · Ganho fixo de +26 para +35 dB** (`PerformanceMasterStage.hpp`). Com a
+correção, a média era −28,0 LUFS; com +35 dB, nas mesmas 48 seeds: **−19,1
+LUFS** de média (−25,5 a −14,5), true peak no teto (−1,4 dBTP) na maioria — o
+limitador passa a segurar os picos, como no Antitotem (−1,7 a −1,1 dBTP).
+Continua sem normalização ao vivo: o ganho é fixo.
+
+Testes: 37/37; o teste do ganho fixo do master usa agora um seno a −46 dBFS
+(a −40 dBFS, ×56 encostaria no joelho).
+
+**Limitação.** A correção é pela média de cada estrela; numa seed, uma estrela
+ainda pode dominar (o equilíbrio dinâmico vem do papel, da VARIAÇÃO e da
+liderança). Conferir na escuta.
+
+## 8. Próximo
+- Escuta do autor: regravar as seeds 26, 1086, 628 e 84 (1 MIN, sem SOLO/MUTE,
+  MASTER −6 dB) e comparar com as tomadas de 5/11 01h15–01h23.

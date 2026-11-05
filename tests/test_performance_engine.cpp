@@ -1768,20 +1768,20 @@ void testFractureTearsTheStruckStem() {
 }
 
 void testMasterStageReachesAlbumLevelSafely() {
-    // The master (30/10, SAIDA_AUDIO_COMUM.md): fixed gain staging (+26 dB,
-    // no automatic normalisation of a live performance) and a ceiling that a
+    // The master (30/10, SAIDA_AUDIO_COMUM.md): fixed gain staging (+35 dB
+    // since 5/11, no automatic normalisation of a live performance) and a ceiling that a
     // hot signal never passes.
     PerformanceMasterStage master;
     master.prepare(48000.0);
     master.setMasterGain(1.0);
     double quietPeak = 0.0;
     for (int sample = 0; sample < 48000 * 2; ++sample) {
-        double left = 0.01 * std::sin(sample * 0.0573), right = left;
+        double left = 0.005 * std::sin(sample * 0.0573), right = left;
         master.process(left, right);
         if (sample > 48000) quietPeak = std::max(quietPeak, std::fabs(left));
     }
-    std::cout << "master: a -40 dBFS sine leaves at peak " << quietPeak << " (fixed +26 dB)\n";
-    expect(std::fabs(quietPeak - 0.01 * master.makeupGain()) < 0.002, "the master applies its fixed gain, no more");
+    std::cout << "master: a -46 dBFS sine leaves at peak " << quietPeak << " (fixed +35 dB)\n";
+    expect(std::fabs(quietPeak - 0.005 * master.makeupGain()) < 0.002, "the master applies its fixed gain, no more");
     double hottest = 0.0;
     for (int sample = 0; sample < 48000 * 5; ++sample) {
         double left = 3.0 * std::sin(sample * 0.0573) + ((sample % 4801) == 0 ? 6.0 : 0.0), right = -left;

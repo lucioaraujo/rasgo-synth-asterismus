@@ -39,7 +39,9 @@ synthesis module is a star. The internal development versions went up to
   `.asterismus` files (parameters only, never audio).
 - **Output** in the common RASGO standard: fixed gain, limiter with 4×
   true-peak detection, −1.41 dBTP ceiling, BS.1770 loudness metering,
-  dither on recording.
+  dither on recording. Each star has a fixed reference level (measured over
+  48 seeds), so no star sits 15 dB above the others; a typical piece comes
+  out near −19 LUFS with MASTER at −6 dB.
 - **Robustness:** if the sound system stalls or the device disappears, the
   app reopens it and the piece goes on from where it was; a take survives a
   crash of the app (its header is updated every second).
