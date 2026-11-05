@@ -1215,27 +1215,63 @@ private:
     // - o piso da atividade, de 0,5 a 0,85 (acesas tocam de fato);
     // - o teto da atividade, de 1,15 a 1,8 (quanto o céu adensa);
     // - quanto o líder que sai recua, no mínimo 0,3 a 0,7 do seu brilho.
-    void chooseDensityGenes() noexcept {
-        const auto gene = [this](std::uint32_t domain) {
-            return static_cast<double>(performanceSeedStream(seed_, domain) & 0xffffU) / 65535.0;
+public:
+    struct DensityGenes {
+        double litLow = 2.0, litHigh = 7.0, activityLow = 0.35, activityHigh = 1.6, recedeFloor = 0.0, chorus = 0.0;
+    };
+    static DensityGenes densityGenesFor(std::uint32_t seed) noexcept {
+        const auto gene = [seed](std::uint32_t domain) {
+            return static_cast<double>(performanceSeedStream(seed, domain) & 0xffffU) / 65535.0;
         };
-        litLow_ = 2.0 + 2.5 * gene(0xDE00U);
-        litHigh_ = std::min(8.0, litLow_ + 1.5 + 4.0 * gene(0xDE01U));
-        activityLow_ = 0.5 + 0.35 * gene(0xDE02U);
-        activityHigh_ = 1.15 + 0.65 * gene(0xDE03U);
-        recedeFloor_ = 0.3 + 0.4 * gene(0xDE04U);
+        DensityGenes g;
+        g.litLow = 2.0 + 2.5 * gene(0xDE00U);
+        g.litHigh = std::min(8.0, g.litLow + 1.5 + 4.0 * gene(0xDE01U));
+        g.activityLow = 0.5 + 0.35 * gene(0xDE02U);
+        g.activityHigh = 1.15 + 0.65 * gene(0xDE03U);
+        g.recedeFloor = 0.3 + 0.4 * gene(0xDE04U);
         // - o coro: quanto o céu chama as acesas a cada tempo, de 0 a 0,6
         //   (vezes a atividade da parte): de céus de solistas a céus corais.
-        chorus_ = 0.6 * gene(0xDE05U);
+        g.chorus = 0.6 * gene(0xDE05U);
+        return g;
     }
+    void chooseDensityGenes() noexcept {
+        const auto g = densityGenesFor(seed_);
+        litLow_ = g.litLow;
+        litHigh_ = g.litHigh;
+        activityLow_ = g.activityLow;
+        activityHigh_ = g.activityHigh;
+        recedeFloor_ = g.recedeFloor;
+        chorus_ = g.chorus;
+    }
+    // O índice de polifonia de uma seed, de 1 (solista) a 10 (coral), pelos
+    // seus genes: a média de estrelas acesas (metade do peso), o piso da
+    // atividade e o coro.
+    static int polyphonyIndexFor(std::uint32_t seed) noexcept {
+        const auto g = densityGenesFor(seed);
+        const double score = 0.5 * std::clamp((0.5 * (g.litLow + g.litHigh) - 3.0) / 4.0, 0.0, 1.0)
+            + 0.3 * std::clamp((g.activityLow - 0.5) / 0.35, 0.0, 1.0) + 0.2 * std::clamp(g.chorus / 0.6, 0.0, 1.0);
+        return 1 + static_cast<int>(std::lround(9.0 * score));
+    }
+    // O POLIFONIA do músico (6/11): −1 (mais esparso) a +1 (mais cheio), 0 =
+    // a seed. Desloca os genes juntos; a personalidade da seed fica.
+    void setPolyphonyBias(double bias) noexcept {
+        const double b = std::clamp(std::isfinite(bias) ? bias : 0.0, -1.0, 1.0);
+        if (std::fabs(b - polyphonyBias_) < 1.0e-6) return;
+        polyphonyBias_ = b;
+        applyDensity(character_);
+    }
+    double polyphonyBias() const noexcept { return polyphonyBias_; }
     void applyDensity(SectionCharacter& character) const noexcept {
-        character.litLow = litLow_;
-        character.litHigh = litHigh_;
-        character.activityLow = activityLow_;
-        character.activityHigh = activityHigh_;
-        character.chorus = chorus_;
+        const double b = polyphonyBias_;
+        character.litLow = std::clamp(litLow_ + 2.5 * b, 1.0, 7.0);
+        character.litHigh = std::clamp(litHigh_ + 2.5 * b, character.litLow + 1.0, 8.0);
+        character.activityLow = std::clamp(activityLow_ + 0.3 * b, 0.2, 1.0);
+        character.activityHigh = std::clamp(activityHigh_ + 0.4 * b, character.activityLow + 0.2, 2.2);
+        character.chorus = std::clamp(chorus_ + 0.5 * b, 0.0, 1.2);
     }
+private:
     double litLow_ = 2.0, litHigh_ = 7.0, activityLow_ = 0.35, activityHigh_ = 1.6, recedeFloor_ = 0.0, chorus_ = 0.0;
+    double polyphonyBias_ = 0.0;
     std::array<bool, kBodies> openingLit_{};
 
     // As gramáticas da forma (5/11, auditoria da seed, item C). Antes havia

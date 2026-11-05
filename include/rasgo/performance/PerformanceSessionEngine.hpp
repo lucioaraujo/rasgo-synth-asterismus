@@ -205,6 +205,8 @@ public:
     }
 
     PerformanceMorceauState morceauState() const noexcept { return morceau_.state(); }
+    // O POLIFONIA do músico (6/11): −1 a +1 sobre a densidade da seed.
+    void setPolyphonyBias(double bias) noexcept { ecology_.setPolyphonyBias(bias); }
     // A coda na proporção da faixa (5/11): o envelope do morceau e o gesto da
     // ecologia com a mesma duração.
     bool setCodaSeconds(double seconds) noexcept {

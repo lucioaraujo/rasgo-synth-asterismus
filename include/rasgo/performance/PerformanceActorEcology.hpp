@@ -433,6 +433,7 @@ public:
     }
 
     CodaGesture codaGesture() const noexcept { return codaGesture_; }
+    void setPolyphonyBias(double bias) noexcept { director_.setPolyphonyBias(bias); }
     void setCodaSeconds(double seconds) noexcept {
         if (!codaActive_ && finite(seconds) && seconds >= 0.25 && seconds <= 30.0) codaSeconds_ = seconds;
     }

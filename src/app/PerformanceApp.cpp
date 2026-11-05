@@ -2857,7 +2857,8 @@ public:
             // cobriam "CAMPO DE MATÉRIAS"; auditoria da interface, 29/10).
             skyWebButton_.setBounds(constellationArea_.getX() + 12, constellationArea_.getY() + 30, 136, 20);
             mixerVariationButton_.setBounds(constellationArea_.getX() + 154, constellationArea_.getY() + 30, 186, 20);
-            auto mixer = constellationArea_.reduced(12, 30).withTrimmedTop(24);
+            layoutPolyphony();
+            auto mixer = constellationArea_.reduced(12, 30).withTrimmedTop(46);
             // MESA must expose the spatial instrument itself. Previously the
             // graph was given an empty bounds rectangle here, leaving only
             // stem sliders visible and hiding the reserve cards needed for
@@ -2941,10 +2942,11 @@ public:
         // cobriam "CAMPO DE MATÉRIAS"; auditoria da interface, 29/10).
         skyWebButton_.setBounds(constellationArea_.getX() + 12, constellationArea_.getY() + 30, 136, 20);
         mixerVariationButton_.setBounds(constellationArea_.getX() + 154, constellationArea_.getY() + 30, 186, 20);
+        layoutPolyphony();
         // The constellation is the visible spatial body of the instrument.
         // Give it the broad central panel; the adjacent matter panel keeps
         // the stem/module controls without shrinking the spatial drawing.
-        auto actorControls = constellationArea_.reduced(10, 30).withTrimmedTop(24);
+        auto actorControls = constellationArea_.reduced(10, 30).withTrimmedTop(46);
         auto focusedPanel = actorControls.removeFromBottom(210).reduced(2, 2);
         const auto actorRowHeight = actorControls.getHeight() / 2;
         for (std::size_t index = 0; index < actorSliders_.size(); ++index) {
@@ -3266,6 +3268,28 @@ private:
             repaint();
         };
         addAndMakeVisible(skyWebButton_);
+        // POLIFONIA (6/11, pedido do autor: "um slide de índice de polifonia,
+        // também para os seeds"): −1 mais esparso, 0 a densidade da seed, +1
+        // mais cheio. O rótulo diz o índice da seed (1 solista – 10 coral).
+        polyphonySlider_.setSliderStyle(juce::Slider::LinearHorizontal);
+        polyphonySlider_.setTextBoxStyle(juce::Slider::TextBoxRight, false, 44, 16);
+        polyphonySlider_.setRange(-1.0, 1.0, 0.05);
+        polyphonySlider_.setValue(0.0, juce::dontSendNotification);
+        polyphonySlider_.setDoubleClickReturnValue(true, 0.0);
+        polyphonySlider_.textFromValueFunction = [](double value) {
+            return std::fabs(value) < 0.025 ? juce::String("seed") : (value > 0.0 ? "+" : "") + juce::String(value, 2);
+        };
+        polyphonySlider_.setColour(juce::Slider::trackColourId, juce::Colour(0xff315e51));
+        polyphonySlider_.setColour(juce::Slider::backgroundColourId, juce::Colour(0xff183b33));
+        polyphonySlider_.setColour(juce::Slider::thumbColourId, juce::Colour(0xffd18a45));
+        polyphonySlider_.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xffe7e3d5));
+        polyphonySlider_.onValueChange = [this] { controller_.setPolyphonyBias(polyphonySlider_.getValue()); };
+        addAndMakeVisible(polyphonySlider_);
+        polyphonyLabel_.setFont(branding::mono(9.0f, juce::Font::bold));
+        polyphonyLabel_.setColour(juce::Label::textColourId, juce::Colour(0xffd8b48c));
+        polyphonyLabel_.setInterceptsMouseClicks(false, false);
+        addAndMakeVisible(polyphonyLabel_);
+        refreshPolyphonyLabel();
         // No app a variação abre ligada; o motor e os testes a começam
         // desligada, e o músico a desliga com um clique.
         controller_.setMixerVariation(true);
@@ -4667,7 +4691,8 @@ private:
     juce::String trackSummary(std::size_t track) const {
         const auto takes = album_.takesOf(track);
         return "seed " + juce::String(static_cast<juce::int64>(album_.trackSeed(track))) + "  ·  "
-            + juce::String(album_.trackBpm(track), 1) + " BPM"
+            + juce::String(album_.trackBpm(track), 1) + " BPM  ·  poli "
+            + juce::String(PerformanceSkyDirector::polyphonyIndexFor(album_.trackSeed(track))) + "/10"
             + (takes > 0U ? utf8("  ·  ") + juce::String(static_cast<int>(takes))
                                 + uiText(supportLanguage_, " tomada(s)", " take(s)", " prise(s)", " toma(s)")
                           : juce::String{});
@@ -4820,6 +4845,7 @@ private:
             job.spec.bpm = album_.trackBpm(track);
             job.spec.seconds = albumTrackSeconds(durationChoice, job.spec.seed);
             job.spec.masterDb = masterSlider_.getValue();
+            job.spec.polyphonyBias = polyphonySlider_.getValue();
             job.spec.mixPath = file.getFullPathName().toStdString();
             job.spec.manifestPath = file.withFileExtension(".json").getFullPathName().toStdString();
             job.spec.startedAt = now.toISO8601(true).toStdString();
@@ -6329,6 +6355,8 @@ private:
                          " min: REC starts at once; the sky's form fits the duration (opening, development, contrast, return) and the coda arrives at the end.",
                          " min : REC démarre aussitôt ; la forme du ciel s’ajuste à la durée et la coda arrive à la fin.",
                          " min: REC empieza ya; la forma del cielo se ajusta a la duración y la coda llega al final."));
+        polyphonyLabelSeed_ = 0xFFFFFFFFU;  // o rótulo do POLIFONIA no idioma novo
+        refreshPolyphonyLabel();
         percursoButton_.setTooltip(uiText(l,
             "As cenas seguem a forma do céu: NASCENTE na abertura; ESPIRAL, RASGO e BALANÇO nas outras partes, numa ordem da seed. A forma segue uma gramática da seed (ciclo, arco, rondó, ondas, kishōtenketsu, choque); gravando, o fim da primeira volta pede a coda.",
             "Scenes follow the sky's form: NASCENTE in the opening; ESPIRAL, RASGO and BALANÇO in the other parts, in an order chosen by the seed. The form follows a grammar of the seed (cycle, arc, rondo, waves, kishōtenketsu, shock); while recording, the end of the first pass asks for the coda.",
@@ -6754,6 +6782,7 @@ private:
         constellationGraph_.setStemTelemetry(telemetry);
         performanceField_.setSkyState(telemetry, controller_.skyWeb());
         followPercurso(telemetry);
+        refreshPolyphonyLabel();
         // A faixa com duração: a coda chega 5,2 s antes do alvo (coda 4 s +
         // cauda 1,2 s), e o arquivo fecha em torno do tempo escolhido.
         if (takeTargetSeconds_ > 0.0 && recorder_.recording() && !codaRequested_ && takeSampleRate_ > 0.0
@@ -7264,6 +7293,28 @@ private:
     juce::TextButton recordButton_;
     juce::TextButton mixerVariationButton_;
     juce::TextButton skyWebButton_;
+    juce::Slider polyphonySlider_;
+    juce::Label polyphonyLabel_;
+    std::uint32_t polyphonyLabelSeed_ = 0xFFFFFFFFU;
+    // A linha do POLIFONIA, logo abaixo de TRAMA e VARIAÇÃO.
+    void layoutPolyphony() {
+        const auto x = constellationArea_.getX() + 12, y = constellationArea_.getY() + 53;
+        polyphonyLabel_.setBounds(x, y, 150, 18);
+        polyphonySlider_.setBounds(x + 152, y, 176, 18);
+    }
+    void refreshPolyphonyLabel() {
+        const auto seed = startupDocument_.territory.seed;
+        if (seed == polyphonyLabelSeed_) return;
+        polyphonyLabelSeed_ = seed;
+        const auto index = PerformanceSkyDirector::polyphonyIndexFor(seed);
+        polyphonyLabel_.setText(uiText(supportLanguage_, "POLIFONIA · SEED ", "POLYPHONY · SEED ", "POLYPHONIE · SEED ",
+                                       "POLIFONÍA · SEED ") + juce::String(index) + "/10", juce::dontSendNotification);
+        polyphonySlider_.setTooltip(uiText(supportLanguage_,
+            "Quantas estrelas soam juntas. No meio, a densidade da seed (índice 1 solista – 10 coral); à esquerda mais esparso, à direita mais cheio. Duplo clique volta à seed.",
+            "How many stars sound together. In the middle, the seed's density (index 1 soloist – 10 choral); left sparser, right fuller. Double-click returns to the seed.",
+            "Combien d’étoiles sonnent ensemble. Au milieu, la densité de la seed (indice 1 soliste – 10 choral) ; à gauche plus clairsemé, à droite plus plein. Double-clic : retour à la seed.",
+            "Cuántas estrellas suenan juntas. En el medio, la densidad de la seed (índice 1 solista – 10 coral); a la izquierda más disperso, a la derecha más lleno. Doble clic vuelve a la seed."));
+    }
     juce::TextButton tutorialButton_;
     juce::TextButton aboutButton_;
     juce::TextButton languageButton_;

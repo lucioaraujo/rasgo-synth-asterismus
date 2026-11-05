@@ -148,6 +148,7 @@ struct PerformanceOfflineTrack {
     double bpm = 120.0;
     double seconds = 120.0;
     double masterDb = -6.0;
+    double polyphonyBias = 0.0;               // o POLIFONIA do músico (−1 a +1)
     std::string mixPath;                      // a mistura; os stems ao lado, como numa tomada ao vivo
     std::string manifestPath;
     std::string startedAt;                    // carimbo ISO, do chamador
@@ -207,6 +208,7 @@ inline PerformanceOfflineResult renderOfflineTrack(const PerformanceOfflineTrack
     engine->setMixerVariation(true);
     engine->setSkyInfluence(1.0);
     engine->setOutputTrimDb(track.masterDb);
+    engine->setPolyphonyBias(track.polyphonyBias);
     const double coda = performanceTrackCodaSeconds(track.seconds);
     engine->setCodaSeconds(coda);
     const double codaLead = coda + 1.2;
