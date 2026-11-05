@@ -99,6 +99,7 @@ public:
         stutterIntensity_ = 0.0;
         stutterPhase_ = 0.0;
         stutterRemainingSamples_ = 0U;
+        performerRecutHold_ = 0U;
         stutterTargetActorId_ = kInvalidActorId;
         tempoShiftIntensity_ = 0.0;
         tempoShiftRemainingSamples_ = 0U;
@@ -576,8 +577,17 @@ public:
 
     // Recuts are temporary transformations of prepared stems. They never
     // construct bodies, write coordinates or replace the session tempo.
+    // O gesto do músico: além do recorte, segura os gestos do céu por 8 s.
     bool triggerRecut(GestureType type, std::uint16_t targetActorId, double intensity,
                       double duration, std::uint32_t variationToken) noexcept {
+        const bool applied = applyRecut(type, targetActorId, intensity, duration, variationToken);
+        if (applied && finite(sampleRate_) && sampleRate_ > 0.0)
+            performerRecutHold_ = static_cast<std::uint32_t>(sampleRate_ * 8.0);
+        return applied;
+    }
+
+    bool applyRecut(GestureType type, std::uint16_t targetActorId, double intensity,
+                    double duration, std::uint32_t variationToken) noexcept {
         if ((type != GestureType::Stutter && type != GestureType::TempoShift)
             || !unit(intensity) || !unit(duration) || !finite(sampleRate_) || sampleRate_ <= 0.0)
             return false;
@@ -1148,6 +1158,14 @@ public:
             }
             --skyBodiesCountdown_;
             director_.advance(skyBodies_, tempoBpm_);
+            // Um gesto do céu (5/11), nunca em cima de um gesto do músico nem
+            // de outro recorte em curso.
+            PerformanceSkyDirector::SkyGesture gesture{};
+            if (director_.popSkyGesture(gesture) && performerRecutHold_ == 0U
+                && stutterRemainingSamples_ == 0U && tempoShiftRemainingSamples_ == 0U
+                && gesture.slot < activeVoiceCount)
+                applyRecut(gesture.displace ? GestureType::TempoShift : GestureType::Stutter,
+                           voices_[gesture.slot].actorId, gesture.intensity, gesture.duration, gesture.token);
             PerformanceSkyDirector::Cue due{};
             while (director_.popDue(due)) {
                 if (due.slot >= activeVoiceCount) continue;
@@ -1797,6 +1815,7 @@ public:
             // A energia de cada estrela vai ao diretor (a liderança que gira).
             director_.addStemEnergy(index, stem.mono * stem.mono);
         }
+        if (performerRecutHold_ > 0U) --performerRecutHold_;
         if (stutterRemainingSamples_ > 0U && --stutterRemainingSamples_ == 0U) {
             stutterIntensity_ = 0.0;
             stutterTargetActorId_ = kInvalidActorId;
@@ -2082,6 +2101,7 @@ private:
     double stutterIntensity_ = 0.0;
     double stutterPhase_ = 0.0;
     std::uint32_t stutterRemainingSamples_ = 0U;
+    std::uint32_t performerRecutHold_ = 0U;
     std::uint16_t stutterTargetActorId_ = kInvalidActorId;
     double tempoShiftIntensity_ = 0.0;
     std::uint32_t tempoShiftRemainingSamples_ = 0U;

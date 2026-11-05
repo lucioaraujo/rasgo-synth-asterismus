@@ -179,6 +179,26 @@ public:
     // 4 kishōtenketsu, 5 choque inicial) e quantas voltas ela já completou.
     std::uint8_t grammar() const noexcept { return grammar_; }
     std::uint8_t formPass() const noexcept { return static_cast<std::uint8_t>(formPass_ & 0xffU); }
+    // Os gestos do céu (5/11, auditoria da seed, item E): o céu também faz
+    // STUTTER e DESLOCAR, com um orçamento por parte (0 a 2, pela energia do
+    // caráter e pela seed; nenhum na abertura, no máximo um no retorno), num
+    // compasso e numa estrela acesa escolhidos pela seed. A ecologia não o
+    // aplica em cima de um gesto do músico.
+    struct SkyGesture {
+        std::size_t slot = 0U;
+        bool displace = false;
+        double intensity = 0.5;
+        double duration = 0.4;
+        std::uint32_t token = 0U;
+    };
+    bool popSkyGesture(SkyGesture& out) noexcept {
+        if (!gesturePending_) return false;
+        out = pendingGesture_;
+        gesturePending_ = false;
+        return true;
+    }
+    std::uint32_t skyGestureCount() const noexcept { return skyGestures_; }
+
     // A região harmônica da parte que soa, em semitons sobre a raiz da seed.
     double regionSemitones() const noexcept {
         if (influence_ <= 0.0) return 0.0;
@@ -688,7 +708,10 @@ public:
         }
         countdown_ = kControlInterval - 1U;
         bodies_ = bodies;
-        if (barTurn) advanceForm();
+        if (barTurn) {
+            advanceForm();
+            checkSkyGesture();
+        }
         if (mixerVariation_) {
             if (barTurn || !brightnessReady_) danceBrightness(barTurn);
             mixByConstellation();
@@ -967,6 +990,12 @@ private:
     std::array<bool, kBodies> pinned_{};
     std::array<std::uint32_t, 4> formPlan_{};
     std::uint8_t grammar_ = 0U;
+    std::uint32_t sectionBars_ = 0U;
+    std::array<std::uint32_t, 2> gestureBar_{{0U, 0U}};
+    std::uint32_t gestureBudget_ = 0U;
+    bool gesturePending_ = false;
+    SkyGesture pendingGesture_{};
+    std::uint32_t skyGestures_ = 0U;
     int contrastRegion_ = 0;
     int developmentRegion_ = 0;
     std::uint8_t formStep_ = 0U;
@@ -1224,6 +1253,42 @@ private:
         plannedParts_ = g.count;
     }
 
+    void planSkyGestures() noexcept {
+        gestureBudget_ = 0U;
+        if (section_ == Section::Opening || sectionBars_ < 2U) return;
+        const double energy = character_.energy();
+        const int base = energy > 0.62 ? 2 : energy > 0.38 ? 1 : 0;
+        const auto word = performanceSeedStream(seed_ ^ (sectionOrdinal_ * 0x9E3779B9U), 0xE000U);
+        int budget = std::clamp(base + static_cast<int>(word % 3U) - 1, 0, 2);
+        if (section_ == Section::Return) budget = std::min(budget, 1);
+        gestureBudget_ = static_cast<std::uint32_t>(budget);
+        for (std::uint32_t k = 0U; k < gestureBudget_; ++k)
+            gestureBar_[k] = 1U + (word >> (8U + k * 8U)) % std::max<std::uint32_t>(1U, sectionBars_ - 1U);
+    }
+    void checkSkyGesture() noexcept {
+        if (influence_ <= 0.0 || gestureBudget_ == 0U || sectionBars_ < sectionBarsLeft_) return;
+        const auto bar = sectionBars_ - sectionBarsLeft_;
+        for (std::uint32_t k = 0U; k < gestureBudget_; ++k) {
+            if (gestureBar_[k] != bar) continue;
+            const auto word = performanceSeedStream(seed_ ^ (sectionOrdinal_ * 0x85EBCA6BU) ^ (k * 0x27D4EB2DU), 0xE100U);
+            std::array<std::size_t, kBodies> lit{};
+            std::size_t count = 0U;
+            for (std::size_t slot = 0U; slot < kBodies; ++slot)
+                if (brightnessTarget_[slot] > 0.5
+                    && performanceStarFunction(bodies_[slot].star) != PerformanceStarFunction::Control)
+                    lit[count++] = slot;
+            if (count == 0U) return;
+            pendingGesture_.slot = lit[word % count];
+            pendingGesture_.displace = ((word >> 8U) & 1U) != 0U;
+            pendingGesture_.intensity = 0.35 + 0.35 * static_cast<double>((word >> 12U) & 0xffU) / 255.0;
+            pendingGesture_.duration = 0.2 + 0.4 * static_cast<double>((word >> 20U) & 0xffU) / 255.0;
+            pendingGesture_.token = word;
+            gesturePending_ = true;
+            ++skyGestures_;
+            return;
+        }
+    }
+
     std::uint32_t sectionLength(std::uint32_t ordinal) const noexcept {
         if (formPlanned_) {
             if (plannedParts_ > 0U && formPass_ == 0U && formStep_ < plannedParts_) return plannedBars_[formStep_];
@@ -1257,9 +1322,11 @@ private:
             section_ = g.parts[formStep_];
         }
         sectionBarsLeft_ = sectionLength(sectionOrdinal_);
+        sectionBars_ = sectionBarsLeft_;
         const auto previousLeader = energyLeader();
         const auto previousCharacter = character_;
         stepCharacter();
+        planSkyGestures();
         // A liderança que gira: quem levou a energia da parte que acabou recua
         // na proporção do salto; no retorno, o líder da abertura volta.
         if (section_ == Section::Development && sectionOrdinal_ == 1U) openingLeader_ = previousLeader;

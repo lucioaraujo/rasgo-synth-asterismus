@@ -177,6 +177,32 @@ int main() {
                     "reciprocal relations stay bounded") && ok;
     }
 
+    // Gestos do céu (5/11, item E): poucos, por orçamento — entre zero e dois
+    // por parte, nenhum na abertura.
+    {
+        std::uint32_t total = 0U, sections = 0U;
+        bool openingClean = true;
+        for (std::uint32_t seed = 1U; seed <= 6U; ++seed) {
+            PerformanceSkyDirector director;
+            director.prepare(kRate);
+            director.setSeed(seed);
+            director.setMixerVariation(true);
+            auto bodies = opening();
+            auto last = director.section();
+            for (std::uint64_t sample = 0U; sample < static_cast<std::uint64_t>(kRate * 240.0); ++sample) {
+                director.advance(bodies, 120.0);
+                PerformanceSkyDirector::SkyGesture gesture{};
+                if (director.popSkyGesture(gesture) && director.section() == PerformanceSkyDirector::Section::Opening)
+                    openingClean = false;
+                if (director.section() != last) { ++sections; last = director.section(); }
+            }
+            total += director.skyGestureCount();
+        }
+        std::cout << "sky gestures: " << total << " in " << sections << " sections (6 seeds, 240 s)\n";
+        ok = expect(total > 0U && total <= sections * 2U, "the sky makes a few gestures, within its budget") && ok;
+        ok = expect(openingClean, "no sky gesture in the opening") && ok;
+    }
+
     // Regiões harmônicas (5/11, item D da auditoria da seed): o contraste
     // muda de região, a abertura e o retorno ficam na tônica.
     {
