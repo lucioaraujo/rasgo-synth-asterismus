@@ -12,7 +12,7 @@ release nem página no ar. Legenda: **feito** · **falta** (técnico) ·
 |---|---|
 | Nome, descrição curta e estado | **feito** — README em EN/PT/FR/ES, CHANGELOG, versão 0.2.0 (num lugar só: `CMakeLists.txt`) |
 | Autoria, créditos, fontes e licença | **feito** — LICENSE, CREDITS, THIRD_PARTY_NOTICES, DEPENDENCIES, `vendor/studio-dsp/PROVENANCE.md` (com os avisos do Studio desde 4/11). **autor:** o Batruc aparece citado em 15 linhas (créditos, avisos, docs, comentários) — manter, trocar por "pesquisa autoral não publicada" ou outra forma |
-| Instruções de build e instalação | **feito** — `INSTALL.md`; **falta** a versão em inglês (os irmãos têm INSTALL em inglês, com "passo a passo" e "problemas comuns") |
+| Instruções de build e instalação | **feito** — `INSTALL.md` em inglês e português (6/11), no padrão dos irmãos |
 | Matriz de plataformas (testada / parcial / planejada) | **feito** no README: Linux compilado, testado (37) e tocado pelo autor; Windows e macOS **não compilados** (CI preparada, nunca rodou) |
 | Testes e validações realmente executados | suíte 37/37; estabilidade com **8 corpos** (como o app), blocos de 512: média ~2 ms em 10,67, pior 4,8 ms, 0 bloco acima de 75 % em 65 536 (4/11; a medida anterior, 200 seeds × 20 s, usou um documento de 4 corpos e não representava o app); som sem a trama idêntico por hash; capturas da tela (4/11). **autor:** a escuta guiada (`docs/ROTEIRO_ESCUTA_2026-11-04.md`) |
 | Imagens com origem autorizada | **feito, provisório** — `website/assets/interface.jpg` (instantâneo do app, 4/11); **autor:** trocar por captura sua, se quiser (o padrão da família) |
@@ -24,7 +24,7 @@ release nem página no ar. Legenda: **feito** · **falta** (técnico) ·
 
 | Camada | O que falta |
 |---|---|
-| 1. Candidato publicável | **autor:** a escuta; o ícone (proposta em `packaging/icon/proposta/`); a decisão do Batruc. **falta:** INSTALL em inglês. Decisão menor: as gravações vão para `~/Music/Rasgo Synth Performance/` (nome antigo, mantido em 27/10 por causa do link para `AUDIOS_RASGO`); trocar para "Rasgo Synth Asterismus" pede migração |
+| 1. Candidato publicável | **autor:** a escuta; o ícone (proposta em `packaging/icon/proposta/`); a decisão do Batruc. Decisão menor: as gravações vão para `~/Music/Rasgo Synth Performance/` (nome antigo, mantido em 27/10 por causa do link para `AUDIOS_RASGO`); trocar para "Rasgo Synth Asterismus" pede migração |
 | 2. Release | **autor:** a primeira CI (tag `v0.2.0` ou o botão; ~160 min cobrados) — ela monta Windows (.exe), macOS (.dmg) e Linux (.deb/.tar.gz); depois conferir os nomes dos pacotes no site. AppImage e testes de arranque em outras distribuições: **falta** (o Trioio e o Aquorbium têm) |
 | 3. Página editorial | **feito** em preparação: `website/` (4 idiomas, noindex); **autor:** ativar o GitHub Pages; o card no portal RASGO (`RASGO_WEBSITE/`) |
 | 4. Publicação | release + site + card juntos; anúncio |
