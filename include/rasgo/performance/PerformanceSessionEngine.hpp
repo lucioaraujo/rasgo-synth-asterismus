@@ -1120,6 +1120,7 @@ private:
             snapshot.skySection = static_cast<std::uint8_t>(director.section());
             snapshot.skyGrammar = director.grammar();
             snapshot.skyFormPass = director.formPass();
+            snapshot.skyGuests = ecology_.guestPacked();
             snapshot.skyTempoMillis = static_cast<std::uint16_t>(std::lround(director.tempoFactor() * 1000.0));
             snapshot.skySwingPercent = static_cast<std::uint8_t>(std::lround(director.swing() * 100.0));
             snapshot.skyGroupingMask = ecology_.skyGroupingMask();

@@ -4521,6 +4521,19 @@ private:
             if (recorder_.recording())
                 appendTakeTrace(juce::String("forma:") + PerformanceSkyDirector::grammarName(telemetry.skyGrammar));
         }
+        // As convidadas do contraste vão ao registro da tomada (os stems levam
+        // o nome da estrela da seed; aqui fica quem tocou no lugar dela).
+        if (recorder_.recording() && telemetry.skyGuests != lastGuests_) {
+            if (telemetry.skyGuests == 0U) appendTakeTrace("convidadas:fim");
+            for (int k = 0; k < 2; ++k) {
+                const auto entry = (telemetry.skyGuests >> (k * 16)) & 0xffffU;
+                if (entry == 0U) continue;
+                appendTakeTrace("convidada:corpo" + juce::String(static_cast<int>(entry & 0xffU))
+                    + ":" + juce::String(std::string(performanceStarLibraryId(
+                        static_cast<PerformanceModuleBody>((entry >> 8U) & 0xffU)))));
+            }
+        }
+        lastGuests_ = telemetry.skyGuests;
         if (section == percursoSection_ && telemetry.skyFormPass == percursoPass_) return;
         // A forma terminou uma passagem da sua gramática (5/11: ciclo, arco,
         // rondó, ondas, kishōtenketsu, choque) — antes, "o retorno acabou"
@@ -7117,6 +7130,7 @@ private:
     bool percurso_ = false;
     std::uint8_t percursoSection_ = 255U;
     std::uint8_t percursoPass_ = 0U;
+    std::uint32_t lastGuests_ = 0U;
     bool takePercurso_ = false;
     bool takeStartedWithPlay_ = true;
     // A FAIXA com duração (2/11): 1/2/3/5 min, como no Antitotem; 0 = sem

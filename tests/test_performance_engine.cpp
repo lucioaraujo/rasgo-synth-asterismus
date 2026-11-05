@@ -2029,7 +2029,38 @@ void testSeedChoosesPhenomena() {
     expect(count(seenPopulation) >= 7U, "the seed reaches most of the 10 population phenomena");
 }
 
+// Auditoria da seed, item F (5/11): no contraste, estrelas de fora do céu
+// tocam no lugar de 1 ou 2 corpos e saem quando o contraste acaba.
+void testContrastInvitesGuestStars() {
+    std::size_t invited = 0U;
+    bool restored = true;
+    for (std::uint32_t seed = 1U; seed <= 8U; ++seed) {
+        const auto document = PerformanceTerritoryFactory::makeForReleasedStems(seed, kPerformanceSafeBodyLimit, true);
+        PerformanceSessionEngine engine;
+        expect(engine.prepare(48000.0, 512U, 2U) && engine.setScene(document.scenes[0], document.territory),
+               "guest engine prepares");
+        engine.setSkyInfluence(1.0);
+        engine.setMixerVariation(true);
+        engine.setFormPlan({{2U, 4U, 4U, 4U}});
+        std::array<float, 512> left{}, right{};
+        bool sawGuest = false, inContrast = false;
+        for (int block = 0; block < 94 * 50; ++block) {
+            engine.processBlock(left.data(), right.data(), 512U);
+            const auto telemetry = engine.readTelemetry();
+            const bool contrast = telemetry.skySection == 2U;
+            if (contrast && telemetry.skyGuests != 0U) sawGuest = true;
+            if (inContrast && !contrast && telemetry.skyGuests != 0U) restored = false;
+            inContrast = contrast;
+        }
+        if (sawGuest) ++invited;
+    }
+    std::cout << "guest stars: invited in " << invited << " of 8 seeds\n";
+    expect(invited >= 3U, "the contrast invites stars from outside the sky");
+    expect(restored, "the guests leave when the contrast ends");
+}
+
 int main() {
+    testContrastInvitesGuestStars();
     testSeedChoosesPhenomena();
     testLiveStemReconstruction();
     testLiveStemMixer();

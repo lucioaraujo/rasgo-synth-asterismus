@@ -108,6 +108,9 @@ public:
         codaActive_ = false;
         codaProgress_ = 0.0;
         codaLeaderIndex_ = 0U;
+        guestSlot_.fill(kNoGuest);
+        guestSection_ = PerformanceSkyDirector::Section::Opening;
+        guestContrasts_ = 0U;
         codaGesture_ = CodaGesture::Gather;
         internalLayerMix_ = {};
         internalModuleSeedVariation_.fill(0.5);
@@ -129,6 +132,9 @@ public:
             // A troca do performer (30/10) vale por cima da escolha da seed.
             for (const auto& swap : starSwaps_)
                 if (swap.actorId == voice.actorId && swap.star != PerformanceModuleBody::Count) voice.star = swap.star;
+            // Uma convidada do contraste atravessa a troca de cena do PERCURSO.
+            for (std::size_t k = 0U; k < guestSlot_.size(); ++k)
+                if (guestSlot_[k] == index && voice.star == guestOriginal_[k]) voice.star = guestStar_[k];
             voice.role = actor.roleMorph >= 0.5 ? actor.targetRole : actor.sourceRole;
             voice.presence = actor.presence;
             voice.nourishment = actor.nourishment;
@@ -282,6 +288,9 @@ public:
         }
         director_.setStrategy(gamePlan.strategy);
         if (newSeed) sky_.setSeedEvent(seedTrajectory_.event(0U));
+        // Um território novo começa sem convidadas.
+        guestSlot_.fill(kNoGuest);
+        guestSection_ = PerformanceSkyDirector::Section::Opening;
         for (std::size_t index = 0U; index < voiceCount_; ++index)
             voices_[index].star = starForSlot(index);
         if (fracturePrepared_ && newSeed) {
@@ -577,6 +586,21 @@ public:
 
     // Recuts are temporary transformations of prepared stems. They never
     // construct bodies, write coordinates or replace the session tempo.
+    // As estrelas convidadas (5/11, auditoria da seed, item F). No contraste,
+    // 1 ou 2 corpos (nunca o MODAL, uma estrela de controle, uma estrela
+    // fixada ou trocada pelo músico) tocam uma estrela de fora do céu —
+    // da família que o caráter do contraste mais pede — e voltam à sua quando
+    // o contraste acaba. Em 3 de cada 10 contrastes, nenhuma convidada.
+    // `guestPacked()` diz quem está convidado (para o registro da tomada).
+    std::uint32_t guestPacked() const noexcept {
+        std::uint32_t packed = 0U;
+        for (std::size_t k = 0U; k < guestSlot_.size(); ++k)
+            if (guestSlot_[k] != kNoGuest)
+                packed |= ((static_cast<std::uint32_t>(guestSlot_[k]) + 1U) << (k * 16U))
+                    | (static_cast<std::uint32_t>(voices_[guestSlot_[k]].star) << (k * 16U + 8U));
+        return packed;
+    }
+
     // O gesto do músico: além do recorte, segura os gestos do céu por 8 s.
     bool triggerRecut(GestureType type, std::uint16_t targetActorId, double intensity,
                       double duration, std::uint32_t variationToken) noexcept {
@@ -1158,6 +1182,7 @@ public:
             }
             --skyBodiesCountdown_;
             director_.advance(skyBodies_, tempoBpm_);
+            updateGuests(activeVoiceCount);
             // Um gesto do céu (5/11), nunca em cima de um gesto do músico nem
             // de outro recorte em curso.
             PerformanceSkyDirector::SkyGesture gesture{};
@@ -2053,6 +2078,80 @@ private:
     double relationalSeedDeviation_ = 0.0;
     double relationalSilence_ = 0.0;
     std::uint16_t tornActorId_ = kInvalidActorId;
+    static constexpr std::uint8_t kNoGuest = 255U;
+    std::array<std::uint8_t, 2> guestSlot_{{kNoGuest, kNoGuest}};
+    std::array<PerformanceModuleBody, 2> guestOriginal_{{PerformanceModuleBody::Count, PerformanceModuleBody::Count}};
+    std::array<PerformanceModuleBody, 2> guestStar_{{PerformanceModuleBody::Count, PerformanceModuleBody::Count}};
+    PerformanceSkyDirector::Section guestSection_ = PerformanceSkyDirector::Section::Opening;
+    std::uint32_t guestContrasts_ = 0U;
+
+    bool performerSwapped(std::uint16_t actorId) const noexcept {
+        for (const auto& swap : starSwaps_) if (swap.actorId == actorId) return true;
+        return false;
+    }
+    void restoreGuests() noexcept {
+        for (std::size_t k = 0U; k < guestSlot_.size(); ++k) {
+            const auto slot = guestSlot_[k];
+            if (slot != kNoGuest && slot < voiceCount_ && voices_[slot].star == guestStar_[k])
+                voices_[slot].star = guestOriginal_[k];
+            guestSlot_[k] = kNoGuest;
+        }
+    }
+    void inviteGuests(std::size_t activeVoiceCount) noexcept {
+        const auto word = performanceSeedStream(seed_ ^ (guestContrasts_++ * 0x9E3779B9U), 0x6E57U);
+        if (word % 10U >= 7U) return;
+        const std::size_t wanted = 1U + (word >> 4U) % 2U;
+        // a família que o contraste mais pede (sem o controle, que não soa)
+        const auto& character = director_.character();
+        std::size_t family = 0U;
+        const auto weight = [&character](std::size_t f) { return character.family(static_cast<PerformanceStarFunction>(f)); };
+        for (std::size_t f = 1U; f < 4U; ++f) if (weight(f) > weight(family)) family = f;
+        std::array<std::size_t, kVoiceCapacity> slots{};
+        std::size_t slotCount = 0U;
+        for (std::size_t index = 0U; index < std::min(activeVoiceCount, voiceCount_); ++index) {
+            const auto& voice = voices_[index];
+            if (!PerformanceSky::isStar(voice.star) || voice.star == PerformanceModuleBody::ModalResonator
+                || performanceStarFunction(voice.star) == PerformanceStarFunction::Control
+                || actorPinned(voice.actorId) || performerSwapped(voice.actorId)) continue;
+            slots[slotCount++] = index;
+        }
+        for (std::size_t k = 0U; k < wanted && slotCount > 0U; ++k) {
+            const auto pick = (word >> (8U + k * 5U)) % slotCount;
+            const auto slot = slots[pick];
+            slots[pick] = slots[--slotCount];
+            // as estrelas de fora do céu: primeiro da família pedida
+            std::array<PerformanceModuleBody, kPerformanceSkyStars.size()> outside{};
+            std::size_t preferred = 0U, any = 0U;
+            for (int pass = 0; pass < 2 && preferred == 0U; ++pass) {
+                any = 0U;
+                for (const auto star : kPerformanceSkyStars) {
+                    if (!PerformanceSky::isStar(star) || star == PerformanceModuleBody::ModalResonator
+                        || performanceStarFunction(star) == PerformanceStarFunction::Control) continue;
+                    bool present = false;
+                    for (std::size_t index = 0U; index < voiceCount_; ++index) present = present || voices_[index].star == star;
+                    if (present) continue;
+                    if (pass == 0 && static_cast<std::size_t>(performanceStarFunction(star)) != family) continue;
+                    outside[any++] = star;
+                }
+                preferred = any;
+            }
+            if (any == 0U) break;
+            guestOriginal_[k] = voices_[slot].star;
+            guestStar_[k] = outside[(word >> (16U + k * 5U)) % any];
+            guestSlot_[k] = static_cast<std::uint8_t>(slot);
+            voices_[slot].star = guestStar_[k];
+        }
+    }
+    void updateGuests(std::size_t activeVoiceCount) noexcept {
+        const auto section = director_.section();
+        if (section == guestSection_) return;
+        const bool leftContrast = guestSection_ == PerformanceSkyDirector::Section::Contrast;
+        guestSection_ = section;
+        if (leftContrast) restoreGuests();
+        if (section == PerformanceSkyDirector::Section::Contrast && director_.influence() > 0.0)
+            inviteGuests(activeVoiceCount);
+    }
+
     struct StarSwap {
         std::uint16_t actorId = kInvalidActorId;
         PerformanceModuleBody star = PerformanceModuleBody::Count;
