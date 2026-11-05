@@ -20,6 +20,7 @@
 #include <rasgo/performance/PerformanceMemory.hpp>
 #include <rasgo/performance/PerformanceAlbum.hpp>
 #include <rasgo/performance/PerformanceAlbumMaster.hpp>
+#include <rasgo/performance/PerformanceOfflineRender.hpp>
 #include <rasgo/performance/PerformanceSessionController.hpp>
 #include <rasgo/performance/PerformanceSky.hpp>
 #include <rasgo/performance/PerformanceTerritoryFactory.hpp>
@@ -2415,6 +2416,10 @@ public:
     }
     ~PerformanceHostComponent() override {
         stopTimer();
+        // Uma geração de álbum em curso para entre blocos; o app espera a
+        // thread soltar o sinal de cancelamento (que é membro daqui).
+        albumCancel_.store(true);
+        for (int wait = 0; wait < 500 && albumWorkerRunning_.load(); ++wait) juce::Thread::sleep(10);
         if (audioCallbackRegistered_ && deviceManager_ != nullptr)
             deviceManager_->removeAudioCallback(this);
     }
@@ -4560,11 +4565,7 @@ private:
     // ESPIRAL, RASGO e BALANÇO numa das 6 ordens, pela seed — antes, sempre a
     // mesma cena para a mesma parte.
     std::uint16_t percursoScene(std::uint8_t section) const noexcept {
-        if (section == 0U) return 1U;
-        static constexpr std::array<std::array<std::uint16_t, 3>, 6> kOrders{{
-            {{2U, 3U, 4U}}, {{2U, 4U, 3U}}, {{3U, 2U, 4U}}, {{3U, 4U, 2U}}, {{4U, 2U, 3U}}, {{4U, 3U, 2U}}}};
-        const auto order = performanceSeedStream(startupDocument_.territory.seed, 0x5CE0U) % kOrders.size();
-        return kOrders[order][std::min<std::size_t>(section, 3U) - 1U];
+        return performancePercursoScene(startupDocument_.territory.seed, section);
     }
     void refreshAlbumButtons() {
         percursoButton_.setButtonText(percurso_ ? uiText(supportLanguage_, "PERCURSO · ON", "PATH · ON", "PARCOURS · ON",
@@ -4574,6 +4575,12 @@ private:
                                   percurso_ ? juce::Colour(0xff9b6a3f) : juce::Colour(0xff3f5a4a));
         // A masterização em curso aparece no próprio botão (5/11, pedido do
         // autor: "não visualizo o trabalho em curso"): etapa k de N.
+        if (albumGenerating_.load()) {
+            albumButton_.setButtonText(uiText(supportLanguage_, "GERANDO ", "RENDERING ", "GÉNÉRATION ", "GENERANDO ")
+                + juce::String(albumGenerateDone_ + 1) + "/" + juce::String(std::max(1, albumGenerateTotal_)) + utf8("…"));
+            albumButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff9b6a3f));
+            return;
+        }
         if (albumMastering_.load()) {
             albumButton_.setButtonText(uiText(supportLanguage_, "MASTERIZANDO ", "MASTERING ", "MASTÉRISATION ",
                                               "MASTERIZANDO ")
@@ -4620,6 +4627,14 @@ private:
                                true, track == current);
             menu.addSubMenu(uiText(supportLanguage_, "IR PARA A FAIXA", "GO TO TRACK", "ALLER À LA PISTE", "IR A LA PISTA"), tracks);
             menu.addSeparator();
+            // GERAR O ÁLBUM (5/11): todas as faixas fora do tempo real.
+            if (albumGenerating_.load())
+                menu.addItem(9, uiText(supportLanguage_, "PARAR A GERAÇÃO", "STOP RENDERING", "ARRÊTER LA GÉNÉRATION",
+                                       "DETENER LA GENERACIÓN"));
+            else
+                menu.addItem(8, uiText(supportLanguage_, "GERAR O ÁLBUM INTEIRO…", "RENDER THE WHOLE ALBUM…",
+                                       "GÉNÉRER L’ALBUM ENTIER…", "GENERAR EL ÁLBUM ENTERO…"),
+                             !albumMastering_.load());
             menu.addItem(7, uiText(supportLanguage_, "MASTERIZAR O ÁLBUM (−16 LUFS, limitador em −1 dBTP)",
                                    "MASTER THE ALBUM (−16 LUFS, limiter at −1 dBTP)",
                                    "MASTERISER L’ALBUM (−16 LUFS, limiteur à −1 dBTP)",
@@ -4636,6 +4651,8 @@ private:
             else if (result == 4) goToAlbumTrack(album_.current());
             else if (result == 5) albumDirectory_.startAsProcess();
             else if (result == 7) masterAlbum();
+            else if (result == 8) askGenerateAlbum();
+            else if (result == 9) albumCancel_.store(true);
             else if (result == 6) {
                 writeAlbumRegister();
                 album_.end();
@@ -4750,6 +4767,124 @@ private:
     // MASTERIZAR: a tomada mais recente de cada faixa, numa thread de
     // trabalho; as cópias vão para master/ com master.json (ganhos e níveis
     // antes e depois). As tomadas originais não mudam.
+    // GERAR O ÁLBUM INTEIRO (5/11, auditoria da seed, item H; pergunta do
+    // autor: "é possível gerar o álbum inteiro automaticamente como o
+    // studio?"). Cada faixa do álbum é renderizada fora do tempo real numa
+    // thread de trabalho (PerformanceOfflineRender.hpp: o mesmo céu, a mesma
+    // forma com duração, o PERCURSO e a coda de uma faixa gravada sem tocar
+    // em nada), entra no registro do álbum, e no fim o álbum é masterizado.
+    // O que soa ao vivo não muda; PARAR A GERAÇÃO interrompe entre blocos.
+    void askGenerateAlbum() {
+        auto* window = new juce::AlertWindow(uiText(supportLanguage_, "GERAR O ÁLBUM INTEIRO", "RENDER THE WHOLE ALBUM",
+                                                    "GÉNÉRER L’ALBUM ENTIER", "GENERAR EL ÁLBUM ENTERO"),
+            uiText(supportLanguage_,
+                   "Todas as faixas, fora do tempo real, cada uma com a sua seed e o seu andamento; depois a masterização. O que soa agora continua.",
+                   "Every track, faster than real time, each with its own seed and tempo; then the mastering. What plays now goes on.",
+                   "Toutes les pistes, hors temps réel, chacune avec sa seed et son tempo ; puis la mastérisation. Ce qui joue continue.",
+                   "Todas las pistas, fuera de tiempo real, cada una con su seed y su tempo; luego la masterización. Lo que suena sigue."),
+            juce::MessageBoxIconType::NoIcon, this);
+        window->addComboBox("duracao", {uiText(supportLanguage_, "variada pela seed (1–5 min)", "varied by the seed (1–5 min)",
+                                               "variée par la seed (1–5 min)", "variada por la seed (1–5 min)"),
+                                        "1 MIN", "2 MIN", "3 MIN", "5 MIN"},
+                            uiText(supportLanguage_, "Duração das faixas", "Track length", "Durée des pistes", "Duración de las pistas"));
+        window->addButton(uiText(supportLanguage_, "GERAR", "RENDER", "GÉNÉRER", "GENERAR"), 1,
+                          juce::KeyPress(juce::KeyPress::returnKey));
+        window->addButton(uiText(supportLanguage_, "CANCELAR", "CANCEL", "ANNULER", "CANCELAR"), 0,
+                          juce::KeyPress(juce::KeyPress::escapeKey));
+        juce::Component::SafePointer<PerformanceHostComponent> safe(this);
+        window->enterModalState(true, juce::ModalCallbackFunction::create([safe, window](int result) {
+            if (safe == nullptr || result != 1) return;
+            safe->generateAlbum(std::max(0, window->getComboBoxComponent("duracao")->getSelectedItemIndex()));
+        }), true);
+    }
+    // A duração de uma faixa: fixa, ou pela seed da faixa (1 min 15 %, 2 min
+    // 40 %, 3 min 30 %, 5 min 15 %).
+    static double albumTrackSeconds(int choice, std::uint32_t trackSeed) noexcept {
+        if (choice >= 1 && choice <= 4) return kTakeDurations[static_cast<std::size_t>(choice - 1)];
+        const auto roll = performanceSeedStream(trackSeed, 0xD0D0U) % 100U;
+        return roll < 15U ? 60.0 : roll < 55U ? 120.0 : roll < 85U ? 180.0 : 300.0;
+    }
+    void generateAlbum(int durationChoice) {
+        if (!album_.active() || albumGenerating_.exchange(true)) return;
+        struct Job { std::size_t track; PerformanceOfflineTrack spec; juce::String relative; };
+        std::vector<Job> jobs;
+        const auto now = juce::Time::getCurrentTime();
+        for (std::size_t track = 1U; track <= album_.tracks(); ++track) {
+            const auto tag = "FAIXA_" + juce::String(static_cast<int>(track)).paddedLeft('0', 2);
+            const auto folder = albumDirectory_.getChildFile(tag + " " + now.formatted("%H-%M-%S") + " offline");
+            folder.createDirectory();
+            const auto file = folder.getChildFile(tag + "_" + now.formatted("%Y-%m-%d_%H-%M-%S") + ".wav");
+            Job job;
+            job.track = track;
+            job.spec.seed = album_.trackSeed(track);
+            job.spec.bpm = album_.trackBpm(track);
+            job.spec.seconds = albumTrackSeconds(durationChoice, job.spec.seed);
+            job.spec.masterDb = masterSlider_.getValue();
+            job.spec.mixPath = file.getFullPathName().toStdString();
+            job.spec.manifestPath = file.withFileExtension(".json").getFullPathName().toStdString();
+            job.spec.startedAt = now.toISO8601(true).toStdString();
+            job.relative = file.getRelativePathFrom(albumDirectory_);
+            jobs.push_back(job);
+        }
+        albumCancel_.store(false);
+        albumGenerateDone_ = 0;
+        albumGenerateTotal_ = static_cast<int>(jobs.size());
+        albumMasterFinished_ = false;
+        refreshAlbumButtons();
+        lastAction_ = uiText(supportLanguage_, "gerando o álbum fora do tempo real…", "rendering the album…",
+                             "génération de l’album…", "generando el álbum…");
+        repaint();
+        juce::Component::SafePointer<PerformanceHostComponent> safe(this);
+        const auto language = supportLanguage_;
+        auto* cancel = &albumCancel_;
+        auto* running = &albumWorkerRunning_;
+        running->store(true);
+        juce::Thread::launch(juce::Thread::Priority::background, [safe, jobs, language, cancel, running] {
+            bool ok = true;
+            std::size_t done = 0U;
+            for (const auto& job : jobs) {
+                const auto result = renderOfflineTrack(job.spec, cancel);
+                if (!result.ok) { ok = false; break; }
+                ++done;
+                juce::MessageManager::callAsync([safe, job, result, done] {
+                    if (safe == nullptr || !safe->album_.active()) return;
+                    PerformanceAlbumTake entry;
+                    entry.track = job.track;
+                    entry.seed = job.spec.seed;
+                    entry.bpm = job.spec.bpm;
+                    entry.file = job.relative.toStdString();
+                    entry.started = job.spec.startedAt;
+                    entry.seconds = result.seconds;
+                    entry.integratedLufs = result.integratedLufs;
+                    entry.maxTruePeakDbtp = result.maxTruePeakDbtp;
+                    entry.percurso = true;
+                    safe->album_.addTake(entry);
+                    safe->writeAlbumRegister();
+                    safe->albumGenerateDone_ = static_cast<int>(done);
+                    safe->refreshAlbumButtons();
+                });
+            }
+            juce::MessageManager::callAsync([safe, ok, done, language] {
+                if (safe == nullptr) return;
+                safe->albumGenerating_.store(false);
+                safe->refreshAlbumButtons();
+                if (ok && safe->album_.active()) {
+                    safe->lastAction_ = uiText(language, "álbum gerado · ", "album rendered · ", "album généré · ", "álbum generado · ")
+                        + juce::String(static_cast<int>(done)) + uiText(language, " faixas · masterizando", " tracks · mastering",
+                                                                        " pistes · mastérisation", " pistas · masterizando");
+                    safe->masterAlbum();
+                } else {
+                    safe->lastAction_ = uiText(language, "geração interrompida · ", "rendering stopped · ",
+                                               "génération interrompue · ", "generación detenida · ")
+                        + juce::String(static_cast<int>(done)) + uiText(language, " faixa(s) prontas", " track(s) ready",
+                                                                        " piste(s) prêtes", " pista(s) listas");
+                }
+                safe->repaint();
+            });
+            running->store(false);
+        });
+    }
+
     void masterAlbum() {
         if (albumMastering_.exchange(true)) return;
         std::vector<std::pair<std::size_t, juce::File>> latest;
@@ -7160,6 +7295,12 @@ private:
     std::array<juce::TextButton, 4> durationButtons_;
     double takeTargetSeconds_ = 0.0;
     std::atomic<bool> albumMastering_{false};
+    // GERAR O ÁLBUM (5/11): em curso, cancelamento e progresso.
+    std::atomic<bool> albumGenerating_{false};
+    std::atomic<bool> albumCancel_{false};
+    std::atomic<bool> albumWorkerRunning_{false};
+    int albumGenerateDone_ = 0;
+    int albumGenerateTotal_ = 0;
     // Progresso da masterização (só na thread de mensagens, via callAsync).
     int albumMasterDone_ = 0;
     int albumMasterTotal_ = 0;
