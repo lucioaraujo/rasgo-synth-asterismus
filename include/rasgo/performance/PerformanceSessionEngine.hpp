@@ -190,6 +190,20 @@ public:
         return true;
     }
 
+    // Pedido do autor (5/11): "acho melhor que há somente a interrupção de
+    // gravação, sem parar o áudio". Quando a peça gravada termina (coda e
+    // cauda), o céu não fica em STOP: uma nova peça abre, com a mesma
+    // abertura suave de um PLAY, e a medição recomeça.
+    bool continueAfterMorceau() noexcept {
+        if (!prepared_ || !session_.playing || !morceau_.finished()) return false;
+        ecology_.endCoda();
+        morceau_.begin();
+        meter_.resetIntegrated();
+        limiterMaxReduction_ = 0.0;
+        noteManualInteraction();
+        return true;
+    }
+
     PerformanceMorceauState morceauState() const noexcept { return morceau_.state(); }
 
     bool setPanicSafe(bool enabled) noexcept {

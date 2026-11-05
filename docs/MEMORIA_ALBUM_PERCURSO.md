@@ -44,8 +44,9 @@ seed nova é uma peça nova; a memória reaplica as suas).
 
 ## 3. ÁLBUM
 
-`include/rasgo/performance/PerformanceAlbum.hpp` e o botão **ÁLBUM** na faixa
-de título das cenas. **NOVO ÁLBUM…** pede nome/tema, faixas (1–40, o limite
+`include/rasgo/performance/PerformanceAlbum.hpp` e o botão **ÁLBUM** na caixa
+FORMA · PERCURSO / ÁLBUM do cabeçalho (desde 5/11; antes na faixa de título
+das cenas). **NOVO ÁLBUM…** pede nome/tema, faixas (1–40, o limite
 do Studio), seed do álbum (sorteada, editável), contorno do andamento e
 abertura (0–35 %), em torno do TEMPO atual. A seed de cada faixa vem da seed
 do álbum (splitmix32 com o número da faixa); a faixa entra ao vivo com o seu
@@ -60,7 +61,7 @@ manifesto e os stems de sempre).
 
 ## 4. PERCURSO (seguindo a forma do céu)
 
-Botão **PERCURSO** na faixa de título das cenas. As cenas seguem a forma do
+Botão **PERCURSO** na caixa FORMA · PERCURSO / ÁLBUM do cabeçalho, à esquerda de FAIXA · DURAÇÃO (desde 5/11; antes na faixa de título das cenas). As cenas seguem a forma do
 céu: ABERTURA → cena 1 (NASCENTE), DESENVOLVIMENTO → ESPIRAL, CONTRASTE →
 RASGO, RETORNO → BALANÇO, com o MORPH escolhido. A forma: abertura uma vez,
 depois desenvolvimento → contraste → retorno em ciclo, cada seção com 8 a 20

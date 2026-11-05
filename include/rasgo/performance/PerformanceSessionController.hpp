@@ -338,6 +338,11 @@ public:
         return loaded_ && transportCommands_.push({TransportCommand::Kind::Coda, false});
     }
 
+    // Depois da coda de uma tomada, uma nova peça abre sem STOP (5/11).
+    bool continueAfterMorceau() noexcept {
+        return loaded_ && transportCommands_.push({TransportCommand::Kind::Continue, true});
+    }
+
     PerformanceMorceauState morceauState() const noexcept {
         return static_cast<PerformanceMorceauState>(morceauState_.load(std::memory_order_acquire));
     }
@@ -483,7 +488,7 @@ private:
     };
 
     struct TransportCommand {
-        enum class Kind : std::uint8_t { Playing, Coda };
+        enum class Kind : std::uint8_t { Playing, Coda, Continue };
         Kind kind = Kind::Playing;
         bool playing = false;
     };
@@ -624,6 +629,7 @@ private:
         TransportCommand command;
         while (transportCommands_.pop(command)) {
             if (command.kind == TransportCommand::Kind::Playing) engine_.setPlaying(command.playing);
+            else if (command.kind == TransportCommand::Kind::Continue) engine_.continueAfterMorceau();
             else engine_.beginMorceauCoda();
         }
     }

@@ -302,6 +302,29 @@ void testMorceauTransportKeepsCodaAndStopDistinct() {
            "STOP remains an explicit emergency interruption");
 }
 
+// 5/11, pedido do autor: quando a tomada acaba, só a gravação termina — o som
+// continua; uma nova peça abre sem STOP.
+void testMorceauContinuesAfterCodaWithoutStop() {
+    PerformanceSessionEngine engine;
+    expect(engine.prepare(48000.0, 512U, 2U), "continuation engine prepares");
+    PerformanceSessionState session;
+    session.territorySeed = 181U;
+    session.playing = true;
+    expect(engine.setSessionSnapshot(session), "continuation session plays");
+    expect(!engine.continueAfterMorceau(), "a piece still playing is not restarted");
+    expect(engine.beginMorceauCoda(), "the take asks for its coda");
+    std::array<float, 512> left{}, right{};
+    for (int block = 0; block < 2000 && engine.morceauState() != PerformanceMorceauState::Finalized; ++block)
+        engine.processBlock(left.data(), right.data(), 512U);
+    expect(engine.morceauState() == PerformanceMorceauState::Finalized, "the coda and tail reach the end of the piece");
+    expect(engine.continueAfterMorceau()
+               && engine.morceauState() == PerformanceMorceauState::Opening,
+           "after the coda a new piece opens without STOP");
+    for (int block = 0; block < 400; ++block) engine.processBlock(left.data(), right.data(), 512U);
+    expect(engine.morceauState() == PerformanceMorceauState::Developing,
+           "the new piece leaves its opening and keeps playing");
+}
+
 void testSeedNarrativeMakesCodaEligibleAfterPerformerPause() {
     const auto territory = ecologyTerritory();
     auto scene = ecologyScene(41U, 0.62);
@@ -1978,6 +2001,7 @@ int main() {
     testLiveStemMixer();
     testEngineLifecycleAndGestures();
     testMorceauTransportKeepsCodaAndStopDistinct();
+    testMorceauContinuesAfterCodaWithoutStop();
     testSeedNarrativeMakesCodaEligibleAfterPerformerPause();
     testEcologyAndSceneMorph();
     testEveryMacroHasAudibleCausality();

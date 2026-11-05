@@ -397,6 +397,13 @@ public:
         return currentSeedEvent(spatialGameTurn_).pauseBeats;
     }
 
+    // A peça seguinte (5/11): depois da coda de uma tomada, o céu continua
+    // tocando — as vozes voltam inteiras, sem o peso da coda.
+    void endCoda() noexcept {
+        codaActive_ = false;
+        codaProgress_ = 0.0;
+    }
+
     // The seed chooses a closing verb from the constellation that actually
     // exists: its live cables, focus and accumulated narrative turn. It never
     // changes authored positions, only the musical behaviour of their bodies.

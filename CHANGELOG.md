@@ -31,10 +31,11 @@ synthesis module is a star. The internal development versions went up to
   that follows the form; gestures on the star in focus (OPEN, TEAR, REPAIR,
   STUTTER, DISPLACE, HOLD, PANIC SAFE); a mixer per star with mute, solo and
   a fader that moves with VARIATION (the sky lighting and dimming stars);
-  the library to swap or pin a star.
+  the LIBRARY button (▾) to swap or pin a star.
 - **Recording.** REC records a 24-bit stereo WAV, one WAV per body and a
   JSON manifest, in one folder per take; TRACK · DURATION (1, 2, 3 or 5 min)
-  fits the form into the chosen length; ▶ LISTEN opens the last take.
+  fits the form into the chosen length; when the coda ends only the recording
+  closes — the sound goes on and a new piece opens; ▶ LISTEN opens the last take.
 - **Memory and sessions.** Eight named places; SAVE SESSION / OPEN SESSION as
   `.asterismus` files (parameters only, never audio).
 - **Output** in the common RASGO standard: fixed gain, limiter with 4×
