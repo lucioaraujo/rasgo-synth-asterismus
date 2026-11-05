@@ -4893,7 +4893,10 @@ private:
             for (const auto& take : album_.takes()) if (take.track == track) last = &take;
             if (last != nullptr) latest.emplace_back(track, albumDirectory_.getChildFile(juce::String::fromUTF8(last->file.c_str())));
         }
-        const auto folder = albumDirectory_.getChildFile("master");
+        // Uma pasta por masterização (6/11): antes, master/ juntava as cópias
+        // de masterizações anteriores com as novas.
+        const auto folder = albumDirectory_.getChildFile("master")
+            .getChildFile(juce::Time::getCurrentTime().formatted("%Y-%m-%d_%H-%M-%S"));
         lastAction_ = uiText(supportLanguage_, "masterizando o álbum…", "mastering the album…", "mastérisation de l’album…",
                              "masterizando el álbum…");
         // Etapas: medir cada faixa e escrever cada cópia (2 × faixas).
@@ -5661,6 +5664,17 @@ private:
     }
 
     bool beginRecording() {
+        // Com o álbum sendo gerado, o REC não grava no álbum (6/11: um REC
+        // durante a geração misturava tomadas ao vivo com as renderizadas e
+        // a próxima faixa ao vivo avançava a fila no meio da geração).
+        if (albumGenerating_.load() && album_.active()) {
+            lastAction_ = uiText(supportLanguage_, "o álbum está sendo gerado · não é preciso REC · espere terminar",
+                                 "the album is being rendered · no REC needed · wait for it to finish",
+                                 "l’album est en cours de génération · pas besoin de REC · attendez la fin",
+                                 "el álbum se está generando · no hace falta REC · espere a que termine");
+            repaint();
+            return false;
+        }
         // A tomada nunca começa com uma seed diferente da que o campo mostra.
         applyTypedSeedIfChanged("antes-de-gravar");
         const auto rate = sampleRate_.load(std::memory_order_acquire);

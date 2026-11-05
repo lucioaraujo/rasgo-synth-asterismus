@@ -173,6 +173,7 @@ public:
         contrastRegion_ = kContrastRegions[performanceSeedStream(seed, 0xF300U) % kContrastRegions.size()];
         developmentRegion_ = kDevelopmentRegions[performanceSeedStream(seed, 0xF301U) % kDevelopmentRegions.size()];
         chooseSeedMotion();
+        chooseDensityGenes();
         reset();
     }
     // A gramática da forma desta seed (0 ciclo, 1 arco, 2 rondó, 3 ondas,
@@ -198,6 +199,10 @@ public:
         return true;
     }
     std::uint32_t skyGestureCount() const noexcept { return skyGestures_; }
+    // A faixa de densidade desta seed (estrelas acesas e atividade).
+    double litLow() const noexcept { return litLow_; }
+    double litHigh() const noexcept { return litHigh_; }
+    double activityLow() const noexcept { return activityLow_; }
 
     // A região harmônica da parte que soa, em semitons sobre a raiz da seed.
     double regionSemitones() const noexcept {
@@ -465,14 +470,21 @@ public:
     struct SectionCharacter {
         // 0 estrelas, 1 atividade, 2 andamento, 3 swing, 4..8 famílias
         std::array<double, kCharacterDims> v{{0.4, 0.7, 0.5, 0.3, 0.6, 0.6, 0.6, 0.6, 0.15}};
+        // A densidade da seed (6/11, pedido do autor: "faça a densidade como
+        // gene, mas desejo muitas possibilidades"): a faixa de estrelas acesas
+        // e a faixa de atividade são da seed; o caráter de cada parte anda
+        // dentro delas. Valores de antes: 2–7 estrelas, atividade 0,35–1,6.
+        double litLow = 2.0, litHigh = 7.0;
+        double activityLow = 0.35, activityHigh = 1.6;
+        double chorus = 0.0;  // chamadas extras por tempo às acesas (gene, 6/11)
         std::size_t litTarget() const noexcept {
-            return static_cast<std::size_t>(std::lround(2.0 + 5.0 * v[0]));
+            return static_cast<std::size_t>(std::lround(litLow + (litHigh - litLow) * v[0]));
         }
-        // A atividade vai de 0,35 a 1,6 (4/11): abaixo de 1 a porta rareia os
-        // ataques; acima de 1, o céu chama as estrelas acesas a tocar mais.
-        double rawActivity() const noexcept { return 0.35 + 1.25 * v[1]; }
+        // Abaixo de 1 a porta rareia os ataques; acima de 1, o céu chama as
+        // estrelas acesas a tocar mais.
+        double rawActivity() const noexcept { return activityLow + (activityHigh - activityLow) * v[1]; }
         double activity() const noexcept { return std::min(1.0, rawActivity()); }
-        double densify() const noexcept { return std::max(0.0, rawActivity() - 1.0); }
+        double densify() const noexcept { return std::max(0.0, rawActivity() - 1.0) + chorus * (0.5 + v[1]); }
         // A energia de uma parte: quantas estrelas soam e quanto tocam.
         double energy() const noexcept { return 0.5 * (v[0] + v[1]); }
         // ±6 %, a mesma ordem da variação antiga (0,95–1,05): a faixa com
@@ -1193,8 +1205,37 @@ private:
                 contrastCharacter_ = next;
             }
         }
+        applyDensity(next);
         character_ = next;
     }
+    // Os genes de densidade (6/11): cada um num fluxo próprio da seed, em
+    // faixas contínuas, para haver muitas combinações e não dois tipos:
+    // - o piso de estrelas acesas, de 2 a 4,5;
+    // - a largura da faixa, de 1,5 a 5,5 estrelas acima do piso (até 8);
+    // - o piso da atividade, de 0,5 a 0,85 (acesas tocam de fato);
+    // - o teto da atividade, de 1,15 a 1,8 (quanto o céu adensa);
+    // - quanto o líder que sai recua, no mínimo 0,3 a 0,7 do seu brilho.
+    void chooseDensityGenes() noexcept {
+        const auto gene = [this](std::uint32_t domain) {
+            return static_cast<double>(performanceSeedStream(seed_, domain) & 0xffffU) / 65535.0;
+        };
+        litLow_ = 2.0 + 2.5 * gene(0xDE00U);
+        litHigh_ = std::min(8.0, litLow_ + 1.5 + 4.0 * gene(0xDE01U));
+        activityLow_ = 0.5 + 0.35 * gene(0xDE02U);
+        activityHigh_ = 1.15 + 0.65 * gene(0xDE03U);
+        recedeFloor_ = 0.3 + 0.4 * gene(0xDE04U);
+        // - o coro: quanto o céu chama as acesas a cada tempo, de 0 a 0,6
+        //   (vezes a atividade da parte): de céus de solistas a céus corais.
+        chorus_ = 0.6 * gene(0xDE05U);
+    }
+    void applyDensity(SectionCharacter& character) const noexcept {
+        character.litLow = litLow_;
+        character.litHigh = litHigh_;
+        character.activityLow = activityLow_;
+        character.activityHigh = activityHigh_;
+        character.chorus = chorus_;
+    }
+    double litLow_ = 2.0, litHigh_ = 7.0, activityLow_ = 0.35, activityHigh_ = 1.6, recedeFloor_ = 0.0, chorus_ = 0.0;
     std::array<bool, kBodies> openingLit_{};
 
     // As gramáticas da forma (5/11, auditoria da seed, item C). Antes havia
@@ -1336,7 +1377,7 @@ private:
         // um passo curto (o desenvolvimento) só o faz recuar um pouco. O
         // líder natural costuma estar 10–20 dB acima das outras estrelas: um
         // recuo pela metade não muda quem lidera.
-        recedeGain_ = 1.0 - std::clamp(jump / 0.8, 0.0, 1.0);
+        recedeGain_ = std::max(recedeFloor_, 1.0 - std::clamp(jump / 0.8, 0.0, 1.0));
         if (section_ == Section::Return && recedeSlot_ == openingLeader_) recedeGain_ = 1.0;
         sectionEnergy_.fill(0.0);
         if (mixerVariation_ && brightnessReady_) reshapeForSection();
