@@ -146,3 +146,27 @@ depois do tanh) — corrigido. A tabela de nível das estrelas foi remedida
 (48 seeds 5000–5047 × 90 s): de 8,6 dB de diferença para a nova mediana;
 loudness média −18,1 LUFS com MASTER −6. Suíte 37/37. **Toda seed soa
 diferente do que soava antes de 5/11** (é outra peça com o mesmo número).
+
+**B–H (5/11, "avance em todos os itens").** Um commit por item, cada um com
+teste; suíte 38/38.
+
+| Item | O que entrou | Onde |
+|---|---|---|
+| B | cabos com um dos 23 fenômenos (35 % na abertura, 60 % nas outras cenas); fenômeno de população das cenas 2–4 entre os 10; uma família de movimento por parte; coreografia ×0,7–1,35 em torno da tabela | TerritoryFactory `seedPhenomena`; SkyDirector `chooseSeedMotion` |
+| C | 6 gramáticas (ciclo, arco, rondó, ondas, kishōtenketsu, choque) com pesos por parte; na faixa com duração a abertura fica com o plano e o resto se reparte; PERCURSO e coda pelo fim da passagem (`skyFormPass`); `forma:` na tomada | SkyDirector `kGrammars`, `planGrammar` |
+| D | regiões: contraste numa região da seed (4ª, 5ª, relativa, mediantes, trítono, vizinhas), desenvolvimento às vezes vizinho, abertura e retorno na tônica | SkyDirector `regionSemitones`; Ecology |
+| E | o céu faz STUTTER e DESLOCAR, 0–2 por parte pela energia e pela seed, nenhum na abertura; um gesto do músico segura os do céu por 8 s | SkyDirector `planSkyGestures`; Ecology `applyRecut` |
+| F | convidadas: no contraste 1–2 corpos tocam uma estrela de fora do céu (da família pedida) e voltam; atravessam a troca de cena; `convidada:` na tomada | Ecology `inviteGuests` |
+| G | coda de 5 % da faixa (4–12 s); cenas do PERCURSO numa das 6 ordens pela seed | MorceauLifecycle, Engine, app `percursoScene` |
+| H | GERAR O ÁLBUM INTEIRO: render offline (~5× o tempo real), duração fixa ou variada pela seed, registro, masterização no fim | `PerformanceOfflineRender.hpp`; app |
+
+Nível depois de tudo (sonda `niveis`, 12 seeds × 90 s, MASTER −6): −18,5
+LUFS de média (−21,2 a −14,9), true peak até −1,6 dBTP.
+
+**Limitações.** As regiões (D) movem as alturas dos corpos, as notas da trama e
+a cadência; estrelas com afinação própria (percussão, HARMONAIG com a sua
+raiz) não seguem a região. As convidadas (F) tocam no stem do corpo, que
+guarda o nome da estrela da seed (o manifesto registra quem tocou). O registro
+das convidadas e da gramática nas tomadas ao vivo vem do PERCURSO (ligado em
+toda faixa com duração). Nada disso foi ouvido ainda: o próximo passo é a
+escuta do autor.

@@ -36,8 +36,16 @@ synthesis module is a star. The internal development versions went up to
   JSON manifest, in one folder per take; TRACK · DURATION (1, 2, 3 or 5 min)
   fits the form into the chosen length; when the coda ends only the recording
   closes — the sound goes on and a new piece opens; ▶ LISTEN opens the last take.
+- **The seed composes more.** Every seed — small numbers too — has its own
+  profile; the seed chooses the cables' phenomena (23), the scenes' population
+  phenomena (10), the physics of each part, one of six form grammars (cycle,
+  arc, rondo, waves, kishōtenketsu, shock), a harmonic region for the
+  contrast, a few sky gestures (STUTTER, DISPLACE), guest stars from outside
+  the sky in the contrast, the order of the PATH scenes and a coda in
+  proportion to the track.
 - **Album.** Tracks with seeds derived from the album seed; the next track
-  comes in by itself; MASTER THE ALBUM brings the album to −16 LUFS with a
+  comes in by itself; RENDER THE WHOLE ALBUM renders every track faster than real
+  time; MASTER THE ALBUM brings the album to −16 LUFS with a
   look-ahead true-peak limiter at −1 dBTP (copies only, the takes never change).
 - **Memory and sessions.** Eight named places; SAVE SESSION / OPEN SESSION as
   `.asterismus` files (parameters only, never audio).
