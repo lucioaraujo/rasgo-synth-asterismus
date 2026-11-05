@@ -4535,6 +4535,22 @@ private:
                                                 : uiText(supportLanguage_, "PERCURSO", "PATH", "PARCOURS", "RECORRIDO"));
         percursoButton_.setColour(juce::TextButton::buttonColourId,
                                   percurso_ ? juce::Colour(0xff9b6a3f) : juce::Colour(0xff3f5a4a));
+        // A masterização em curso aparece no próprio botão (5/11, pedido do
+        // autor: "não visualizo o trabalho em curso"): etapa k de N.
+        if (albumMastering_.load()) {
+            albumButton_.setButtonText(uiText(supportLanguage_, "MASTERIZANDO ", "MASTERING ", "MASTÉRISATION ",
+                                              "MASTERIZANDO ")
+                + juce::String(albumMasterDone_) + "/" + juce::String(std::max(1, albumMasterTotal_)) + utf8("…"));
+            albumButton_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff9b6a3f));
+            return;
+        }
+        albumButton_.setColour(juce::TextButton::buttonColourId, albumMasterFinished_
+            ? juce::Colour(0xff4f6b3a) : juce::Colour(0xff3f5a4a));
+        if (albumMasterFinished_ && album_.active()) {
+            albumButton_.setButtonText(uiText(supportLanguage_, "ÁLBUM · MASTERIZADO", "ALBUM · MASTERED",
+                                              "ALBUM · MASTÉRISÉ", "ÁLBUM · MASTERIZADO"));
+            return;
+        }
         albumButton_.setButtonText(album_.active()
             ? uiText(supportLanguage_, "ÁLBUM · FAIXA ", "ALBUM · TRACK ", "ALBUM · PISTE ", "ÁLBUM · PISTA ")
                 + juce::String(static_cast<int>(album_.current())) + "/" + juce::String(static_cast<int>(album_.tracks()))
@@ -4673,6 +4689,7 @@ private:
     // andamento da faixa em todas as cenas, para o PERCURSO não o desfazer.
     void goToAlbumTrack(std::size_t track) {
         if (!album_.goTo(track)) return;
+        albumMasterFinished_ = false;
         const auto seed = album_.trackSeed(track);
         const auto bpm = album_.trackBpm(track);
         auto document = PerformanceTerritoryFactory::makeForReleasedStems(seed, kPerformanceSafeBodyLimit);
@@ -4707,13 +4724,27 @@ private:
         const auto folder = albumDirectory_.getChildFile("master");
         lastAction_ = uiText(supportLanguage_, "masterizando o álbum…", "mastering the album…", "mastérisation de l’album…",
                              "masterizando el álbum…");
+        // Etapas: medir cada faixa e escrever cada cópia (2 × faixas).
+        albumMasterDone_ = 0;
+        albumMasterTotal_ = static_cast<int>(latest.size() * 2U);
+        albumMasterFinished_ = false;
+        refreshAlbumButtons();
         repaint();
         juce::Component::SafePointer<PerformanceHostComponent> safe(this);
         const auto language = supportLanguage_;
         juce::Thread::launch(juce::Thread::Priority::background, [safe, latest, folder, language] {
+            int step = 0;
+            const auto progress = [safe, &step] {
+                juce::MessageManager::callAsync([safe, done = ++step] {
+                    if (safe == nullptr) return;
+                    safe->albumMasterDone_ = done;
+                    safe->refreshAlbumButtons();
+                });
+            };
             std::vector<PerformanceTrackLevel> levels;
             bool ok = folder.createDirectory();
             for (const auto& [track, file] : latest) {
+                progress();
                 const auto level = measureWavLevel(file.getFullPathName().toStdString());
                 ok = ok && level.has_value();
                 levels.push_back(level.value_or(PerformanceTrackLevel{}));
@@ -4725,6 +4756,7 @@ private:
                 + juce::String(plan.albumGainDb, 2)
                 + ",\n  \"method\": \"só ganho, sem limitador; cada faixa em direção à mediana (−3,1…+2,9 dB, o limite do Studio), depois um ganho comum\",\n  \"tracks\": [";
             for (std::size_t index = 0U; ok && index < latest.size(); ++index) {
+                progress();
                 const auto target = folder.getChildFile(latest[index].second.getFileNameWithoutExtension() + "_master.wav");
                 ok = writeMasteredWav(latest[index].second.getFullPathName().toStdString(), target.getFullPathName().toStdString(),
                                       plan.gainDb[index], static_cast<std::uint32_t>(index + 1U) * 0x9E3779B9U);
@@ -4740,6 +4772,8 @@ private:
             juce::MessageManager::callAsync([safe, ok, folder, count = latest.size(), language] {
                 if (safe == nullptr) return;
                 safe->albumMastering_.store(false);
+                safe->albumMasterFinished_ = ok;
+                safe->refreshAlbumButtons();
                 safe->lastAction_ = ok ? uiText(language, "álbum masterizado · ", "album mastered · ", "album mastérisé · ",
                                                 "álbum masterizado · ")
                                              + juce::String(static_cast<int>(count))
@@ -5660,6 +5694,7 @@ private:
             entry.maxTruePeakDbtp = takeLevel.maxTruePeakDbtp;
             entry.percurso = takePercurso_;
             album_.addTake(entry);
+            albumMasterFinished_ = false;
             writeAlbumRegister();
             refreshAlbumButtons();
         }
@@ -7071,6 +7106,10 @@ private:
     std::array<juce::TextButton, 4> durationButtons_;
     double takeTargetSeconds_ = 0.0;
     std::atomic<bool> albumMastering_{false};
+    // Progresso da masterização (só na thread de mensagens, via callAsync).
+    int albumMasterDone_ = 0;
+    int albumMasterTotal_ = 0;
+    bool albumMasterFinished_ = false;
     std::string lastRecalledMemory_;
     juce::Label seedLabel_;
     juce::TextEditor seedEditor_;
