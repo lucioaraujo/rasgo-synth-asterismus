@@ -25,6 +25,8 @@ enum class PerformanceModuleBody : std::uint8_t {
     // Vozes do Studio trazidas em 6/11 (auditoria dos módulos): na
     // biblioteca e entre as convidadas, fora do sorteio das 8 da seed.
     AyChip, Morph, Rossler, EnvelopePulse,
+    // Reescritas do Studio a partir do conceito (6/11, PerformanceStudioVoices.hpp).
+    Granular, Turing,
     Count
 };
 

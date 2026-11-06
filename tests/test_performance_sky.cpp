@@ -111,8 +111,9 @@ int main() {
     // a library star the performer places by swapping a body's star.
     // 6/11: 28 do sorteio da seed + 4 do Studio fora do sorteio (AY-8910,
     // MORPH, RÖSSLER, ENVELOPE PULSE).
-    ok = expect(PerformanceSky::kStarCount == 32U && kPerformanceSkyStars.size() == 28U,
-                "thirty-two stars play today, twenty-eight of them in the seed's draw") && ok;
+    // + GRANULAR e TURING (6/11, reescritas do Studio).
+    ok = expect(PerformanceSky::kStarCount == 34U && kPerformanceSkyStars.size() == 28U,
+                "thirty-four stars play today, twenty-eight of them in the seed's draw") && ok;
     for (const auto star : kPerformanceExtraStars) {
         const auto signal = renderStar(181U, star, {}, static_cast<std::size_t>(kRate * 6.0));
         double peak = 0.0, energy = 0.0;

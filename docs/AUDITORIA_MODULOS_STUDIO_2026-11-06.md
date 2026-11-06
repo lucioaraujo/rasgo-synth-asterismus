@@ -104,3 +104,25 @@ o critério de 30/10: uma estrela de cada vez.
    VECTOR (reescrita).
 
 Nada disso é necessário para publicar a 0.2.0: pode ser a 0.3.
+
+## 9. Feito na 0.3 (6/11) e correções desta auditoria
+
+- **Passo 1:** o kit da DRUMS pela seed (COWBELL, PALMAS, PRATO, MARACAS).
+- **Passo 2:** AY-8910, MORPH, RÖSSLER e ENVELOPE PULSE como estrelas
+  (cópias fixadas em `vendor/`, PROVENANCE.md), fora do sorteio das 8 da
+  seed: na BIBLIOTECA e entre as convidadas do contraste.
+- **Passo 3:** NeoRiemannian (progressões P/L/R) e 16 modos de contraste do
+  repertório do `Scales.hpp`.
+- **Passo 5:** GRANULAR e TURING, **reescritas a partir do conceito**
+  (`include/rasgo/performance/PerformanceStudioVoices.hpp`): as fontes do
+  Studio usam distribuições de `<random>`, cujo resultado muda de um
+  compilador para outro — a mesma seed soaria diferente no Linux, no Windows
+  e no macOS; aqui o acaso é um xorshift próprio.
+- As máscaras por estrela passaram a 64 bits (o céu tem 34 estrelas).
+
+**Correções:** na tabela do §2, `OchdBank` não é voz — é um banco de oito
+LFOs lentos (fonte de modulação); `KSRandomizerCore` não é corda
+Karplus-Strong — é o registrador de bits aleatórios do "Turing Machine"
+(virou a estrela TURING); `GrainyNoise`/`NoiseGateGenerator` repetem a
+estrela TEXTURE (cama de ruído) e ficaram de fora. Faltam: os glitches como
+gestos do céu (passo 4), SPECTRAL GHOST, BINAURAL e VECTOR.

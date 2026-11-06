@@ -67,6 +67,7 @@
 #include <dsp/MorphOscillator.hpp>
 #include <dsp/RosslerMap.hpp>
 #include <dsp/EnvelopeLoopPulse.hpp>
+#include "PerformanceStudioVoices.hpp"
 #include "PerformanceBluffSignal.hpp"
 #include "PerformanceSpectralObject.hpp"
 #include "PerformanceHarmonyStars.hpp"
@@ -112,11 +113,12 @@ inline constexpr std::array<PerformanceModuleBody, 28> kPerformanceSkyStars{{
 // de propósito — o sorteio das 8 estrelas de cada seed (a ordem acima) não
 // muda, e as seeds da 0.2.0 continuam com o mesmo céu. Tocam pela BIBLIOTECA
 // e como convidadas do contraste.
-inline constexpr std::array<PerformanceModuleBody, 4> kPerformanceExtraStars{{
+inline constexpr std::array<PerformanceModuleBody, 6> kPerformanceExtraStars{{
     PerformanceModuleBody::AyChip, PerformanceModuleBody::Morph,
-    PerformanceModuleBody::Rossler, PerformanceModuleBody::EnvelopePulse}};
+    PerformanceModuleBody::Rossler, PerformanceModuleBody::EnvelopePulse,
+    PerformanceModuleBody::Granular, PerformanceModuleBody::Turing}};
 // Todas as estrelas que o céu sabe tocar: as 28 do sorteio e as de fora.
-inline constexpr std::array<PerformanceModuleBody, 32> kPerformanceAllStars{{
+inline constexpr std::array<PerformanceModuleBody, 34> kPerformanceAllStars{{
     PerformanceModuleBody::Acid, PerformanceModuleBody::Gendyn,
     PerformanceModuleBody::Percussion, PerformanceModuleBody::FmFlute,
     PerformanceModuleBody::Theremin, PerformanceModuleBody::Scat,
@@ -130,7 +132,8 @@ inline constexpr std::array<PerformanceModuleBody, 32> kPerformanceAllStars{{
     PerformanceModuleBody::Bloom, PerformanceModuleBody::ThermalStatic, PerformanceModuleBody::Core,
     PerformanceModuleBody::Texture, PerformanceModuleBody::BassFallback,
     PerformanceModuleBody::AyChip, PerformanceModuleBody::Morph,
-    PerformanceModuleBody::Rossler, PerformanceModuleBody::EnvelopePulse}};
+    PerformanceModuleBody::Rossler, PerformanceModuleBody::EnvelopePulse,
+    PerformanceModuleBody::Granular, PerformanceModuleBody::Turing}};
 
 // A função musical de cada estrela, a mesma do catálogo
 // (PerformanceModuleLibrary): é ela que dá a cada corpo do primeiro
@@ -146,6 +149,7 @@ inline constexpr PerformanceStarFunction performanceStarFunction(
     case PerformanceModuleBody::Spectral:
     case PerformanceModuleBody::ThermalStatic:
     case PerformanceModuleBody::Rossler:
+    case PerformanceModuleBody::Granular:
     case PerformanceModuleBody::Texture: return PerformanceStarFunction::Texture;
     case PerformanceModuleBody::Sieve:
     case PerformanceModuleBody::Polymeter:
@@ -254,6 +258,8 @@ inline constexpr std::string_view performanceStarLibraryId(PerformanceModuleBody
     case PerformanceModuleBody::Morph: return "morph";
     case PerformanceModuleBody::Rossler: return "rossler";
     case PerformanceModuleBody::EnvelopePulse: return "envelope-pulse";
+    case PerformanceModuleBody::Granular: return "granular";
+    case PerformanceModuleBody::Turing: return "turing";
     default: return {};
     }
 }
@@ -295,6 +301,8 @@ inline constexpr std::string_view performanceStarRole(PerformanceModuleBody body
     case PerformanceModuleBody::Morph: return "oscilador que passa entre formas de onda";
     case PerformanceModuleBody::Rossler: return "atrator caótico de Rössler, com erupções";
     case PerformanceModuleBody::EnvelopePulse: return "pulso de envelope em laço";
+    case PerformanceModuleBody::Granular: return "nuvem de grãos do passado recente";
+    case PerformanceModuleBody::Turing: return "melodia em laço que muda aos poucos";
     default: return {};
     }
 }
@@ -336,6 +344,8 @@ inline constexpr std::array<const char*, 3> performanceStarControlNames(
     case PerformanceModuleBody::Morph: return {"FORMA", "DERIVA", "DURAÇÃO"};
     case PerformanceModuleBody::Rossler: return {"TAXA", "CAOS", "BRILHO"};
     case PerformanceModuleBody::EnvelopePulse: return {"VELOCIDADE", "DECAIM.", "ALTURA"};
+    case PerformanceModuleBody::Granular: return {"DENSIDADE", "ESPALHAR", "ALTURA"};
+    case PerformanceModuleBody::Turing: return {"MUDANÇA", "FORMA", "DURAÇÃO"};
     default: return {"I", "II", "III"};
     }
 }
@@ -364,7 +374,7 @@ public:
     // As máscaras por estrela (renderizada, atacou) têm 32 bits: até 16
     // estrelas cabiam em 16, e a 17ª (Bluff, 30/10) caía fora — sem ataque e
     // com o DSP avançando duas vezes na mesma amostra.
-    static_assert(kPerformanceAllStars.size() <= 32U, "star masks are 32 bits");
+    static_assert(kPerformanceAllStars.size() <= 64U, "star masks are 64 bits");
     using StarControls = std::array<double, 3>;
 
     static constexpr bool available() noexcept {
@@ -737,7 +747,7 @@ public:
     double renderStar(PerformanceModuleBody body, double frequency) noexcept {
         const auto star = starIndex(body);
         if (star >= kStarCount || !std::isfinite(frequency)) return 0.0;
-        const auto bit = static_cast<std::uint32_t>(1U << star);
+        const auto bit = std::uint64_t{1} << star;
         if ((renderedMask_ & bit) != 0U) return lastOutput_[star];
         renderedMask_ |= bit;
         double value = 0.0;
@@ -782,7 +792,7 @@ public:
     // que altura — o que as outras estrelas "ouvem".
     bool attacked(PerformanceModuleBody body) const noexcept {
         const auto star = starIndex(body);
-        return star < kStarCount && (attackedMask_ & (1U << star)) != 0U;
+        return star < kStarCount && (attackedMask_ & (std::uint64_t{1} << star)) != 0U;
     }
     double attackPitch(PerformanceModuleBody body) const noexcept {
         const auto star = starIndex(body);
@@ -823,7 +833,7 @@ private:
     std::uint32_t seedMix_ = performanceSeedStream(181U, 0x5EEDU);
     std::array<StarControls, kStarCount> controls_{defaultControls()};
     std::array<double, kStarCount> lastOutput_{};
-    std::uint32_t renderedMask_ = 0U;
+    std::uint64_t renderedMask_ = 0U;  // 64 bits desde 6/11 (mais de 32 estrelas)
     PerformanceSkyContext context_{};
     PerformanceCompositionProfile profile_{};
     std::uint8_t seedVariation_ = 0U;
@@ -994,6 +1004,8 @@ private:
             case PerformanceModuleBody::Morph: range = {{{7, 9, 11, 9}}, 0.20, 0.40}; break;
             case PerformanceModuleBody::Rossler: range = {{{11, 13, 16, 13}}, 0.10, 0.20}; break;
             case PerformanceModuleBody::EnvelopePulse: range = {{{8, 12, 16, 16}}, 0.30, 0.60}; break;
+            case PerformanceModuleBody::Granular: range = {{{11, 13, 16, 13}}, 0.12, 0.25}; break;
+            case PerformanceModuleBody::Turing: range = {{{8, 16, 8, 16}}, 0.35, 0.60}; break;
             case PerformanceModuleBody::Acid: range = {{{8, 12, 16, 12}}, 0.40, 0.70}; break;
             case PerformanceModuleBody::Percussion: range = {{{12, 16, 16, 12}}, 0.50, 0.75}; break;
             case PerformanceModuleBody::Gendyn: range = {{{5, 7, 9, 7}}, 0.25, 0.45}; break;
@@ -1085,7 +1097,7 @@ private:
         stepTimes_[16] = 1.0;
     }
     std::size_t currentStar_ = 0U;
-    std::uint32_t attackedMask_ = 0U;
+    std::uint64_t attackedMask_ = 0U;
     std::array<double, kStarCount> attackPitch_{};
     std::array<bool, kStarCount> cuePending_{};
     std::array<double, kStarCount> cuePitch_{};
@@ -1095,7 +1107,7 @@ private:
                                           1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}};
 
     void markAttack(double pitchHz) noexcept {
-        attackedMask_ |= 1U << currentStar_;
+        attackedMask_ |= std::uint64_t{1} << currentStar_;
         attackPitch_[currentStar_] = pitchHz;
     }
 
@@ -1128,6 +1140,12 @@ private:
     rasgo::EnvelopeLoopPulse pulseLoop_{};
     double pulseLoopRate_ = -1.0, pulseLoopDecay_ = -1.0;
     int ayStep_ = 0;
+    // GRANULAR e TURING (6/11): reescritas do Studio, PerformanceStudioVoices.hpp.
+    PerformanceGranularCloud granular_{};
+    double granularPhase_ = 0.0, granularHz_ = 220.0, granularEnv_ = 0.0;
+    PerformanceTuringRegister turing_{};
+    rasgo::MorphOscillator turingVoice_{};
+    double turingEnv_ = 0.0, turingDecay_ = 0.999;
     rasgo::ThereminVoice theremin_{};
     // A Tuba (30/10): banco modal grave excitado por sopro
     // (TubaBreathVoice.hpp, proveniência em PROVENIENCIA_TUBA_BREATH.md).
@@ -1204,6 +1222,8 @@ private:
         morph_.setSampleRate(sampleRate_);
         rossler_.setSampleRate(sampleRate_);
         pulseLoop_.setSampleRate(sampleRate_);
+        granular_.prepare(sampleRate_);
+        turingVoice_.setSampleRate(sampleRate_);
         clap_.setSampleRate(sampleRate_);
         cymbal_.setSampleRate(sampleRate_);
         maracas_.setSampleRate(sampleRate_);
@@ -1252,6 +1272,8 @@ private:
         rossler_.setParams(0.2, 0.2, 4.5 + static_cast<double>(v(163U) % 250U) / 100.0, 0.1);
         rossler_.setInitial(0.5 + static_cast<double>(v(164U) % 100U) / 100.0, 1.0, 1.0);
         pulseLoopRate_ = -1.0;
+        granular_.seed(v(165U));
+        turing_.seed(v(166U));
         // O kit da seed: cada peça com a sua chance, afinação e cauda.
         drumKit_ = static_cast<std::uint8_t>((v(140U) % 100U < 35U ? 1U : 0U) | (v(141U) % 100U < 45U ? 2U : 0U)
             | (v(142U) % 100U < 30U ? 4U : 0U) | (v(143U) % 100U < 45U ? 8U : 0U));
@@ -1514,6 +1536,47 @@ private:
             const double out = static_cast<double>(rossler_.tick());
             if (rossler_.justErupted()) markAttack(frequency);
             return std::tanh(out * (0.6 + control[2] * 1.4)) * 0.7 * holdGain;
+        }
+        case PerformanceModuleBody::Granular: {
+            // Uma nuvem de grãos lidos do passado recente de uma frase própria
+            // (o GRANULAR do Studio): DENSIDADE de 2 a 40 grãos por segundo,
+            // ESPALHAR o quanto atrás eles vão (até 1,6 s), ALTURA o desvio
+            // de cada grão (até 7 semitons).
+            if (starTick(phraseTick_)) {
+                granularHz_ = phrasePitch(std::clamp(frequency, 60.0, 1200.0));
+                granularEnv_ = 1.0;
+                markAttack(granularHz_);
+            }
+            granularPhase_ += granularHz_ / sampleRate_;
+            if (granularPhase_ >= 1.0) granularPhase_ -= std::floor(granularPhase_);
+            granularEnv_ *= 0.99996;
+            const double source = std::sin(6.283185307179586 * granularPhase_) * granularEnv_
+                + 0.3 * std::sin(12.566370614359172 * granularPhase_) * granularEnv_;
+            granular_.setDensity(2.0 + control[0] * 38.0);
+            granular_.setSpread(0.05 + control[1] * 1.55);
+            granular_.setPitchJitter(control[2] * 7.0);
+            granular_.setGrainSeconds(0.03, 0.06 + (1.0 - control[0]) * 0.22);
+            return std::tanh(static_cast<double>(granular_.process(static_cast<float>(source * 0.6))) * 1.4) * 0.8 * holdGain;
+        }
+        case PerformanceModuleBody::Turing: {
+            // A melodia do registrador "Turing Machine" (o KS Randomizer do
+            // Studio): MUDANÇA é a chance de um bit novo a cada passo (0: o
+            // laço trava e repete; 0,6: quase nunca repete), FORMA o timbre
+            // (seno a quadrada), DURAÇÃO a cauda de cada nota.
+            if (starTick(circuitTick_)) {
+                static constexpr std::array<int, 8> degrees{{0, 2, 4, 7, 9, 12, 14, 16}};
+                turing_.setChange(control[0] * 0.6);
+                const auto value = turing_.step();
+                const double hz = phrasePitch(std::clamp(frequency, 60.0, 900.0))
+                    * std::pow(2.0, degrees[value & 7U] / 12.0);
+                turingVoice_.setFrequency(hz);
+                turingEnv_ = (value & 0x80U) != 0U ? 1.0 : 0.55;
+                turingDecay_ = std::exp(-1.0 / (sampleRate_ * (0.06 + control[2] * 0.9)));
+                markAttack(hz);
+            }
+            turingVoice_.setShape(static_cast<float>(control[1]));
+            turingEnv_ *= turingDecay_;
+            return static_cast<double>(turingVoice_.tick()) * turingEnv_ * 0.55 * holdGain;
         }
         case PerformanceModuleBody::EnvelopePulse: {
             // Um pulso que se repete sozinho (o envelope em laço do Studio):

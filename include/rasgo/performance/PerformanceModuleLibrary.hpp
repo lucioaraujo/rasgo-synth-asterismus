@@ -38,7 +38,7 @@ struct PerformanceLibraryEntry {
     std::string_view source{};
 };
 
-inline constexpr std::array<PerformanceLibraryEntry, 33> kPerformanceModuleLibrary{{
+inline constexpr std::array<PerformanceLibraryEntry, 35> kPerformanceModuleLibrary{{
     {"acid", "Acid", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort, 1U},
     {"gendyn", "Gendyn", PerformanceModuleFamily::Texture, PerformanceLibraryState::ActiveCohort, 1U},
     {"drums", "Drums", PerformanceModuleFamily::Pulse, PerformanceLibraryState::ActiveCohort, 1U},
@@ -81,6 +81,11 @@ inline constexpr std::array<PerformanceLibraryEntry, 33> kPerformanceModuleLibra
      0U, "Studio dsp/RosslerMap.hpp"},
     {"envelope-pulse", "Envelope Pulse", PerformanceModuleFamily::Pulse, PerformanceLibraryState::ActiveCohort,
      0U, "Studio dsp/EnvelopeLoopPulse.hpp"},
+    // Reescritas a partir do conceito (PerformanceStudioVoices.hpp).
+    {"granular", "Granular", PerformanceModuleFamily::Texture, PerformanceLibraryState::ActiveCohort,
+     0U, "Studio dsp/GranularCloud.hpp (conceito)"},
+    {"turing", "Turing", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort,
+     0U, "Studio dsp/KSRandomizerCore.hpp (conceito)"},
     // Harmonaig e Bloom: reescritas a partir do conceito desde 2/11
     // (PerformanceHarmonyStars.hpp).
     {"harmonaig", "Harmonaig", PerformanceModuleFamily::Voice, PerformanceLibraryState::ActiveCohort,

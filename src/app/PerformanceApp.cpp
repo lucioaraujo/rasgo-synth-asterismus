@@ -4064,6 +4064,8 @@ private:
         case PerformanceModuleBody::Morph: return "MORPH";
         case PerformanceModuleBody::Rossler: return utf8("RÖSSLER");
         case PerformanceModuleBody::EnvelopePulse: return "ENV PULSE";
+        case PerformanceModuleBody::Granular: return "GRANULAR";
+        case PerformanceModuleBody::Turing: return "TURING";
         default: return utf8("MÓDULO");
         }
     }
