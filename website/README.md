@@ -51,7 +51,7 @@ python3 gerar_paginas.py && python3 seo.py
 |---|---|
 | `assets/interface.jpg` | instantâneo da janela do app 0.2.0 (1920×1006), em 2026-11-04: instância isolada (HOME temporário), saída muda (`rasgo_mudo`), ganchos `RASGO_ASTERISMUS_AUTOPLAY=1` e `RASGO_ASTERISMUS_SNAPSHOT=1` (sem dicas), seed sorteada 4289420027, ~40 s tocando; JPEG q84. **Provisória**: o autor pode trocá-la por uma captura sua |
 | `assets/og-asterismus.jpg` | o mesmo instantâneo, recorte central 1200×630, JPEG q85 |
-| `assets/identity/rasgo_logo_2026.svg` | a logo RASGO do cabeçalho do app (`../assets/rasgo_logo_2026.svg`), arte de Lúcio de Araújo |
+| `assets/identity/rasgo_logo_2026.svg` | a logo RASGO do cabeçalho do app (`../assets/rasgo_logo_2026.svg`), arte de Lúcio de Araújo; na cópia do site o preto vira o âmbar `#d18a45`, a mesma troca que o app faz ao desenhá-la (6/11: em preto ela sumia no fundo verde) |
 
 ## Proveniência das cópias
 
