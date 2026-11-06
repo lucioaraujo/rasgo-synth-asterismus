@@ -461,6 +461,22 @@ public:
         activity_ = std::isfinite(activity) ? std::clamp(activity, 0.0, 1.0) : 1.0;
     }
     double activity() const noexcept { return activity_; }
+    // O diálogo do groove (6/11; conceito do GrooveDialogue do Rasgo Synth
+    // Studio, mesmo autor, só lido): seis famílias de bumbo/caixa/chimbal em
+    // 16 passos — semicolcheias longa-curta, backbeat solto, contratempos
+    // entrelaçados, 3+3+2, acentos deslocados, frase e resposta. A cada parte
+    // da forma a família muda (a parte 0 é a da casa; a mesma parte volta à
+    // mesma família, então um rondó reencontra o seu groove). -1 = a seed
+    // toca as células do Circuito.
+    void setGrooveSection(std::uint32_t ordinal) noexcept {
+        if (ordinal == grooveSection_) return;
+        grooveSection_ = ordinal;
+        if (grooveHome_ < 0) return;
+        grooveFamily_ = ordinal == 0U ? grooveHome_
+            : static_cast<int>((static_cast<std::uint32_t>(grooveHome_) + 1U
+                                + scoreWordStatic(seed_ ^ (ordinal * 1709U), ordinal, 24U) % 5U) % 6U);
+    }
+    int grooveFamily() const noexcept { return grooveFamily_; }
     void setCounting(bool enabled, std::uint32_t ordinal) noexcept {
         if (enabled == counting_ && ordinal == countingOrdinal_) return;
         counting_ = enabled;
@@ -673,9 +689,11 @@ public:
             circuitTick_ = advanceClock(circuitPhase_, circuitRate, sky.holding);
             if (circuitTick_) barStep_ = (barStep_ + 1U) & 15U;
         }
+        stepSamples_ = sampleRate_ / std::max(circuitRate, 0.05);
         if (circuitTick_) {
             divider_.clock();
             ++circuitStep_;
+            if (barStep_ == 0U) ++grooveBar_;
         }
         if (counting_) {
             const double stepSamples = sampleRate_ / std::max(circuitRate, 0.05);
@@ -882,6 +900,21 @@ private:
     std::array<double, 17> stepTimes_{{0.0, 0.0625, 0.125, 0.1875, 0.25, 0.3125, 0.375, 0.4375, 0.5,
                                        0.5625, 0.625, 0.6875, 0.75, 0.8125, 0.875, 0.9375, 1.0}};
     std::array<double, 16> grooveOffsets_{};
+    // O diálogo do groove da DRUMS (6/11): família desta parte (-1 = as
+    // células do Circuito, como antes), a da casa, o compasso corrente, o
+    // passo em amostras, ataques adiados por voz (bumbo, caixa, chimbal) e a
+    // rajada da resposta.
+    int grooveFamily_ = -1;
+    int grooveHome_ = -1;
+    std::uint32_t grooveSection_ = 0U;
+    std::uint32_t grooveBar_ = 0U;
+    double stepSamples_ = 12000.0;
+    std::array<std::uint32_t, 3> groovePending_{};
+    std::array<double, 3> groovePendingGain_{};
+    std::array<double, 3> grooveVoiceGain_{{1.0, 1.0, 1.0}};
+    std::uint32_t ratchetLeft_ = 0U;
+    std::uint32_t ratchetTimer_ = 0U;
+    std::uint32_t ratchetInterval_ = 0U;
     bool counting_ = false;
     std::uint32_t countingOrdinal_ = 0U;
     std::array<std::uint8_t, kStarCount> euclidK_{};
@@ -1341,6 +1374,18 @@ private:
         nextStep_ = 0U;
         barStep_ = 0U;
         rebuildStepTimes();
+        // O diálogo do groove: 60 % das seeds tocam a DRUMS por famílias de
+        // groove; as outras ficam com as células do Circuito.
+        {
+            const auto word = performanceSeedStream(seed, 0x6007EU);
+            grooveHome_ = (word % 100U) < 60U ? static_cast<int>((word >> 8U) % 6U) : -1;
+            grooveFamily_ = grooveHome_;
+            grooveSection_ = 0U;
+            grooveBar_ = 0U;
+            groovePending_.fill(0U);
+            grooveVoiceGain_ = {{1.0, 1.0, 1.0}};
+            ratchetLeft_ = 0U;
+        }
         countStep_.fill(0U);
         delayLeft_.fill(0U);
         durationStep_.fill(0U);
@@ -1942,10 +1987,10 @@ private:
 
     double renderDrums(const StarControls& control) noexcept {
         const auto& c = context_;
-        if (seedCue_ == 1) kick_.trigger();
-        if (seedCue_ == 2) { snare_.trigger(); hat_.trigger(true); }
-        if (mutateEdge_) hat_.trigger(false);
-        if (tearEdge_) { kick_.trigger(); snare_.trigger(); hat_.trigger(true); }
+        if (seedCue_ == 1) grooveFire(0U, 1.0);
+        if (seedCue_ == 2) { grooveFire(1U, 1.0); grooveFire(2U, 1.0, true); }
+        if (mutateEdge_) grooveFire(2U, 1.0);
+        if (tearEdge_) { grooveFire(0U, 1.0); grooveFire(1U, 1.0); grooveFire(2U, 1.0, true); }
         if (starTick(circuitTick_)) {
             // As células rítmicas da família Circuito, com a palavra da seed.
             static constexpr std::array<std::uint16_t, 6> kickCells{{
@@ -1972,6 +2017,9 @@ private:
             const bool snareHit = (cell & 3U) == 2U ? (snareWord & 0xffU) < 214U
                 : (snareWord & 0xffU) < 18U + static_cast<std::uint32_t>(c.risk * 40.0);
             const bool hatHit = (hatWord & 0xffU) < 84U + static_cast<std::uint32_t>(c.density * 104.0);
+            if (grooveFamily_ >= 0) {
+                grooveStep(control, kickWord, snareWord, hatWord);
+            } else {
             if (at(kickCells[pattern]) || kickHit || divider_.risingEdge(0, 1)
                 || (c.density + control[0] * 0.55 > 0.92 && (circuitStep_ & 3U) == 0U)) {
                 kick_.trigger();
@@ -1985,6 +2033,7 @@ private:
             if (at(hatCells[pattern]) || hatHit || divider_.risingEdge(0, 2)
                 || c.density + c.risk + control[1] * 0.45 > 1.18)
                 hat_.trigger((c.risk + control[2] * 0.55) > 0.72 && divider_.q(3));
+            }
             // O kit da seed (6/11): o palmas reforça os tempos fracos, o
             // cowbell pontua, o prato abre a frase, as maracas nos
             // contratempos — cada um com a sua palavra da seed.
@@ -2009,9 +2058,10 @@ private:
             }
         }
         if (tearEdge_ && (drumKit_ & 4U) != 0U) cymbal_.trigger();
-        const double drums = (static_cast<double>(kick_.process()) * (0.38 + control[0] * 0.88)
-            + static_cast<double>(snare_.process()) * (0.20 + control[1] * 0.82)
-            + static_cast<double>(hat_.process()) * (0.06 + control[2] * 0.88)
+        if (grooveFamily_ >= 0) grooveService();
+        const double drums = (static_cast<double>(kick_.process()) * grooveVoiceGain_[0] * (0.38 + control[0] * 0.88)
+            + static_cast<double>(snare_.process()) * grooveVoiceGain_[1] * (0.20 + control[1] * 0.82)
+            + static_cast<double>(hat_.process()) * grooveVoiceGain_[2] * (0.06 + control[2] * 0.88)
             + ((drumKit_ & 2U) != 0U ? static_cast<double>(clap_.process()) * (0.18 + control[1] * 0.40) : 0.0)
             + ((drumKit_ & 1U) != 0U ? static_cast<double>(cowbell_.process()) * (0.10 + control[2] * 0.28) : 0.0)
             + ((drumKit_ & 4U) != 0U ? static_cast<double>(cymbal_.process()) * (0.06 + control[2] * 0.22) : 0.0)
@@ -2021,6 +2071,81 @@ private:
                          + runglerValue_ * (mutateResponse_ * 0.10 + control[1] * 0.28)
                          + autonomyEvent_ * 0.72)
             * (1.0 - holdResponse_ * 0.42);
+    }
+
+    // O diálogo do groove (ver setGrooveSection). Máscaras de 16 passos (bit
+    // n = passo n) de bumbo, caixa e chimbal, as do GrooveDialogue do Studio.
+    static constexpr std::array<std::array<std::uint16_t, 3>, 6> kGrooveFamilies{{
+        {{0x4141U, 0x1010U, 0xddddU}},   // semicolcheias longa-curta (swing)
+        {{0x0489U, 0x1810U, 0x5555U}},   // backbeat solto (caixa atrasada)
+        {{0x8241U, 0x1210U, 0x6b6bU}},   // contratempos entrelaçados
+        {{0x1041U, 0x4410U, 0x5555U}},   // 3+3+2
+        {{0x8121U, 0x1408U, 0x5b5bU}},   // acentos deslocados
+        {{0x0481U, 0x2010U, 0x4965U}}}}; // frase e resposta
+
+    // Um ataque da voz (0 bumbo, 1 caixa, 2 chimbal) com a sua dinâmica.
+    void grooveFire(std::size_t voice, double gain, bool open = false) noexcept {
+        grooveVoiceGain_[voice] = gain;
+        if (voice == 0U) { kick_.trigger(); markAttack(55.0); }
+        else if (voice == 1U) { snare_.trigger(); markAttack(180.0); }
+        else hat_.trigger(open);
+    }
+    // Agenda o ataque `delaySteps` passos depois (o microtempo de cada voz);
+    // se um ataque ainda esperava, ele sai já.
+    void grooveSchedule(std::size_t voice, double delaySteps, double gain, bool open = false) noexcept {
+        const auto delay = static_cast<std::uint32_t>(std::max(0.0, delaySteps) * stepSamples_);
+        if (delay == 0U || open) { grooveFire(voice, gain, open); return; }
+        if (groovePending_[voice] > 0U) grooveFire(voice, groovePendingGain_[voice]);
+        groovePending_[voice] = delay;
+        groovePendingGain_[voice] = gain;
+    }
+    void grooveService() noexcept {
+        for (std::size_t voice = 0U; voice < 3U; ++voice)
+            if (groovePending_[voice] > 0U && --groovePending_[voice] == 0U)
+                grooveFire(voice, groovePendingGain_[voice]);
+        if (ratchetLeft_ > 0U && ratchetTimer_-- == 0U) {
+            grooveFire(2U, 0.6);
+            --ratchetLeft_;
+            ratchetTimer_ = ratchetInterval_;
+        }
+    }
+    // Um passo do compasso tocado pela família: o padrão, a dinâmica (bumbo
+    // mais forte no 1, chimbal acentuado nos passos pares, caixa fantasma), o
+    // microtempo (swing na família longa-curta, caixa e chimbal atrasados nas
+    // soltas) e, no último passo de cada quatro compassos, a resposta: uma
+    // caixa fantasma e uma rajada de 2 a 4 chimbais.
+    void grooveStep(const StarControls& control, std::uint32_t kickWord, std::uint32_t snareWord,
+                    std::uint32_t hatWord) noexcept {
+        const auto& c = context_;
+        const auto family = static_cast<std::size_t>(grooveFamily_);
+        const auto& mask = kGrooveFamilies[family];
+        const auto step = barStep_ & 15U;
+        const auto on = [step](std::uint16_t bits) noexcept { return ((bits >> step) & 1U) != 0U; };
+        const double bpm = 60.0 * sampleRate_ / std::max(1.0, stepSamples_ * 4.0);
+        const double swing = family == 0U && (step & 1U) == 1U
+            ? std::clamp(0.32 - (bpm - 60.0) * 0.001, 0.12, 0.25) : 0.0;
+        const double snareLate = family == 1U ? 0.10 : family == 2U ? 0.035 : family == 4U ? 0.055 : 0.0;
+        const double hatLate = family == 1U ? 0.02 : family == 2U ? 0.015 : 0.0;
+        // bumbo: o padrão e, com densidade, um bumbo a mais em passo par
+        if (on(mask[0]) || ((step & 1U) == 0U && (kickWord & 0xffU) < static_cast<std::uint32_t>(c.density * 34.0)))
+            grooveSchedule(0U, swing, step == 0U ? 1.08 : 0.9);
+        // caixa: o padrão, ou uma fantasma (risco)
+        if (on(mask[1]))
+            grooveSchedule(1U, swing + snareLate, 1.0);
+        else if ((snareWord & 0xffU) < 14U + static_cast<std::uint32_t>(c.risk * 36.0))
+            grooveSchedule(1U, swing + snareLate, 0.38);
+        // chimbal: o padrão, rareado quando a densidade é baixa
+        if (on(mask[2]) && (hatWord & 0xffU) < 120U + static_cast<std::uint32_t>(c.density * 136.0)) {
+            const bool open = step == 14U && (c.risk + control[2] * 0.55) > 0.72;
+            grooveSchedule(2U, swing + hatLate, (step & 1U) == 0U ? 0.92 : 0.67, open);
+        }
+        // a resposta no fim da frase de quatro compassos
+        if (step == 15U && (grooveBar_ & 3U) == 3U) {
+            grooveSchedule(1U, swing + snareLate + 0.5, 0.38);
+            ratchetLeft_ = 2U + static_cast<std::uint32_t>(std::clamp(c.density, 0.0, 1.0) * 2.99);
+            ratchetInterval_ = static_cast<std::uint32_t>(stepSamples_ / static_cast<double>(ratchetLeft_));
+            ratchetTimer_ = 0U;
+        }
     }
 
     static std::uint32_t scoreWord(std::uint32_t seed, std::uint32_t step,

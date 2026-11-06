@@ -19,6 +19,13 @@ and [`docs/`](docs/).
   and MATERIAL from Antitotem; type, cutoff, resonance and mix from the seed)
   and two sends, ECHO (in tempo) and HALL; the focused star has CUT, RES.,
   ECHO and HALL controls (centre = the seed).
+- **Groove dialogue on the DRUMS:** in about six seeds out of ten the DRUMS
+  plays groove families (long-short sixteenths, loose backbeat, interlocking
+  offbeats, 3+3+2, displaced accents, phrase and answer — the Studio's
+  GrooveDialogue concept) instead of the Circuit cells: the family changes
+  with each part of the form and comes back with it; each drum has its own
+  timing (swing, a late snare, a late hat), ghost snares and accents, and
+  every four bars ends with an answer (a ghost snare and a 2–4 hat ratchet).
 
 ## 0.2.0 — first public version (2026-11-06)
 

@@ -221,6 +221,47 @@ int main() {
         }
     }
 
+    // O diálogo do groove (6/11): parte das seeds toca a DRUMS por famílias de
+    // groove; a família muda com a parte da forma, a parte 0 volta à da casa
+    // e a mesma parte volta à mesma família (determinístico).
+    {
+        int withGroove = 0;
+        bool changes = false, stable = true;
+        for (std::uint32_t seed = 1U; seed <= 60U; ++seed) {
+            PerformanceSky sky;
+            sky.prepare(kRate);
+            sky.setSeed(seed);
+            const int home = sky.grooveFamily();
+            if (home < 0) continue;
+            ++withGroove;
+            stable = stable && home <= 5;
+            sky.setGrooveSection(3U);
+            const int third = sky.grooveFamily();
+            changes = changes || third != home;
+            stable = stable && third >= 0 && third <= 5 && third != home;
+            sky.setGrooveSection(0U);
+            stable = stable && sky.grooveFamily() == home;
+            sky.setGrooveSection(3U);
+            stable = stable && sky.grooveFamily() == third;
+        }
+        std::cout << "groove: " << withGroove << " of 60 seeds play groove families\n";
+        ok = expect(withGroove >= 20 && withGroove <= 50, "part of the seeds play the groove dialogue") && ok;
+        ok = expect(changes && stable, "the groove family changes per section, deterministically") && ok;
+        int rendered = 0;
+        for (std::uint32_t seed = 1U; seed <= 30U && rendered < 4; ++seed) {
+            PerformanceSky probe;
+            probe.prepare(kRate);
+            probe.setSeed(seed);
+            if (probe.grooveFamily() < 0) continue;
+            ++rendered;
+            const auto signal = renderStar(seed, PerformanceModuleBody::Percussion, {}, static_cast<std::size_t>(kRate * 6.0));
+            double peak = 0.0;
+            bool finite = true;
+            for (const auto sample : signal) { finite = finite && std::isfinite(sample); peak = std::max(peak, std::fabs(sample)); }
+            ok = expect(finite && peak > 0.01 && peak <= 1.0, "a groove DRUMS sounds, bounded") && ok;
+        }
+    }
+
     // Every star sounds alone, finite and bounded (control stars are silent:
     // they filter the others' attacks, tested above).
     const auto seconds = static_cast<std::size_t>(kRate * 8.0);
