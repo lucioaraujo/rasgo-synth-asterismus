@@ -79,3 +79,20 @@ Conferido também que `CREDITS.md` e `LICENSE` desta pasta são idênticos aos
 do commit. O arquivo cita um `DEPENDENCIES.md` que é o do Studio na origem
 (não copiado): as dependências do Asterismus estão em `DEPENDENCIES.md` e
 `THIRD_PARTY_NOTICES.md` na raiz do projeto.
+
+## 2026-11-06 — quatro vozes do Studio (auditoria dos módulos, passo 2)
+
+Origem: a pasta do Rasgo Synth Studio no workspace
+(`PROJETOS_AUTORAIS/RASGO_SYNTH_STUDIO/rasgo-synth-core/src/dsp/`, sem Git
+próprio neste disco), lida em 6/11/2026 — mesmo autor, GPLv3. Cópia de bytes
+integrais (`cp -p`), sem nenhuma transformação; dependências já presentes
+aqui e idênticas à origem (`Oscillator.hpp`, `Envelope.hpp`). A adaptação ao
+Asterismus está em `include/rasgo/performance/PerformanceSky.hpp` (estrelas
+AY-8910, MORPH, RÖSSLER, ENVELOPE PULSE; fora do sorteio das 8 da seed).
+
+| Arquivo | SHA-256 |
+| --- | --- |
+| `src/dsp/AY8910Chip.hpp` | `b03986bcb23240a78cf1996f7e340bde5da254f008a8f5b7bf7708b02ef564ca` |
+| `src/dsp/MorphOscillator.hpp` | `0538d60b93098752ba25c99a24d5601bd630cb5aa4f769ddf2d79eb70fc2b3d3` |
+| `src/dsp/RosslerMap.hpp` | `673a861a6fcd940e64ba2bcecf180e29bfc1023ac4c89ca3498f8108671524a6` |
+| `src/dsp/EnvelopeLoopPulse.hpp` | `39dc847273ed1afcb1a7b7de8804b0209c3e4fc5bc1bd403640b73a4e48fa9b9` |

@@ -22,9 +22,10 @@ void testLibrarySeparatesAudibleCohortsFromPotential() {
     }
     // 30/10: the Tuba became a library star (sounding, placed by the
     // performer), leaving thirteen sourced Studio organisms to adapt.
-    expect(kPerformanceModuleLibrary.size() == 29U && active == 28U && candidates == 1U
+    // 6/11: + AY-8910, MORPH, RÖSSLER, ENVELOPE PULSE (vozes do Studio).
+    expect(kPerformanceModuleLibrary.size() == 33U && active == 32U && candidates == 1U
                && studioOnly == 0U,
-           "library: twenty-eight playable stars, one candidate, every Studio organism adapted or rewritten");
+           "library: thirty-two playable stars, one candidate, every Studio organism adapted or rewritten");
     const auto* flute = findPerformanceModule("fm-flute");
     const auto* walsh = findPerformanceModule("walsh");
     const auto* vosim = findPerformanceModule("vosim");

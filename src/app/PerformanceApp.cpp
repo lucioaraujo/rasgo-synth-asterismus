@@ -1477,7 +1477,7 @@ public:
             : uiText(language_, "BIBLIOTECA · ESCOLHER ESTRELAS", "LIBRARY · CHOOSE STARS",
                      "BIBLIOTHÈQUE · CHOISIR DES ÉTOILES", "BIBLIOTECA · ELEGIR ESTRELLAS"))
             + utf8(" ▾");
-        const auto libraryLineTwo = juce::String(static_cast<int>(kPerformanceSkyStars.size()))
+        const auto libraryLineTwo = juce::String(static_cast<int>(kPerformanceAllStars.size()))
             + uiText(language_, " ESTRELAS · TOM, TEXTURA, VOZ, PULSO, CONTROLE · OU ARRASTE ATÉ UMA ESTRELA",
                      " STARS · TONE, TEXTURE, VOICE, PULSE, CONTROL · OR DRAG ONTO A STAR",
                      " ÉTOILES · TON, TEXTURE, VOIX, PULSATION, CONTRÔLE · OU GLISSEZ SUR UNE ÉTOILE",
@@ -4060,6 +4060,10 @@ private:
         case PerformanceModuleBody::Core: return "CORE";
         case PerformanceModuleBody::Texture: return "TEXTURE";
         case PerformanceModuleBody::BassFallback: return "BASS";
+        case PerformanceModuleBody::AyChip: return "AY-8910";
+        case PerformanceModuleBody::Morph: return "MORPH";
+        case PerformanceModuleBody::Rossler: return utf8("RÖSSLER");
+        case PerformanceModuleBody::EnvelopePulse: return "ENV PULSE";
         default: return utf8("MÓDULO");
         }
     }
@@ -4318,8 +4322,8 @@ private:
                                                "silent: they filter the others' attacks",
                                                "muettes : elles filtrent les attaques des autres",
                                                "no suenan: filtran los ataques de las otras"));
-            for (std::size_t index = 0U; index < kPerformanceSkyStars.size(); ++index) {
-                const auto star = kPerformanceSkyStars[index];
+            for (std::size_t index = 0U; index < kPerformanceAllStars.size(); ++index) {
+                const auto star = kPerformanceAllStars[index];
                 if (performanceStarFunction(star) != functions[group]) continue;
                 // Desde 3/11 a seed escolhe entre todas: não há mais "· biblioteca".
                 constexpr bool library = false;
@@ -4357,7 +4361,7 @@ private:
             }
             const auto star = result == 1000 ? PerformanceModuleBody::Count
                 : result == 900 ? PerformanceModuleBody::ModalResonator
-                                : kPerformanceSkyStars[static_cast<std::size_t>(result - 1)];
+                                : kPerformanceAllStars[static_cast<std::size_t>(result - 1)];
             if (!controller_.setActorStar(actorId, star)) {
                 lastAction_ = uiText(supportLanguage_, "troca de estrela não entrou na fila realtime",
                                      "star swap not queued", "changement d’étoile non mis en file",

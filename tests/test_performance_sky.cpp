@@ -109,7 +109,22 @@ int main() {
     bool ok = expect(PerformanceSky::available(), "the sky needs the four vendored cohorts");
     // 30/10: fifteen stars play — the fourteen the seed chooses and the Tuba,
     // a library star the performer places by swapping a body's star.
-    ok = expect(PerformanceSky::kStarCount == 28U, "twenty-eight stars play today") && ok;
+    // 6/11: 28 do sorteio da seed + 4 do Studio fora do sorteio (AY-8910,
+    // MORPH, RÖSSLER, ENVELOPE PULSE).
+    ok = expect(PerformanceSky::kStarCount == 32U && kPerformanceSkyStars.size() == 28U,
+                "thirty-two stars play today, twenty-eight of them in the seed's draw") && ok;
+    for (const auto star : kPerformanceExtraStars) {
+        const auto signal = renderStar(181U, star, {}, static_cast<std::size_t>(kRate * 6.0));
+        double peak = 0.0, energy = 0.0;
+        bool finite = true;
+        for (const auto sample : signal) {
+            finite = finite && std::isfinite(sample);
+            peak = std::max(peak, std::fabs(sample));
+            energy += sample * sample;
+        }
+        std::cout << std::string(performanceStarLibraryId(star)) << " peak " << peak << '\n';
+        ok = expect(finite && energy > 1.0 && peak <= 1.0, "every Studio voice of 6/11 sounds, bounded") && ok;
+    }
     {
         const auto free = runWithControl(PerformanceModuleBody::Count, {});
         const auto sieved = runWithControl(PerformanceModuleBody::Sieve, {{0.6, 0.6, 0.3}});

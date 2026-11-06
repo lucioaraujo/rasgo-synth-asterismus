@@ -2124,11 +2124,11 @@ private:
             const auto slot = slots[pick];
             slots[pick] = slots[--slotCount];
             // as estrelas de fora do céu: primeiro da família pedida
-            std::array<PerformanceModuleBody, kPerformanceSkyStars.size()> outside{};
+            std::array<PerformanceModuleBody, kPerformanceAllStars.size()> outside{};
             std::size_t preferred = 0U, any = 0U;
             for (int pass = 0; pass < 2 && preferred == 0U; ++pass) {
                 any = 0U;
-                for (const auto star : kPerformanceSkyStars) {
+                for (const auto star : kPerformanceAllStars) {
                     if (!PerformanceSky::isStar(star) || star == PerformanceModuleBody::ModalResonator
                         || performanceStarFunction(star) == PerformanceStarFunction::Control) continue;
                     bool present = false;

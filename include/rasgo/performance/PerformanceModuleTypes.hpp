@@ -22,6 +22,9 @@ enum class PerformanceModuleBody : std::uint8_t {
     Sieve, Polymeter, Hocket, Rupture,
     // Reescritas a partir do conceito (2/11, grupo B).
     Harmonaig, Bloom, ThermalStatic, Core, Texture, BassFallback,
+    // Vozes do Studio trazidas em 6/11 (auditoria dos módulos): na
+    // biblioteca e entre as convidadas, fora do sorteio das 8 da seed.
+    AyChip, Morph, Rossler, EnvelopePulse,
     Count
 };
 

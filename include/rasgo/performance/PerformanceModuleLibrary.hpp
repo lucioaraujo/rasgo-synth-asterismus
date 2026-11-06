@@ -38,7 +38,7 @@ struct PerformanceLibraryEntry {
     std::string_view source{};
 };
 
-inline constexpr std::array<PerformanceLibraryEntry, 29> kPerformanceModuleLibrary{{
+inline constexpr std::array<PerformanceLibraryEntry, 33> kPerformanceModuleLibrary{{
     {"acid", "Acid", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort, 1U},
     {"gendyn", "Gendyn", PerformanceModuleFamily::Texture, PerformanceLibraryState::ActiveCohort, 1U},
     {"drums", "Drums", PerformanceModuleFamily::Pulse, PerformanceLibraryState::ActiveCohort, 1U},
@@ -71,6 +71,16 @@ inline constexpr std::array<PerformanceLibraryEntry, 29> kPerformanceModuleLibra
     // Reescrita a partir do conceito desde 2/11 (PerformanceStudioConceptStars.hpp).
     {"bass-fallback", "Bass Fallback", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort,
      0U, "Studio OrganismStem::BassFallback"},
+    // Vozes do Studio de 6/11 (auditoria dos módulos): na biblioteca e entre
+    // as convidadas, fora do sorteio da seed (vendor/studio-dsp/PROVENANCE.md).
+    {"ay-8910", "AY-8910", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort,
+     0U, "Studio dsp/AY8910Chip.hpp"},
+    {"morph", "Morph", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort,
+     0U, "Studio dsp/MorphOscillator.hpp"},
+    {"rossler", "Rossler", PerformanceModuleFamily::Texture, PerformanceLibraryState::ActiveCohort,
+     0U, "Studio dsp/RosslerMap.hpp"},
+    {"envelope-pulse", "Envelope Pulse", PerformanceModuleFamily::Pulse, PerformanceLibraryState::ActiveCohort,
+     0U, "Studio dsp/EnvelopeLoopPulse.hpp"},
     // Harmonaig e Bloom: reescritas a partir do conceito desde 2/11
     // (PerformanceHarmonyStars.hpp).
     {"harmonaig", "Harmonaig", PerformanceModuleFamily::Voice, PerformanceLibraryState::ActiveCohort,

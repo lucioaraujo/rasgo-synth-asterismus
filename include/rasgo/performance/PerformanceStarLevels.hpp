@@ -55,6 +55,12 @@ inline constexpr double performanceStarLevelTrimDb(PerformanceModuleBody star) n
     case PerformanceModuleBody::Acid: return +8.4; // -55.2 dB (5/11 2ª medida: -52.0 com +5.5)
     case PerformanceModuleBody::Bluff: return +7.5; // -55.2 dB (5/11 2ª medida: -51.1 com +5.5)
     case PerformanceModuleBody::ModalResonator: return +9.0; // -60.0 dB (5/11 2ª medida: -53.1 com +9.0)
+    // As vozes do Studio de 6/11, medidas no corpo 2 de 12 seeds × 60 s
+    // (sonda `novas`), levadas à mediana da 2ª medida (−49,1 dB).
+    case PerformanceModuleBody::AyChip: return +0.2; // -49.3 dB
+    case PerformanceModuleBody::Morph: return -1.0; // -48.1 dB
+    case PerformanceModuleBody::Rossler: return -4.2; // -44.9 dB
+    case PerformanceModuleBody::EnvelopePulse: return -1.7; // -47.4 dB
     default: return 0.0;
     }
 }

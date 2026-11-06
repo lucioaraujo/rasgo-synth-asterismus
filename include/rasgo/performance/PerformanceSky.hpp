@@ -63,6 +63,10 @@
 #include <dsp/ThereminVoice.hpp>
 #include "TubaBreathVoice.hpp"
 #include <dsp/FootnotePluck.hpp>
+#include <dsp/AY8910Chip.hpp>
+#include <dsp/MorphOscillator.hpp>
+#include <dsp/RosslerMap.hpp>
+#include <dsp/EnvelopeLoopPulse.hpp>
 #include "PerformanceBluffSignal.hpp"
 #include "PerformanceSpectralObject.hpp"
 #include "PerformanceHarmonyStars.hpp"
@@ -103,6 +107,31 @@ inline constexpr std::array<PerformanceModuleBody, 28> kPerformanceSkyStars{{
     PerformanceModuleBody::Bloom, PerformanceModuleBody::ThermalStatic, PerformanceModuleBody::Core,
     PerformanceModuleBody::Texture, PerformanceModuleBody::BassFallback}};
 
+// As estrelas trazidas do Studio em 6/11 (auditoria dos módulos, passo 2):
+// AY-8910, MORPH, RÖSSLER, ENVELOPE PULSE. Ficam fora de kPerformanceSkyStars
+// de propósito — o sorteio das 8 estrelas de cada seed (a ordem acima) não
+// muda, e as seeds da 0.2.0 continuam com o mesmo céu. Tocam pela BIBLIOTECA
+// e como convidadas do contraste.
+inline constexpr std::array<PerformanceModuleBody, 4> kPerformanceExtraStars{{
+    PerformanceModuleBody::AyChip, PerformanceModuleBody::Morph,
+    PerformanceModuleBody::Rossler, PerformanceModuleBody::EnvelopePulse}};
+// Todas as estrelas que o céu sabe tocar: as 28 do sorteio e as de fora.
+inline constexpr std::array<PerformanceModuleBody, 32> kPerformanceAllStars{{
+    PerformanceModuleBody::Acid, PerformanceModuleBody::Gendyn,
+    PerformanceModuleBody::Percussion, PerformanceModuleBody::FmFlute,
+    PerformanceModuleBody::Theremin, PerformanceModuleBody::Scat,
+    PerformanceModuleBody::Choir, PerformanceModuleBody::Vosim,
+    PerformanceModuleBody::Walsh, PerformanceModuleBody::HardSync,
+    PerformanceModuleBody::AtariPunk, PerformanceModuleBody::DejaVu,
+    PerformanceModuleBody::Atropelo, PerformanceModuleBody::Galo,
+    PerformanceModuleBody::Tuba, PerformanceModuleBody::Footnote, PerformanceModuleBody::Bluff,
+    PerformanceModuleBody::Spectral, PerformanceModuleBody::Sieve, PerformanceModuleBody::Polymeter,
+    PerformanceModuleBody::Hocket, PerformanceModuleBody::Rupture, PerformanceModuleBody::Harmonaig,
+    PerformanceModuleBody::Bloom, PerformanceModuleBody::ThermalStatic, PerformanceModuleBody::Core,
+    PerformanceModuleBody::Texture, PerformanceModuleBody::BassFallback,
+    PerformanceModuleBody::AyChip, PerformanceModuleBody::Morph,
+    PerformanceModuleBody::Rossler, PerformanceModuleBody::EnvelopePulse}};
+
 // A função musical de cada estrela, a mesma do catálogo
 // (PerformanceModuleLibrary): é ela que dá a cada corpo do primeiro
 // asterismo um lugar audível na figura.
@@ -116,6 +145,7 @@ inline constexpr PerformanceStarFunction performanceStarFunction(
     case PerformanceModuleBody::DejaVu:
     case PerformanceModuleBody::Spectral:
     case PerformanceModuleBody::ThermalStatic:
+    case PerformanceModuleBody::Rossler:
     case PerformanceModuleBody::Texture: return PerformanceStarFunction::Texture;
     case PerformanceModuleBody::Sieve:
     case PerformanceModuleBody::Polymeter:
@@ -220,6 +250,10 @@ inline constexpr std::string_view performanceStarLibraryId(PerformanceModuleBody
     case PerformanceModuleBody::Core: return "core";
     case PerformanceModuleBody::Texture: return "texture";
     case PerformanceModuleBody::BassFallback: return "bass-fallback";
+    case PerformanceModuleBody::AyChip: return "ay-8910";
+    case PerformanceModuleBody::Morph: return "morph";
+    case PerformanceModuleBody::Rossler: return "rossler";
+    case PerformanceModuleBody::EnvelopePulse: return "envelope-pulse";
     default: return {};
     }
 }
@@ -257,6 +291,10 @@ inline constexpr std::string_view performanceStarRole(PerformanceModuleBody body
     case PerformanceModuleBody::Core: return "voz de FM cruzado na frase do céu";
     case PerformanceModuleBody::Texture: return "cama de ruído colorido";
     case PerformanceModuleBody::BassFallback: return "baixo fraseado";
+    case PerformanceModuleBody::AyChip: return "chip de som de 8 bits: três tons, ruído e envelope";
+    case PerformanceModuleBody::Morph: return "oscilador que passa entre formas de onda";
+    case PerformanceModuleBody::Rossler: return "atrator caótico de Rössler, com erupções";
+    case PerformanceModuleBody::EnvelopePulse: return "pulso de envelope em laço";
     default: return {};
     }
 }
@@ -294,6 +332,10 @@ inline constexpr std::array<const char*, 3> performanceStarControlNames(
     case PerformanceModuleBody::Core: return {"FM", "RAZÃO", "DECAIM."};
     case PerformanceModuleBody::Texture: return {"COR", "FOCO", "MOVIMENTO"};
     case PerformanceModuleBody::BassFallback: return {"REGISTRO", "ATAQUE", "DURAÇÃO"};
+    case PerformanceModuleBody::AyChip: return {"ARPEJO", "RUÍDO", "ENVELOPE"};
+    case PerformanceModuleBody::Morph: return {"FORMA", "DERIVA", "DURAÇÃO"};
+    case PerformanceModuleBody::Rossler: return {"TAXA", "CAOS", "BRILHO"};
+    case PerformanceModuleBody::EnvelopePulse: return {"VELOCIDADE", "DECAIM.", "ALTURA"};
     default: return {"I", "II", "III"};
     }
 }
@@ -318,11 +360,11 @@ struct PerformanceSkyContext {
 
 class PerformanceSky {
 public:
-    static constexpr std::size_t kStarCount = kPerformanceSkyStars.size();
+    static constexpr std::size_t kStarCount = kPerformanceAllStars.size();
     // As máscaras por estrela (renderizada, atacou) têm 32 bits: até 16
     // estrelas cabiam em 16, e a 17ª (Bluff, 30/10) caía fora — sem ataque e
     // com o DSP avançando duas vezes na mesma amostra.
-    static_assert(kPerformanceSkyStars.size() <= 32U, "star masks are 32 bits");
+    static_assert(kPerformanceAllStars.size() <= 32U, "star masks are 32 bits");
     using StarControls = std::array<double, 3>;
 
     static constexpr bool available() noexcept {
@@ -334,8 +376,8 @@ public:
     }
 
     static constexpr std::size_t starIndex(PerformanceModuleBody body) noexcept {
-        for (std::size_t index = 0U; index < kPerformanceSkyStars.size(); ++index)
-            if (kPerformanceSkyStars[index] == body) return index;
+        for (std::size_t index = 0U; index < kPerformanceAllStars.size(); ++index)
+            if (kPerformanceAllStars[index] == body) return index;
         return kStarCount;
     }
     static constexpr bool isStar(PerformanceModuleBody body) noexcept {
@@ -844,8 +886,8 @@ private:
     // Os controles da estrela com a duração da sequência (só com contagens).
     StarControls shapedControls(std::size_t star) const noexcept {
         auto control = controls_[star];
-        if (counting_ && counts_[star] && shapesDuration(kPerformanceSkyStars[star]))
-            control[2] = std::clamp(control[2] * durationFactor(kPerformanceSkyStars[star]), 0.0, 1.0);
+        if (counting_ && counts_[star] && shapesDuration(kPerformanceAllStars[star]))
+            control[2] = std::clamp(control[2] * durationFactor(kPerformanceAllStars[star]), 0.0, 1.0);
         return control;
     }
     std::array<bool, kStarCount> sieve_{};
@@ -883,7 +925,7 @@ private:
     };
     bool controlGate() noexcept {
         const auto star = currentStar_;
-        if (performanceStarFunction(kPerformanceSkyStars[star]) == PerformanceStarFunction::Control) return true;
+        if (performanceStarFunction(kPerformanceAllStars[star]) == PerformanceStarFunction::Control) return true;
         if (activity_ < 1.0) {
             std::uint32_t h = static_cast<std::uint32_t>(star) * 0x9e3779b9U ^ (activityStep_[star]++ * 0x85ebca6bU);
             h ^= h >> 16U; h *= 0x7feb352dU; h ^= h >> 15U; h *= 0x846ca68bU; h ^= h >> 16U;
@@ -947,7 +989,11 @@ private:
         struct Range { std::array<std::uint8_t, 4> lengths; double minDensity; double maxDensity; };
         for (std::size_t star = 0U; star < kStarCount; ++star) {
             Range range{{{8, 12, 16, 16}}, 0.0, 0.0};
-            switch (kPerformanceSkyStars[star]) {
+            switch (kPerformanceAllStars[star]) {
+            case PerformanceModuleBody::AyChip: range = {{{8, 12, 16, 12}}, 0.30, 0.55}; break;
+            case PerformanceModuleBody::Morph: range = {{{7, 9, 11, 9}}, 0.20, 0.40}; break;
+            case PerformanceModuleBody::Rossler: range = {{{11, 13, 16, 13}}, 0.10, 0.20}; break;
+            case PerformanceModuleBody::EnvelopePulse: range = {{{8, 12, 16, 16}}, 0.30, 0.60}; break;
             case PerformanceModuleBody::Acid: range = {{{8, 12, 16, 12}}, 0.40, 0.70}; break;
             case PerformanceModuleBody::Percussion: range = {{{12, 16, 16, 12}}, 0.50, 0.75}; break;
             case PerformanceModuleBody::Gendyn: range = {{{5, 7, 9, 7}}, 0.25, 0.45}; break;
@@ -1074,6 +1120,14 @@ private:
     rasgo::MaracasVoice maracas_{};
     std::uint8_t drumKit_ = 0U;  // bits: 1 cowbell, 2 clap, 4 cymbal, 8 maracas
     rasgo::FmFluteVoice flute_{};
+    // As vozes do Studio de 6/11 (vendor/studio-dsp/src/dsp, PROVENANCE.md).
+    rasgo::AY8910Chip ay_{};
+    rasgo::MorphOscillator morph_{};
+    double morphEnv_ = 0.0, morphDecay_ = 0.999, morphHz_ = 220.0, morphDrift_ = 0.0;
+    rasgo::RosslerMap rossler_{};
+    rasgo::EnvelopeLoopPulse pulseLoop_{};
+    double pulseLoopRate_ = -1.0, pulseLoopDecay_ = -1.0;
+    int ayStep_ = 0;
     rasgo::ThereminVoice theremin_{};
     // A Tuba (30/10): banco modal grave excitado por sopro
     // (TubaBreathVoice.hpp, proveniência em PROVENIENCIA_TUBA_BREATH.md).
@@ -1146,6 +1200,10 @@ private:
         snare_.setSampleRate(sampleRate_);
         hat_.setSampleRate(sampleRate_);
         cowbell_.setSampleRate(sampleRate_);
+        ay_.setSampleRate(sampleRate_);
+        morph_.setSampleRate(sampleRate_);
+        rossler_.setSampleRate(sampleRate_);
+        pulseLoop_.setSampleRate(sampleRate_);
         clap_.setSampleRate(sampleRate_);
         cymbal_.setSampleRate(sampleRate_);
         maracas_.setSampleRate(sampleRate_);
@@ -1186,6 +1244,14 @@ private:
         kick_.setTuning(42.0 + static_cast<double>(v(120U) % 17U),
                         72.0 + static_cast<double>(v(108U) % 67U));
         snare_.setTone(145.0 + static_cast<double>(v(109U) % 83U));
+        // As vozes de 6/11: o timbre de partida pela seed.
+        ay_.setToneEnabled(0, true); ay_.setToneEnabled(1, true); ay_.setToneEnabled(2, (v(160U) & 1U) != 0U);
+        ay_.setVolume(0, 0.8f); ay_.setVolume(1, 0.55f); ay_.setVolume(2, 0.4f);
+        ay_.setEnvelopeShape(static_cast<rasgo::AY8910Chip::EnvelopeShape>(v(161U) % 4U));
+        morph_.setShape(static_cast<float>(v(162U) % 1000U) / 1000.0f);
+        rossler_.setParams(0.2, 0.2, 4.5 + static_cast<double>(v(163U) % 250U) / 100.0, 0.1);
+        rossler_.setInitial(0.5 + static_cast<double>(v(164U) % 100U) / 100.0, 1.0, 1.0);
+        pulseLoopRate_ = -1.0;
         // O kit da seed: cada peça com a sua chance, afinação e cauda.
         drumKit_ = static_cast<std::uint8_t>((v(140U) % 100U < 35U ? 1U : 0U) | (v(141U) % 100U < 45U ? 2U : 0U)
             | (v(142U) % 100U < 30U ? 4U : 0U) | (v(143U) % 100U < 45U ? 8U : 0U));
@@ -1399,6 +1465,71 @@ private:
                 markAttack(pitch);
             }
             return bass_.tick(control[1]) * holdGain;
+        case PerformanceModuleBody::AyChip: {
+            // O chip de 8 bits (AY-3-8910): três tons em arpejo (ARPEJO: da
+            // oitava à tríade aberta), o ruído do registrador (RUÍDO) e o
+            // envelope de hardware em laço (ENVELOPE: a sua velocidade).
+            if (starTick(circuitTick_)) {
+                static constexpr std::array<double, 4> steps{{1.0, 1.25, 1.5, 2.0}};
+                const double base = phrasePitch(std::clamp(frequency, 60.0, 900.0));
+                const auto span = 1 + static_cast<int>(std::lround(control[0] * 3.0));
+                ayStep_ = (ayStep_ + 1) % std::max(1, span);
+                ay_.setToneFrequency(0, base * steps[static_cast<std::size_t>(ayStep_)]);
+                ay_.setToneFrequency(1, base * 0.5);
+                ay_.setToneFrequency(2, base * 2.0);
+                markAttack(base);
+            }
+            const bool noise = control[1] > 0.35;
+            ay_.setNoiseEnabled(1, noise);
+            ay_.setNoiseFrequency(800.0 + control[1] * 9000.0);
+            ay_.useEnvelope(0, true);
+            ay_.setEnvelopeFrequency(0.5 + control[2] * 11.5);
+            return static_cast<double>(ay_.tick()) * 0.55 * holdGain;
+        }
+        case PerformanceModuleBody::Morph: {
+            // Um tom que passa entre seno, triângulo, serra e quadrada
+            // (FORMA), com a forma andando sozinha (DERIVA); cada frase
+            // reacende o envelope, de 0,1 a 1,8 s (DURAÇÃO).
+            if (starTick(phraseTick_)) {
+                morphHz_ = phrasePitch(std::clamp(frequency, 40.0, 1400.0));
+                morph_.setFrequency(morphHz_);
+                morphEnv_ = 1.0;
+                morphDecay_ = std::exp(-1.0 / (sampleRate_ * (0.1 + control[2] * 1.7)));
+                markAttack(morphHz_);
+            }
+            morphDrift_ += (0.05 + control[1] * 0.6) / sampleRate_;
+            if (morphDrift_ >= 1.0) morphDrift_ -= 1.0;
+            const double drift = control[1] * 0.35 * std::sin(morphDrift_ * 6.283185307179586);
+            morph_.setShape(static_cast<float>(std::clamp(control[0] + drift, 0.0, 1.0)));
+            morphEnv_ *= morphDecay_;
+            return static_cast<double>(morph_.tick()) * morphEnv_ * 0.6 * holdGain;
+        }
+        case PerformanceModuleBody::Rossler: {
+            // O atrator de Rössler como fonte: TAXA é a velocidade do passeio
+            // (o tom do ruído caótico), CAOS o parâmetro c (de órbita quase
+            // periódica a caos pleno), BRILHO o quanto do sinal passa; cada
+            // erupção do eixo z é um ataque.
+            rossler_.setRate(std::clamp(frequency * (0.25 + control[0] * 2.0), 20.0, 4000.0));
+            rossler_.setParams(0.2, 0.2, 3.5 + control[1] * 4.5, 0.1);
+            const double out = static_cast<double>(rossler_.tick());
+            if (rossler_.justErupted()) markAttack(frequency);
+            return std::tanh(out * (0.6 + control[2] * 1.4)) * 0.7 * holdGain;
+        }
+        case PerformanceModuleBody::EnvelopePulse: {
+            // Um pulso que se repete sozinho (o envelope em laço do Studio):
+            // VELOCIDADE do laço, DECAIM. de cada golpe, ALTURA do tom.
+            const double rate = 0.6 + control[0] * 7.4;
+            const double decay = 0.03 + control[1] * 0.5;
+            if (std::fabs(rate - pulseLoopRate_) > 0.05 || std::fabs(decay - pulseLoopDecay_) > 0.01) {
+                pulseLoopRate_ = rate;
+                pulseLoopDecay_ = decay;
+                pulseLoop_.configure(std::max(0.002, 1.0 / rate - decay) * 0.08, std::min(decay, 0.95 / rate));
+            }
+            pulseLoop_.setFrequency(std::clamp(frequency * (0.5 + control[2] * 3.5), 40.0, 3000.0));
+            const double out = static_cast<double>(pulseLoop_.tick());
+            if (pulseLoop_.justPulsed()) markAttack(frequency);
+            return out * 0.8 * holdGain;
+        }
         case PerformanceModuleBody::Sieve:
             // Peneira (Xenakis, "Sieves", 1990): (A, 0) ∪ (B, R) sobre a
             // contagem de ataques de cada estrela.
@@ -1633,6 +1764,14 @@ private:
             break;
         case PerformanceModuleBody::BassFallback:
             bass_.trigger(pitch, control[0], 0.08 + control[2] * 0.9);
+            break;
+        case PerformanceModuleBody::AyChip:
+            ay_.setToneFrequency(0, std::clamp(pitch, 60.0, 1800.0));
+            break;
+        case PerformanceModuleBody::Morph:
+            morphHz_ = std::clamp(pitch, 40.0, 1400.0);
+            morph_.setFrequency(morphHz_);
+            morphEnv_ = std::max(morphEnv_, 0.4 + strength * 0.6);
             break;
         case PerformanceModuleBody::Bloom:
             bloom_.step(std::clamp(pitch, 50.0, 880.0), control[0], std::round(control[1] * 2.0) - 1.0);
