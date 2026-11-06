@@ -16,6 +16,7 @@ o selo "em preparação" e nenhum link de download.
 
 import html
 import pathlib
+import sys
 
 AQUI = pathlib.Path(__file__).parent
 PORTAL = "https://rasgoinstruments.arquiviagem.net/"
@@ -25,6 +26,11 @@ BLOB = REPO + "/blob/main"
 # os nomes são os do CPack (CPACK_PACKAGE_NAME) — conferir na primeira release
 VERSAO = "0.2.0"
 PUBLICADO = True
+# LEARN (7/11/2026): as fichas das estrelas descrevem a 0.3 (36 estrelas, o
+# kit e o groove da DRUMS…). Enquanto o site for o da 0.2.0, as páginas não
+# são escritas em website/ nem entram no menu; `--previa-learn DIR` as gera
+# para leitura local. Na release 0.3: LEARN_PUBLICO = True.
+LEARN_PUBLICO = False
 RELEASE = REPO + "/releases/tag/v" + VERSAO
 DL = REPO + "/releases/download/v" + VERSAO + "/"
 PACOTES = [
@@ -389,7 +395,7 @@ def pagina(arquivo, lang):
 # O menu e as páginas Tutorial e Instalação seguem o site do Aquorbium
 # (lucioaraujo/aquorbium, website/): tutorial.html, tutorial-en.html…
 
-TIPOS = {"sobre": "", "tutorial": "tutorial", "instalacao": "instalacao"}
+TIPOS = {"sobre": "", "tutorial": "tutorial", "learn": "learn", "instalacao": "instalacao"}
 SUFIXO = {"pt-BR": "", "en": "-en", "fr": "-fr", "es": "-es"}
 INDICE = {"pt-BR": "index.html", "en": "en.html", "fr": "fr.html", "es": "es.html"}
 
@@ -408,18 +414,27 @@ MENU = {
 }
 
 
+def menu(lang, com_learn):
+    itens = list(MENU[lang])
+    if com_learn:
+        itens.insert(2, ("learn", "LEARN"))
+    return itens
+
+
 def icones():
     return ('<link rel="icon" href="assets/identity/asterismus-favicon.svg" type="image/svg+xml" />\n'
             '<link rel="icon" href="assets/identity/favicon-32.png" sizes="32x32" type="image/png" />\n'
             '<link rel="apple-touch-icon" href="assets/identity/apple-touch-icon.png" />\n')
 
 
-def cabecalho(lang, atual):
+def cabecalho(lang, atual, com_learn=None):
+    if com_learn is None:
+        com_learn = LEARN_PUBLICO
     t = T[lang]
     e = lambda s: html.escape(s, quote=False)
     a = lambda s: html.escape(s, quote=True)
     itens = []
-    for alvo, rotulo in MENU[lang]:
+    for alvo, rotulo in menu(lang, com_learn):
         if alvo.startswith("#"):
             href = INDICE[lang] + alvo
             cur = ""
@@ -509,6 +524,7 @@ def secao_studio(lang):
 
 TITULOS = {
     "tutorial": {"pt-BR": "Tutorial", "en": "Tutorial", "fr": "Tutoriel", "es": "Tutorial"},
+    "learn": {"pt-BR": "LEARN · as estrelas", "en": "LEARN · the stars", "fr": "LEARN · les étoiles", "es": "LEARN · las estrellas"},
     "instalacao": {"pt-BR": "Instalação", "en": "Installation", "fr": "Installation", "es": "Instalación"},
 }
 INTRO_TUTORIAL = {
@@ -534,6 +550,53 @@ def corpo_tutorial(lang):
         blocos.append('  <article class="tutorial-part">\n    <h3>%s</h3>\n    %s\n  </article>' % (
             e(titulo), "".join("<p>%s</p>" % e(l) for l in resto.split("\n") if l.strip())))
     return '<p class="lead">%s</p>\n<div class="tutorial">\n%s\n</div>' % (e(INTRO_TUTORIAL[lang]), "\n".join(blocos))
+
+
+INTRO_LEARN = {
+    "pt-BR": "A mesma ficha que abre no app (BIBLIOTECA → LEARN), para cada estrela: o que é, como funciona, os três controles, o que ouvir e de onde vem.",
+    "en": "The same fiche the app opens (LIBRARY → LEARN), for every star: what it is, how it works, the three controls, what to listen for and where it comes from.",
+    "fr": "La même fiche que l'app ouvre (BIBLIOTHÈQUE → LEARN), pour chaque étoile : ce qu'elle est, comment elle marche, les trois contrôles, quoi écouter et d'où elle vient.",
+    "es": "La misma ficha que abre la app (BIBLIOTECA → LEARN), para cada estrella: qué es, cómo funciona, los tres controles, qué escuchar y de dónde viene.",
+}
+ROTULOS_LEARN = {
+    "pt-BR": ("Como funciona", "Os controles", "Para ouvir", "De onde vem"),
+    "en": ("How it works", "The controls", "Listen for", "Where it comes from"),
+    "fr": ("Comment elle marche", "Les contrôles", "À écouter", "D'où elle vient"),
+    "es": ("Cómo funciona", "Los controles", "Para escuchar", "De dónde viene"),
+}
+ORDEM_FAMILIAS = ["Tone", "Texture", "Voice", "Pulse", "Control"]
+
+
+# O JSON vem de tools/extrair_learn.py: em website/ só na release 0.3; a
+# prévia o lê da própria pasta.
+LEARN_JSON = AQUI / "learn_textos.json"
+
+
+def corpo_learn(lang):
+    import json
+    dados = json.loads(LEARN_JSON.read_text(encoding="utf-8"))
+    k = CHAVE_TUTORIAL[lang]
+    e = lambda s: html.escape(s, quote=False)
+    rot = ROTULOS_LEARN[lang]
+    indice, blocos = [], []
+    for familia in ORDEM_FAMILIAS:
+        fichas = [f for f in dados["fichas"] if f["familia"] == familia]
+        if not fichas:
+            continue
+        nome_familia = dados["familias"][familia][k]
+        indice.append("<p><b>%s</b> · %s</p>" % (e(nome_familia), " · ".join(
+            '<a href="#%s">%s</a>' % (f["corpo"].lower(), e(f["nome"])) for f in fichas)))
+        for f in fichas:
+            controles = "".join("<p><b>%s</b> — %s</p>" % (e(n[k]), e(c[k]))
+                                for n, c in zip(f["nomes_controles"], f["controles"]))
+            blocos.append(
+                '  <article class="tutorial-part" id="%s">\n    <h3>%s · %s</h3>\n    <p>%s</p>\n'
+                '    <h3>%s</h3><p>%s</p>\n    <h3>%s</h3>%s\n    <h3>%s</h3><p>%s</p>\n    <h3>%s</h3><p>%s</p>\n  </article>' % (
+                    f["corpo"].lower(), e(f["nome"]), e(nome_familia), e(f["rapido"][k]),
+                    e(rot[0]), e(f["como"][k]), e(rot[1]), controles,
+                    e(rot[2]), e(f["ouvir"][k]), e(rot[3]), e(f["origem"][k])))
+    return '<p class="lead">%s</p>\n%s\n<div class="tutorial">\n%s\n</div>' % (
+        e(INTRO_LEARN[lang]), "\n".join(indice), "\n".join(blocos))
 
 
 INSTALACAO = {
@@ -603,12 +666,13 @@ def corpo_instalacao(lang):
 </div>"""
 
 
-def pagina_interna(tipo, lang):
+def pagina_interna(tipo, lang, com_learn=None):
     t = T[lang]
     e = lambda s: html.escape(s, quote=False)
     a = lambda s: html.escape(s, quote=True)
     titulo = TITULOS[tipo][lang]
-    corpo = corpo_tutorial(lang) if tipo == "tutorial" else corpo_instalacao(lang)
+    corpo = (corpo_tutorial(lang) if tipo == "tutorial" else corpo_learn(lang) if tipo == "learn"
+             else corpo_instalacao(lang))
     return f"""<!doctype html>
 <html lang="{lang}">
 <head>
@@ -620,7 +684,7 @@ def pagina_interna(tipo, lang):
 <script src="assets/contact.js" defer></script>
 </head>
 <body>
-{cabecalho(lang, tipo)}
+{cabecalho(lang, tipo, com_learn)}
 <main id="conteudo">
 <section class="section page-section">
   <h1 class="page-title">{e(titulo)}</h1>
@@ -631,10 +695,28 @@ def pagina_interna(tipo, lang):
 {rodape(lang)}"""
 
 
+def previa_learn(destino):
+    # A prévia do LEARN, fora de website/: as páginas LEARN (com o menu que
+    # terão), mais os estilos e os assets para abrir no navegador.
+    import shutil
+    global LEARN_JSON
+    destino = pathlib.Path(destino)
+    LEARN_JSON = destino / "learn_textos.json"
+    destino.mkdir(parents=True, exist_ok=True)
+    shutil.copy(AQUI / "styles.css", destino / "styles.css")
+    shutil.copytree(AQUI / "assets", destino / "assets", dirs_exist_ok=True)
+    for _, lang, _ in PAGINAS:
+        (destino / arquivo_de("learn", lang)).write_text(pagina_interna("learn", lang, True), encoding="utf-8")
+    print("gerar_paginas.py: prévia do LEARN em %s" % destino)
+
+
 def main():
+    if len(sys.argv) == 3 and sys.argv[1] == "--previa-learn":
+        previa_learn(sys.argv[2])
+        return
     for arquivo, lang, _ in PAGINAS:
         (AQUI / arquivo).write_text(pagina(arquivo, lang), encoding="utf-8")
-        for tipo in ("tutorial", "instalacao"):
+        for tipo in ("tutorial", "learn", "instalacao") if LEARN_PUBLICO else ("tutorial", "instalacao"):
             (AQUI / arquivo_de(tipo, lang)).write_text(pagina_interna(tipo, lang), encoding="utf-8")
     print("gerar_paginas.py: %d páginas%s" % (len(PAGINAS), "" if PUBLICADO else " (em preparação, noindex)"))
 

@@ -4157,6 +4157,7 @@ private:
         case PerformanceModuleBody::Acid: return "ACID";
         case PerformanceModuleBody::Gendyn: return "GENDYN";
         case PerformanceModuleBody::Percussion: return "DRUMS";
+        case PerformanceModuleBody::ModalResonator: return "MODAL";
         case PerformanceModuleBody::FmFlute: return "FM FLUTE";
         case PerformanceModuleBody::Theremin: return "THEREMIN";
         case PerformanceModuleBody::Scat: return "SCAT";

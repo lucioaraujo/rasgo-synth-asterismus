@@ -17,6 +17,11 @@ o selo da versão e os links de download do release. O workflow
    (da raiz do projeto). O site da 0.2.0 usa esse texto sem o que só existe
    na 0.3 (as 36 estrelas, CORTE · RES. · ECO · SALA, os cortes e a fita) —
    na release 0.3, extrair de novo, inteiro.
+   O LEARN (as fichas das estrelas, 0.3) fica fora do site até a release:
+   prévia com `python3 tools/extrair_learn.py > .local-build/previa-learn/learn_textos.json`
+   e `python3 website/gerar_paginas.py --previa-learn .local-build/previa-learn`.
+   Na release 0.3: `python3 tools/extrair_learn.py > website/learn_textos.json`
+   e `LEARN_PUBLICO = True` no `gerar_paginas.py` (a página entra no menu).
 4. Gerar: `python3 gerar_paginas.py && python3 seo.py`.
 5. Ativar o GitHub Pages no repositório (Settings → Pages → GitHub Actions) —
    decisão e ação do autor.
