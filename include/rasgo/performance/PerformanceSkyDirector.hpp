@@ -171,6 +171,14 @@ public:
         static constexpr std::array<int, 9> kContrastRegions{{5, 7, -3, 4, -4, 6, -5, 2, 3}};
         static constexpr std::array<int, 6> kDevelopmentRegions{{0, 0, 0, 2, -2, 5}};
         contrastRegion_ = kContrastRegions[performanceSeedStream(seed, 0xF300U) % kContrastRegions.size()];
+        // A progressão (6/11): a seed escolhe o ritmo harmônico (2–4
+        // compassos), a preferência entre P, L e R, e o modo do contraste.
+        harmonicRhythm_ = 2U + performanceSeedStream(seed, 0xF302U) % 3U;
+        plrBias_ = performanceSeedStream(seed, 0xF303U);
+        contrastMode_ = static_cast<int>(performanceSeedStream(seed, 0xF304U) % kRegionModes.size());
+        triadRoot_ = 0;
+        triadMajor_ = true;
+        harmonicBar_ = 0U;
         developmentRegion_ = kDevelopmentRegions[performanceSeedStream(seed, 0xF301U) % kDevelopmentRegions.size()];
         chooseSeedMotion();
         chooseDensityGenes();
@@ -205,14 +213,41 @@ public:
     double activityLow() const noexcept { return activityLow_; }
 
     // A região harmônica da parte que soa, em semitons sobre a raiz da seed.
+    // Desde 6/11 (0.3), o centro anda por progressões neo-riemannianas: a
+    // raiz da tríade em curso, em semitons sobre a raiz da seed (−5 a +6).
     double regionSemitones() const noexcept {
         if (influence_ <= 0.0) return 0.0;
-        switch (section_) {
-        case Section::Contrast: return static_cast<double>(contrastRegion_);
-        case Section::Development: return static_cast<double>(developmentRegion_);
-        default: return 0.0;
-        }
+        if (section_ != Section::Contrast && section_ != Section::Development) return 0.0;
+        const int root = ((triadRoot_ % 12) + 12) % 12;
+        return static_cast<double>(root > 6 ? root - 12 : root);
     }
+    // O modo do contraste (6/11): índice em kRegionModes, ou −1 (a escala de
+    // casa da seed). Fora do contraste, sempre a escala de casa.
+    int regionMode() const noexcept {
+        return influence_ > 0.0 && section_ == Section::Contrast ? contrastMode_ : -1;
+    }
+    // Os modos de contraste: o repertório do Rasgo Synth Studio
+    // (rasgo-synth-core/src/sequencer/Scales.hpp, mesmo autor, GPLv3 —
+    // teoria musical, os graus de cada modo), no formato de 8 graus do
+    // Asterismus (pentatônicas completadas na oitava de cima).
+    static constexpr std::array<std::array<int, 8>, 16> kRegionModes{{
+        {{0, 2, 4, 6, 7, 9, 11, 12}},   // lídio
+        {{0, 1, 3, 5, 7, 8, 10, 12}},   // frígio
+        {{0, 2, 4, 5, 7, 9, 10, 12}},   // mixolídio
+        {{0, 2, 3, 5, 7, 8, 10, 12}},   // eólio
+        {{0, 2, 4, 5, 7, 9, 11, 12}},   // jônio
+        {{0, 2, 3, 5, 7, 8, 11, 12}},   // menor harmônica
+        {{0, 2, 3, 5, 7, 9, 11, 12}},   // menor melódica
+        {{0, 1, 4, 5, 7, 8, 10, 12}},   // frígio dominante
+        {{0, 2, 4, 6, 7, 9, 10, 12}},   // lídio dominante
+        {{0, 1, 4, 5, 7, 8, 11, 12}},   // bizantino
+        {{0, 2, 4, 6, 8, 9, 11, 12}},   // lídio aumentado
+        {{0, 1, 3, 5, 6, 8, 10, 12}},   // lócrio
+        {{0, 3, 5, 7, 10, 12, 15, 17}}, // pentatônica menor
+        {{0, 2, 4, 7, 9, 12, 14, 16}},  // pentatônica maior
+        {{0, 2, 5, 7, 9, 12, 14, 17}},  // ritusen
+        {{0, 3, 5, 6, 7, 10, 12, 15}},  // blues
+    }};
     static const char* grammarName(std::uint8_t grammar) noexcept {
         static constexpr std::array<const char*, 6> names{{"ciclo", "arco", "rondo", "ondas", "kishotenketsu", "choque"}};
         return grammar < names.size() ? names[grammar] : "ciclo";
@@ -723,6 +758,7 @@ public:
         if (barTurn) {
             advanceForm();
             checkSkyGesture();
+            advanceHarmony();
         }
         if (mixerVariation_) {
             if (barTurn || !brightnessReady_) danceBrightness(barTurn);
@@ -1009,6 +1045,51 @@ private:
     SkyGesture pendingGesture_{};
     std::uint32_t skyGestures_ = 0U;
     int contrastRegion_ = 0;
+    // A progressão neo-riemanniana (6/11): a tríade em curso (raiz relativa
+    // à raiz da seed e qualidade), o ritmo harmônico e a preferência P/L/R.
+    int triadRoot_ = 0;
+    bool triadMajor_ = true;
+    std::uint32_t harmonicRhythm_ = 3U, harmonicBar_ = 0U, plrBias_ = 0U;
+    int contrastMode_ = -1;
+    // Ao entrar numa parte: a abertura e o retorno na tônica; o contraste
+    // salta para a sua região (o salto de 5/11) e de lá caminha; o
+    // desenvolvimento parte de onde a harmonia está (ou da sua vizinha).
+    void enterHarmonicSection() noexcept {
+        harmonicBar_ = 0U;
+        if (section_ == Section::Contrast) {
+            triadRoot_ = contrastRegion_;
+            triadMajor_ = !triadMajor_;
+        } else if (section_ == Section::Development) {
+            if (triadRoot_ == 0) triadRoot_ = developmentRegion_;
+        } else {
+            triadRoot_ = 0;
+            triadMajor_ = true;
+        }
+    }
+    // A cada `harmonicRhythm_` compassos, no desenvolvimento e no contraste,
+    // um passo P, L ou R (Cohn, Lewin; a mesma regra do NeoRiemannian.hpp
+    // do Studio): P troca a qualidade; L leva a maior à menor uma terça maior
+    // acima (e volta); R à relativa (uma terça menor abaixo, e volta). Cada
+    // passo muda uma só nota da tríade — a condução mais econômica.
+    void advanceHarmony() noexcept {
+        if (influence_ <= 0.0 || (section_ != Section::Development && section_ != Section::Contrast)) return;
+        if (++harmonicBar_ % harmonicRhythm_ != 0U) return;
+        const auto word = performanceSeedStream(plrBias_ ^ (sectionOrdinal_ * 0x9E3779B9U)
+                                                ^ (harmonicBar_ * 0x85EBCA6BU), 0xF400U);
+        // a preferência da seed: pesos de P, L, R
+        const auto wp = 1U + (plrBias_ & 3U), wl = 1U + ((plrBias_ >> 2U) & 3U), wr = 1U + ((plrBias_ >> 4U) & 3U);
+        const auto pick = word % (wp + wl + wr);
+        if (pick < wp) {
+            triadMajor_ = !triadMajor_;
+        } else if (pick < wp + wl) {
+            triadRoot_ += triadMajor_ ? 4 : -4;
+            triadMajor_ = !triadMajor_;
+        } else {
+            triadRoot_ += triadMajor_ ? 9 : -9;
+            triadMajor_ = !triadMajor_;
+        }
+        triadRoot_ = ((triadRoot_ % 12) + 12) % 12;
+    }
     int developmentRegion_ = 0;
     std::uint8_t formStep_ = 0U;
     std::uint32_t formPass_ = 0U;
@@ -1404,6 +1485,7 @@ private:
         const auto previousCharacter = character_;
         stepCharacter();
         planSkyGestures();
+        enterHarmonicSection();
         // A liderança que gira: quem levou a energia da parte que acabou recua
         // na proporção do salto; no retorno, o líder da abertura volta.
         if (section_ == Section::Development && sectionOrdinal_ == 1U) openingLeader_ = previousLeader;

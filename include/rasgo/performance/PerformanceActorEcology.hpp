@@ -2285,6 +2285,10 @@ private:
         {{0, 2, 4, 6, 8, 10, 12, 14}} // whole tone
     }};
     const std::array<int, 8>& seedScale() const noexcept {
+        // No contraste, o modo do contraste (6/11, 0.3); fora dele, a escala
+        // de casa da seed, a mesma da 0.2.0.
+        const int mode = director_.regionMode();
+        if (mode >= 0) return PerformanceSkyDirector::kRegionModes[static_cast<std::size_t>(mode)];
         return kSeedScales[static_cast<std::size_t>((composition_.harmonicDialect
             + (performanceSeedStream(seed_, 0xA11AU) % kSeedScales.size())) % kSeedScales.size())];
     }

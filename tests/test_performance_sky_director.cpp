@@ -203,6 +203,37 @@ int main() {
         ok = expect(openingClean, "no sky gesture in the opening") && ok;
     }
 
+    // Progressões neo-riemannianas e modos de contraste (6/11, 0.3): no
+    // desenvolvimento e no contraste o centro anda por passos P/L/R (mais de
+    // uma região por parte); no contraste a escala vira um dos 16 modos.
+    {
+        std::size_t walked = 0U, moded = 0U;
+        for (std::uint32_t seed = 1U; seed <= 8U; ++seed) {
+            PerformanceSkyDirector director;
+            director.prepare(kRate);
+            director.setSeed(seed);
+            director.setMixerVariation(true);
+            auto bodies = opening();
+            std::array<bool, 12> seen{};
+            bool contrastMode = false;
+            for (std::uint64_t sample = 0U; sample < static_cast<std::uint64_t>(kRate * 120.0); ++sample) {
+                director.advance(bodies, 120.0);
+                const auto section = director.section();
+                if (section == PerformanceSkyDirector::Section::Development
+                    || section == PerformanceSkyDirector::Section::Contrast) {
+                    seen[static_cast<std::size_t>((static_cast<int>(director.regionSemitones()) + 12) % 12)] = true;
+                }
+                if (section == PerformanceSkyDirector::Section::Contrast && director.regionMode() >= 0) contrastMode = true;
+                if (section != PerformanceSkyDirector::Section::Contrast && director.regionMode() >= 0) contrastMode = false;
+            }
+            if (std::count(seen.begin(), seen.end(), true) >= 3) ++walked;
+            if (contrastMode) ++moded;
+        }
+        std::cout << "harmony: progressions in " << walked << " of 8 seeds, contrast modes in " << moded << "\n";
+        ok = expect(walked >= 6U, "the harmony walks through several regions (P/L/R)") && ok;
+        ok = expect(moded == 8U, "the contrast takes a mode of its own") && ok;
+    }
+
     // Regiões harmônicas (5/11, item D da auditoria da seed): o contraste
     // muda de região, a abertura e o retorno ficam na tônica.
     {
