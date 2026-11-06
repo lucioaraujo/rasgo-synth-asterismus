@@ -13,10 +13,14 @@ o selo da versão e os links de download do release. O workflow
    `gerar_paginas.py` (os de hoje são os nomes padrão do CPack).
 2. `PUBLICADO = True` no `gerar_paginas.py`; a versão fica em `VERSAO` no
    `gerar_paginas.py` e no `seo.py` (numa versão nova, mudar as duas).
-3. Gerar: `python3 gerar_paginas.py && python3 seo.py`.
-4. Ativar o GitHub Pages no repositório (Settings → Pages → GitHub Actions) —
+3. O tutorial é o do app: `python3 tools/extrair_tutorial.py src/app/PerformanceApp.cpp > website/tutorial_textos.json`
+   (da raiz do projeto). O site da 0.2.0 usa esse texto sem o que só existe
+   na 0.3 (as 36 estrelas, CORTE · RES. · ECO · SALA, os cortes e a fita) —
+   na release 0.3, extrair de novo, inteiro.
+4. Gerar: `python3 gerar_paginas.py && python3 seo.py`.
+5. Ativar o GitHub Pages no repositório (Settings → Pages → GitHub Actions) —
    decisão e ação do autor.
-5. No `deploy-site.yml`, devolver o gatilho `push` com `paths: website/**`
+6. No `deploy-site.yml`, devolver o gatilho `push` com `paths: website/**`
    (como no Trioio), ou disparar à mão uma vez.
 
 ## Como gerar

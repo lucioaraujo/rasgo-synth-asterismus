@@ -166,29 +166,29 @@ juce::String aboutCopy(SupportLanguage language) {
     case SupportLanguage::English:
         return utf8("Generative instrument for composition and performance.\n\n"
                     "Version " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
-                    "Concept, artistic direction, music and RASGO identity\nLucio Araújo\n\n"
-                    "Original code: GNU GPLv3\nHost: JUCE 9 under AGPLv3\n"
+                    "Concept, artistic direction, music and RASGO identity\nLúcio de Araújo\n\n"
+                    "Original code: GNU GPL-3.0-or-later\nHost: JUCE 9 under AGPLv3\n"
                     "Typefaces: Big Shoulders Display and IBM Plex Mono · SIL OFL 1.1\n\n"
                     "Full credits and provenance: THIRD_PARTY_NOTICES.md");
     case SupportLanguage::French:
         return utf8("Instrument génératif pour la composition et la performance.\n\n"
                     "Version " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
-                    "Conception, direction artistique, musique et identité RASGO\nLucio Araújo\n\n"
-                    "Code original : GNU GPLv3\nHôte : JUCE 9 sous AGPLv3\n"
+                    "Conception, direction artistique, musique et identité RASGO\nLúcio de Araújo\n\n"
+                    "Code original : GNU GPL-3.0 ou ultérieure\nHôte : JUCE 9 sous AGPLv3\n"
                     "Typographies : Big Shoulders Display et IBM Plex Mono · SIL OFL 1.1\n\n"
                     "Crédits et provenance : THIRD_PARTY_NOTICES.md");
     case SupportLanguage::Spanish:
         return utf8("Instrumento generativo para composición y performance.\n\n"
                     "Versión " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
-                    "Concepción, dirección artística, música e identidad RASGO\nLucio Araújo\n\n"
-                    "Código original: GNU GPLv3\nHost: JUCE 9 bajo AGPLv3\n"
+                    "Concepción, dirección artística, música e identidad RASGO\nLúcio de Araújo\n\n"
+                    "Código original: GNU GPL-3.0 o posterior\nHost: JUCE 9 bajo AGPLv3\n"
                     "Tipografías: Big Shoulders Display e IBM Plex Mono · SIL OFL 1.1\n\n"
                     "Créditos y procedencia: THIRD_PARTY_NOTICES.md");
     default:
         return utf8("Instrumento generativo para composição e performance.\n\n"
                     "Versão " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
-                    "Concepção, direção artística, música e identidade RASGO\nLucio Araújo\n\n"
-                    "Código autoral: GNU GPLv3\nHost: JUCE 9 pela via AGPLv3\n"
+                    "Concepção, direção artística, música e identidade RASGO\nLúcio de Araújo\n\n"
+                    "Código autoral: GNU GPL-3.0 ou posterior\nHost: JUCE 9 pela via AGPLv3\n"
                     "Tipografia: Big Shoulders Display e IBM Plex Mono · SIL OFL 1.1\n\n"
                     "Créditos e proveniência completos: THIRD_PARTY_NOTICES.md");
     }
@@ -3157,6 +3157,20 @@ private:
         // TEMPO SHIFT virou DESLOCAR (3/11, R2): é um recorte que desloca o
         // pulso e a fase do stem; o andamento não muda.
         gestureButtons_[5].setButtonText(uiText(supportLanguage_, "DESLOCAR", "DISPLACE", "DÉCALER", "DESPLAZAR"));
+        gestureButtons_[0].setTooltip(uiText(supportLanguage_,
+            "Q · HOLD congela o pulso e concentra a matéria; Q outra vez libera.",
+            "Q · HOLD freezes the pulse and gathers the material; Q again releases it.",
+            "Q · HOLD fige la pulsation et concentre la matière ; Q à nouveau la libère.",
+            "Q · HOLD congela el pulso y concentra la materia; Q otra vez lo libera."));
+        gestureButtons_[4].setTooltip(uiText(supportLanguage_,
+            "S · recorta e reitera uma janela rítmica curta em ", "S · cuts and repeats a short rhythmic window in ",
+            "S · découpe et répète une courte fenêtre rythmique dans ", "S · recorta y repite una ventana rítmica corta en ")
+            + target + uiText(supportLanguage_, "; o Campo não muda.", "; the Field stays.", " ; le Champ ne change pas.", "; el Campo no cambia."));
+        gestureButtons_[6].setTooltip(uiText(supportLanguage_,
+            "P · ativa PANIC SAFE; pressione outra vez para RESET SAFE.",
+            "P · switches PANIC SAFE on; press again for RESET SAFE.",
+            "P · active PANIC SAFE ; appuyez à nouveau pour RESET SAFE.",
+            "P · activa PANIC SAFE; pulse otra vez para RESET SAFE."));
         gestureButtons_[5].setTooltip(uiText(supportLanguage_,
             "D · desloca por um momento o pulso e a fase de ", "D · briefly displaces the pulse and phase of ",
             "D · décale un moment la pulsation et la phase de ", "D · desplaza un momento el pulso y la fase de ")
@@ -6232,10 +6246,11 @@ private:
         return utf8("\n\n") + uiText(supportLanguage_, "Biblioteca: ", "Library: ", "Bibliothèque : ", "Biblioteca: ")
             + n(kPerformanceModuleLibrary.size())
             + uiText(supportLanguage_, " módulos — ", " modules — ", " modules — ", " módulos — ") + n(adapted)
-            + uiText(supportLanguage_, " estrelas tocáveis (a seed escolhe entre todas), ",
-                     " playable stars (the seed chooses among all), ",
-                     " étoiles jouables (la seed choisit parmi toutes), ",
-                     " estrellas tocables (la seed elige entre todas), ")
+            + uiText(supportLanguage_, " estrelas tocáveis (a seed sorteia entre ", " playable stars (the seed draws among ",
+                     " étoiles jouables (la seed tire parmi ", " estrellas tocables (la seed sortea entre ")
+            + n(kPerformanceSkyStars.size())
+            + uiText(supportLanguage_, "; as outras pela BIBLIOTECA), ", "; the others through the LIBRARY), ",
+                     " ; les autres par la BIBLIOTHÈQUE), ", "; las demás por la BIBLIOTECA), ")
             + n(candidates)
             + uiText(supportLanguage_, " com adaptador próprio (Modal), ", " with its own adapter (Modal), ",
                      " avec son propre adaptateur (Modal), ", " con adaptador propio (Modal), ")
@@ -6464,6 +6479,14 @@ private:
                          " min: REC starts at once; the sky's form fits the duration (opening, development, contrast, return) and the coda arrives at the end.",
                          " min : REC démarre aussitôt ; la forme du ciel s’ajuste à la durée (ouverture, développement, contraste, retour) et la coda arrive à la fin.",
                          " min: REC empieza ya; la forma del cielo se ajusta a la duración (apertura, desarrollo, contraste, retorno) y la coda llega al final."));
+        morphSlider_.setTooltip(uiText(l, "Duração do morph entre cenas · [ e ] ajustam 0,1 s.",
+            "Length of the morph between scenes · [ and ] adjust 0.1 s.",
+            "Durée du morph entre scènes · [ et ] règlent 0,1 s.",
+            "Duración del morph entre escenas · [ y ] ajustan 0,1 s."));
+        for (std::size_t control = 0U; control < walshControlSliders_.size(); ++control)
+            walshControlSliders_[control].setTooltip(optionalModuleDisplayName_
+                + uiText(l, " · controle contextual · ", " · contextual control · ", " · contrôle contextuel · ", " · control contextual · ")
+                + walshControlLabels_[control].getText());
         polyphonyLabelSeed_ = 0xFFFFFFFFU;  // o rótulo do POLIFONIA no idioma novo
         refreshPolyphonyLabel();
         stemFxSlot_ = 999U;  // CORTE · RES. · ECO · SALA e as dicas no idioma novo
