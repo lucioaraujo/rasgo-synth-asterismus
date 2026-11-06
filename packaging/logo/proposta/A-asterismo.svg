@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- A · ASTERISMO: a figura da Constelação — seis estrelas, a que lidera em âmbar com a sua órbita pontilhada -->
+  <ellipse cx="62" cy="36" rx="34" ry="13" fill="none" stroke="#d18a45" stroke-width="2" stroke-dasharray="1.5 5" stroke-linecap="round" opacity=".8" transform="rotate(-14 62 36)"/>
+  <g stroke="#6f9b8d" stroke-width="4" stroke-linecap="round">
+    <line x1="30" y1="44" x2="62" y2="34"/><line x1="62" y1="34" x2="86" y2="54"/>
+    <line x1="62" y1="34" x2="44" y2="80"/><line x1="86" y1="54" x2="80" y2="90"/><line x1="44" y1="80" x2="80" y2="90"/>
+  </g>
+  <g fill="#ece7d8"><circle cx="30" cy="44" r="7"/><circle cx="86" cy="54" r="7"/><circle cx="44" cy="80" r="7"/><circle cx="80" cy="90" r="7"/></g>
+  <circle cx="62" cy="34" r="11" fill="#d18a45"/>
+</svg>

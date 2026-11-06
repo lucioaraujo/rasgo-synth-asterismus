@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- C · MONOGRAMA: um asterismo em forma de A — as estrelas desenham a letra; o topo é a estrela que lidera -->
+  <g stroke="#6f9b8d" stroke-width="4" stroke-linecap="round">
+    <line x1="60" y1="18" x2="30" y2="100"/><line x1="60" y1="18" x2="90" y2="100"/>
+  </g>
+  <line x1="42" y1="68" x2="78" y2="68" stroke="#d18a45" stroke-width="5" stroke-linecap="round"/>
+  <g fill="#ece7d8"><circle cx="30" cy="100" r="7"/><circle cx="90" cy="100" r="7"/><circle cx="42" cy="68" r="6.5"/><circle cx="78" cy="68" r="6.5"/></g>
+  <circle cx="60" cy="18" r="10.5" fill="#d18a45"/>
+  <circle cx="60" cy="18" r="17" fill="none" stroke="#d18a45" stroke-width="1.6" stroke-dasharray="1.2 4.5" stroke-linecap="round" opacity=".8"/>
+</svg>

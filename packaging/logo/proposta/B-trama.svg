@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- B · A TRAMA: a constelação em linha fina e dois pares em foco acesos em âmbar, uma estrela com o rastro da física -->
+  <g stroke="#6f9b8d" stroke-width="2" stroke-linecap="round" opacity=".75">
+    <line x1="24" y1="40" x2="52" y2="26"/><line x1="52" y1="26" x2="94" y2="40"/>
+    <line x1="94" y1="40" x2="84" y2="86"/><line x1="84" y1="86" x2="40" y2="92"/><line x1="40" y1="92" x2="24" y2="40"/>
+  </g>
+  <g stroke="#d18a45" stroke-width="5" stroke-linecap="round">
+    <line x1="52" y1="26" x2="60" y2="62"/><line x1="60" y1="62" x2="84" y2="86"/>
+  </g>
+  <path d="M24 40 q-6 10 -2 22" fill="none" stroke="#ece7d8" stroke-width="2" stroke-dasharray="1 4" stroke-linecap="round" opacity=".7"/>
+  <g fill="#ece7d8"><circle cx="24" cy="40" r="6.5"/><circle cx="94" cy="40" r="6.5"/><circle cx="40" cy="92" r="6.5"/></g>
+  <g fill="#d18a45"><circle cx="52" cy="26" r="8"/><circle cx="84" cy="86" r="8"/></g>
+  <circle cx="60" cy="62" r="10" fill="#ece7d8" stroke="#d18a45" stroke-width="3"/>
+</svg>
