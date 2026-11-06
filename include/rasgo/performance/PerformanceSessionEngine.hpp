@@ -41,6 +41,8 @@ public:
         skyCuts_.prepare(sampleRate);
         for (auto& tape : tape_) tape.setSampleRate(sampleRate);
         surface_.prepare(sampleRate);
+        echo_.prepare(sampleRate);
+        hall_.prepare(sampleRate);
         tapeWet_ = 0.0;
         tapeStep_ = 1.0 / std::max(1.0, sampleRate * 2.0);
         prepared_ = true;
@@ -213,6 +215,10 @@ public:
     }
 
     PerformanceMorceauState morceauState() const noexcept { return morceau_.state(); }
+    // Os botões da estrela em foco (6/11): 0 CORTE, 1 RES., 2 ECO, 3 SALA.
+    void setStemEffect(std::size_t slot, std::size_t param, double value) noexcept {
+        ecology_.setStemEffect(slot, param, value);
+    }
     // O POLIFONIA do músico (6/11): −1 a +1 sobre a densidade da seed.
     void setPolyphonyBias(double bias) noexcept { ecology_.setPolyphonyBias(bias); }
     // A coda na proporção da faixa (5/11): o envelope do morceau e o gesto da
@@ -666,6 +672,9 @@ public:
                     panRight = std::clamp(finite(panRight + centre) ? panRight + centre : 0.0, -ceiling, ceiling);
                 }
                 for (std::size_t stem = 0U; stem < stems.actorCount; ++stem) {
+                    // os envios (6/11): ECO e SALA de cada estrela
+                    echoIn += stems.actors[stem].mono * ecology_.echoSend(stem);
+                    hallIn += stems.actors[stem].mono * ecology_.hallSend(stem);
                     stemActorIds[stem] = stems.actors[stem].actorId;
                     stemPeaks[stem] = std::max(stemPeaks[stem], std::fabs(stems.actors[stem].mono));
                     stemLayerMix[stem] = std::max(stemLayerMix[stem],
@@ -707,6 +716,35 @@ public:
             if (physicalPan) {
                 leftSample = finiteSample(panLeft * amplitude);
                 rightSample = finiteSample(panRight * amplitude);
+            }
+            // Os envios do céu (6/11): o eco (núcleo do Space do Modular, com
+            // o tempo preso ao andamento) e a sala (núcleo do Hall). As
+            // caudas seguem soando mesmo sem entrada.
+            {
+                const double bpm = std::clamp(session_.tempoBpm * ecology_.skyDirector().tempoFactor(), 30.0, 300.0);
+                echo_.set(60.0 / bpm * ecology_.echoDivision(), ecology_.echoFeedback(), 0.55, 0.35, 2);
+                // a sala só recalcula os ganhos quando a seed muda (as
+                // potências por linha pesavam por amostra)
+                if (ecology_.hallSize() != hallSizeSet_ || ecology_.hallDecay() != hallDecaySet_) {
+                    hallSizeSet_ = ecology_.hallSize();
+                    hallDecaySet_ = ecology_.hallDecay();
+                    hall_.set(hallSizeSet_, hallDecaySet_, 0.45);
+                }
+                float echoLeft = 0.0f, echoRight = 0.0f, hallLeft = 0.0f, hallRight = 0.0f;
+                echo_.process(static_cast<float>(finiteSample(echoIn * amplitude)), echoLeft, echoRight);
+                hall_.process(static_cast<float>(finiteSample(hallIn * amplitude)), hallLeft, hallRight);
+                // a largura dos envios segue o ESPAÇO (com ele em zero, o
+                // centro fica no centro — o contrato do campo estéreo)
+                const double width = clampUnit(session_.space + ecology_.spacePressure() * 0.62);
+                const double mid = 0.5 * ((0.55 * echoLeft + 0.5 * hallLeft) + (0.55 * echoRight + 0.5 * hallRight));
+                const double side = 0.5 * ((0.55 * echoLeft + 0.5 * hallLeft) - (0.55 * echoRight + 0.5 * hallRight)) * width;
+                // O SILÊNCIO e o fim do STOP calam também as caudas (o mesmo
+                // envelope que cala as estrelas, sem o ganho de saída).
+                const double tailGate = (1.0 - silence_) * boundaryGain;
+                leftSample += (mid + side) * tailGate;
+                if (channels_ == 2U) rightSample += (mid - side) * tailGate;
+                echoIn = 0.0;
+                hallIn = 0.0;
             }
             // O master (30/10): ganho fixo → MASTER → limitador → teto.
             // Parado e já no silêncio do STOP, a saída é zero exato: o master
@@ -859,6 +897,10 @@ private:
     PerformanceSkyCuts skyCuts_{};
     std::array<rasgo::TapeSaturator, 2> tape_{};
     PerformanceSurfaceNoise surface_{};
+    PerformanceEchoBus echo_{};
+    PerformanceHallBus hall_{};
+    double echoIn = 0.0, hallIn = 0.0;
+    double hallSizeSet_ = -1.0, hallDecaySet_ = -1.0;
     double tapeWet_ = 0.0, tapeStep_ = 1.0e-5;
     std::uint8_t lastSkyCut_ = 0U;
     std::uint32_t skyCutSerial_ = 0U;

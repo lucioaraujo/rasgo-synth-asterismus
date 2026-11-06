@@ -11,6 +11,7 @@
 #include "PerformanceSky.hpp"
 #include "PerformanceSkyDirector.hpp"
 #include "PerformanceStarLevels.hpp"
+#include "PerformanceStemEffects.hpp"
 #include "PerformanceStemFrame.hpp"
 #include "PerformanceSpatialGame.hpp"
 #include "PerformanceSeedTrajectory.hpp"
@@ -31,6 +32,7 @@ public:
                  std::uint32_t channels) noexcept {
         if (!sky_.prepare(sampleRate)) return false;
         director_.prepare(sampleRate);
+        for (auto& filter : stemFilters_) filter.prepare(sampleRate);
         sampleRate_ = sampleRate;
         fracturePrepared_ = fracture_.prepare(sampleRate, maximumBlockSize, channels);
 #if defined(RASGO_PERFORMANCE_WITH_MODAL_CORE)
@@ -283,6 +285,7 @@ public:
             collageTrajectory_.configure(seed);
             sky_.setSeed(seed);
             director_.setSeed(seed);
+            chooseStemEffects(seed);
             director_.setTonalCenter(440.0 * seedTonalScale()
                 * std::pow(2.0, (static_cast<double>(seedRootMidi()) - 69.0) / 12.0));
         }
@@ -434,6 +437,46 @@ public:
 
     CodaGesture codaGesture() const noexcept { return codaGesture_; }
     void setPolyphonyBias(double bias) noexcept { director_.setPolyphonyBias(bias); }
+    // Os envios de cada estrela (6/11): o gene da seed, o bônus da parte (o
+    // contraste manda mais ECO, o retorno mais SALA) e o botão do músico.
+    double echoSend(std::size_t slot) const noexcept {
+        if (slot >= stemSendEcho_.size()) return 0.0;
+        const double bonus = director_.influence() > 0.0
+            && director_.section() == PerformanceSkyDirector::Section::Contrast ? 0.15 : 0.0;
+        return std::clamp(stemSendEcho_[slot] + bonus + 0.5 * stemFx_[slot][2], 0.0, 1.0);
+    }
+    double hallSend(std::size_t slot) const noexcept {
+        if (slot >= stemSendHall_.size()) return 0.0;
+        const double bonus = director_.influence() > 0.0
+            && director_.section() == PerformanceSkyDirector::Section::Return ? 0.15 : 0.0;
+        return std::clamp(stemSendHall_[slot] + bonus + 0.5 * stemFx_[slot][3], 0.0, 1.0);
+    }
+    // Os botões da estrela em foco (6/11): 0 CORTE, 1 RES., 2 ECO, 3 SALA,
+    // de −1 a +1 (0 = a escolha da seed).
+    void setStemEffect(std::size_t slot, std::size_t param, double value) noexcept {
+        if (slot < stemFx_.size() && param < 4U && std::isfinite(value)) stemFx_[slot][param] = std::clamp(value, -1.0, 1.0);
+    }
+    // O que a seed escolheu para o filtro de cada estrela (para a interface).
+    PerformanceStemFilter::Type stemFilterType(std::size_t slot) const noexcept {
+        return slot < stemFilterType_.size() ? stemFilterType_[slot] : PerformanceStemFilter::Type::SvfLow;
+    }
+    bool stemFilterOn(std::size_t slot) const noexcept { return slot < stemFilterOn_.size() && stemFilterOn_[slot]; }
+    // O filtro que a seed escolhe para um corpo, sem tocar no áudio (para a
+    // interface mostrar): a mesma regra de chooseStemEffects.
+    static bool seedStemFilterOn(std::uint32_t seed, std::size_t slot) noexcept {
+        const auto base = 0xF170U + static_cast<std::uint32_t>(slot) * 16U;
+        return static_cast<double>(performanceSeedStream(seed, base) & 0xffffU) / 65535.0 < 0.7;
+    }
+    static PerformanceStemFilter::Type seedStemFilterType(std::uint32_t seed, std::size_t slot) noexcept {
+        const auto base = 0xF170U + static_cast<std::uint32_t>(slot) * 16U;
+        return static_cast<PerformanceStemFilter::Type>(
+            performanceSeedStream(seed, base + 1U) % static_cast<std::uint32_t>(PerformanceStemFilter::Type::Count));
+    }
+    double echoDivision() const noexcept { return echoDivision_; }
+    double echoFeedback() const noexcept { return echoFeedback_; }
+    double hallSize() const noexcept { return hallSize_; }
+    double hallDecay() const noexcept { return hallDecay_; }
+
     // O corte do céu pedido (6/11), para o motor: 0 = nenhum.
     std::uint8_t takeSkyCut(std::uint32_t& word) noexcept {
         const auto cut = pendingCut_;
@@ -1849,6 +1892,23 @@ public:
             // O nível de referência da estrela (PerformanceStarLevels.hpp):
             // nenhuma estrela 15 dB acima das outras. Guardado por voz e
             // recalculado só quando a estrela da voz muda (troca, recall).
+            // O filtro da estrela (6/11): o tipo, o corte, a ressonância e o
+            // caráter da seed, o corte abrindo com a energia da parte, e os
+            // botões CORTE e RES. do músico como deslocamento (0 = a seed).
+            if (stemFilterOn_[index] || stemFx_[index][0] != 0.0 || stemFx_[index][1] != 0.0) {
+                // A energia da parte abre o filtro: o passa-alta desce, os
+                // outros sobem. O filtro tinge (mistura 60–100 %), não apaga.
+                const double energy = director_.influence() > 0.0 ? director_.character().energy() : 0.5;
+                const double direction = stemFilterType_[index] == PerformanceStemFilter::Type::SvfHigh ? -1.0 : 1.0;
+                const double cutoff = stemFilterCut_[index] + direction * 0.18 * (energy - 0.5) + 0.5 * stemFx_[index][0];
+                const double resonance = stemFilterRes_[index] + 0.5 * stemFx_[index][1];
+                stemFilters_[index].set(stemFilterType_[index], std::clamp(cutoff, 0.04, 1.0),
+                                        std::clamp(resonance, 0.0, 1.0), stemFilterChar_[index]);
+                const double dry = stem.mono;
+                const double wet = stemFilters_[index].process(static_cast<float>(dry));
+                const double mix = stemFilterOn_[index] ? stemFilterMix_[index] : 1.0;
+                stem.mono = dry + (wet - dry) * mix;
+            }
             if (voice.levelTrimStar != voice.star) {
                 voice.levelTrimStar = voice.star;
                 voice.levelTrim = std::pow(10.0, performanceStarLevelTrimDb(voice.star) / 20.0);
@@ -2220,6 +2280,54 @@ private:
     std::uint32_t stutterRemainingSamples_ = 0U;
     std::uint32_t performerRecutHold_ = 0U;
     std::uint8_t pendingCut_ = 0U;
+    // Filtros e envios por estrela (6/11, PerformanceStemEffects.hpp).
+    std::array<PerformanceStemFilter, kVoiceCapacity> stemFilters_{};
+    std::array<PerformanceStemFilter::Type, kVoiceCapacity> stemFilterType_{};
+    std::array<double, kVoiceCapacity> stemFilterCut_{}, stemFilterRes_{}, stemFilterChar_{}, stemFilterMix_{};
+    std::array<bool, kVoiceCapacity> stemFilterOn_{};
+    std::array<double, kVoiceCapacity> stemSendEcho_{}, stemSendHall_{};
+    std::array<std::array<double, 4>, kVoiceCapacity> stemFx_{};
+    double echoDivision_ = 0.75, echoFeedback_ = 0.35, hallSize_ = 0.5, hallDecay_ = 0.5;
+    // A seed escolhe (6/11, "os filtros também podem ser submetidos às
+    // escolhas da seed"): em 7 de 10 estrelas um filtro, de um dos cinco
+    // tipos, com corte na faixa do tipo, ressonância 0–0,55, caráter 0–1 e
+    // mistura 60–100 %; os
+    // envios de cada estrela (ECO 0–0,45, SALA 0,05–0,5); e o eco do céu
+    // (a divisão em tempos do andamento do céu: colcheia pontuada, colcheia,
+    // semínima, semínima pontuada, tercina, semicolcheia — e a
+    // realimentação) e a sala (tamanho e decaimento).
+    void chooseStemEffects(std::uint32_t seed) noexcept {
+        const auto unit = [seed](std::uint32_t domain) {
+            return static_cast<double>(performanceSeedStream(seed, domain) & 0xffffU) / 65535.0;
+        };
+        for (std::size_t slot = 0U; slot < kVoiceCapacity; ++slot) {
+            const auto base = 0xF170U + static_cast<std::uint32_t>(slot) * 16U;
+            stemFilterOn_[slot] = unit(base) < 0.7;
+            stemFilterType_[slot] = static_cast<PerformanceStemFilter::Type>(
+                performanceSeedStream(seed, base + 1U) % static_cast<std::uint32_t>(PerformanceStemFilter::Type::Count));
+            // o corte numa faixa musical para cada tipo: o passa-baixa e o
+            // MATÉRIA acima de ~500 Hz, o passa-alta abaixo, banda e CMOS no
+            // meio (um passa-alta a 13 kHz apagava uma estrela grave inteira)
+            switch (stemFilterType_[slot]) {
+            case PerformanceStemFilter::Type::SvfHigh: stemFilterCut_[slot] = 0.18 + 0.3 * unit(base + 2U); break;
+            case PerformanceStemFilter::Type::SvfBand:
+            case PerformanceStemFilter::Type::Cmos: stemFilterCut_[slot] = 0.42 + 0.35 * unit(base + 2U); break;
+            default: stemFilterCut_[slot] = 0.5 + 0.45 * unit(base + 2U); break;
+            }
+            stemFilterMix_[slot] = 0.6 + 0.4 * unit(base + 8U);
+            stemFilterRes_[slot] = 0.55 * unit(base + 3U);
+            stemFilterChar_[slot] = unit(base + 4U);
+            stemSendEcho_[slot] = 0.45 * unit(base + 5U) * unit(base + 6U);
+            stemSendHall_[slot] = 0.05 + 0.45 * unit(base + 7U);
+            stemFx_[slot] = {};
+            stemFilters_[slot].reset();
+        }
+        static constexpr std::array<double, 6> divisions{{0.375, 0.5, 0.75, 1.0, 1.5, 0.25}};
+        echoDivision_ = divisions[performanceSeedStream(seed, 0xF1E0U) % divisions.size()];
+        echoFeedback_ = 0.2 + 0.45 * unit(0xF1E1U);
+        hallSize_ = 0.25 + 0.7 * unit(0xF1E2U);
+        hallDecay_ = 0.3 + 0.5 * unit(0xF1E3U);
+    }
     std::uint32_t pendingCutWord_ = 0U;
     std::uint16_t stutterTargetActorId_ = kInvalidActorId;
     double tempoShiftIntensity_ = 0.0;

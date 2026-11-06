@@ -4,6 +4,22 @@ What changed between the published versions of Rasgo Synth Asterismus. The
 development notes, in Portuguese, are in [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md)
 and [`docs/`](docs/).
 
+## 0.3.0 — in development (not released)
+
+- **More stars:** AY-8910, MORPH, RÖSSLER, ENVELOPE PULSE (Studio voices),
+  GRANULAR and TURING (rewritten from Studio concepts); they play from the
+  LIBRARY and as guests in the contrast — the eight stars a seed draws are
+  the same as in 0.2.0. The DRUMS kit (cowbell, clap, cymbal, maracas) comes
+  from the seed.
+- **Harmony:** neo-Riemannian progressions (P/L/R) and 16 contrast modes.
+- **The sky's cuts and tape:** PARENTHESIS, MONTAGE CUT, APOCRYPHAL,
+  DECIMATION, TAPE STOP, SPIN BACK and VARISPEED as sky gestures; a TAPE or
+  VINYL layer (saturation, wow, hiss, crackle) in the parts the seed picks.
+- **Filters and sends:** a filter on every star (SVF from Rasgo Modular, CMOS
+  and MATERIAL from Antitotem; type, cutoff, resonance and mix from the seed)
+  and two sends, ECHO (in tempo) and HALL; the focused star has CUT, RES.,
+  ECHO and HALL controls (centre = the seed).
+
 ## 0.2.0 — first public version (2026-11-06)
 
 The first public version of the Asterismus, a live instrument in which every

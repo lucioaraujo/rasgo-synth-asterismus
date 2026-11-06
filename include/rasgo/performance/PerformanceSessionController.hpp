@@ -390,6 +390,14 @@ public:
 
     // Variação do mixer, ligada ou desligada pelo músico (qualquer thread);
     // o áudio a aplica no começo do bloco seguinte.
+    // Os botões da estrela em foco (qualquer thread; 6/11): corpo 0–7,
+    // parâmetro 0 CORTE, 1 RES., 2 ECO, 3 SALA, valor −1 a +1.
+    void setStemEffect(std::size_t slot, std::size_t param, double value) noexcept {
+        if (slot < stemFx_.size() && param < 4U) stemFx_[slot][param].store(value, std::memory_order_release);
+    }
+    double stemEffect(std::size_t slot, std::size_t param) const noexcept {
+        return slot < stemFx_.size() && param < 4U ? stemFx_[slot][param].load(std::memory_order_acquire) : 0.0;
+    }
     // O POLIFONIA (qualquer thread; 6/11), −1 a +1.
     void setPolyphonyBias(double bias) noexcept { polyphonyBias_.store(bias, std::memory_order_release); }
     // A duração da próxima coda, em segundos (qualquer thread; 5/11).
@@ -416,6 +424,9 @@ public:
     void processBlock(float* left, float* right, std::uint32_t samples) noexcept {
         engine_.setMixerVariation(mixerVariation_.load(std::memory_order_acquire));
         engine_.setPolyphonyBias(polyphonyBias_.load(std::memory_order_acquire));
+        for (std::size_t slot = 0U; slot < stemFx_.size(); ++slot)
+            for (std::size_t param = 0U; param < 4U; ++param)
+                engine_.setStemEffect(slot, param, stemFx_[slot][param].load(std::memory_order_acquire));
         {
             const auto coda = codaSeconds_.load(std::memory_order_acquire);
             if (coda != appliedCodaSeconds_ && engine_.setCodaSeconds(coda)) appliedCodaSeconds_ = coda;
@@ -706,6 +717,7 @@ private:
     std::atomic<bool> mixerVariation_{false};
     std::atomic<double> codaSeconds_{4.0};
     std::atomic<double> polyphonyBias_{0.0};
+    std::array<std::array<std::atomic<double>, 4>, 8> stemFx_{};
     double appliedCodaSeconds_ = 4.0;
     std::atomic<std::uint8_t> starCapacity_{8U};
     std::atomic<bool> skyWeb_{true};

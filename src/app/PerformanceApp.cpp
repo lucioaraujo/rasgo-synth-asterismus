@@ -2807,6 +2807,10 @@ public:
                 moduleControlSliders_[index][control].setVisible(focusedPanel);
             }
         }
+        for (std::size_t k = 0U; k < stemFxSliders_.size(); ++k) {
+            stemFxSliders_[k].setVisible(false);
+            stemFxLabels_[k].setVisible(false);
+        }
         const bool actorSeedVariationVisible = seedVariationInspectorAvailable(selectedModuleIndex_);
         actorSeedVariationLabel_.setVisible(actorSeedVariationVisible);
         actorSeedVariationSlider_.setVisible(actorSeedVariationVisible);
@@ -2889,6 +2893,7 @@ public:
                 stemSoloButtons_[index].setBounds(rightButton);
             }
 
+            if (hasFocusedStem) layoutStemFx(focusedPanel.removeFromBottom(46).reduced(6, 2));
             if (seedVariationInspectorAvailable(selectedModuleIndex_)) {
                 auto seedVariation = focusedPanel.removeFromTop(26).reduced(6, 2);
                 actorSeedVariationLabel_.setBounds(seedVariation.removeFromLeft(128));
@@ -2971,6 +2976,8 @@ public:
             stemMuteButtons_[index].setBounds(leftButton);
             stemSoloButtons_[index].setBounds(rightButton);
         }
+        if (selectedModuleIndex_ < modulePanelActive_.size() && modulePanelActive_[selectedModuleIndex_])
+            layoutStemFx(focusedPanel.removeFromBottom(46).reduced(6, 2));
         if (seedVariationInspectorAvailable(selectedModuleIndex_)) {
             auto seedVariation = focusedPanel.removeFromTop(26).reduced(6, 2);
             actorSeedVariationLabel_.setBounds(seedVariation.removeFromLeft(128));
@@ -3285,6 +3292,30 @@ private:
         polyphonySlider_.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xffe7e3d5));
         polyphonySlider_.onValueChange = [this] { controller_.setPolyphonyBias(polyphonySlider_.getValue()); };
         addAndMakeVisible(polyphonySlider_);
+        {
+            const std::array<const char*, 4> names{{"CORTE", "RES.", "ECO", "SALA"}};
+            for (std::size_t k = 0U; k < stemFxSliders_.size(); ++k) {
+                auto& slider = stemFxSliders_[k];
+                slider.setSliderStyle(juce::Slider::LinearHorizontal);
+                slider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
+                slider.setRange(-1.0, 1.0, 0.01);
+                slider.setValue(0.0, juce::dontSendNotification);
+                slider.setDoubleClickReturnValue(true, 0.0);
+                slider.setColour(juce::Slider::trackColourId, juce::Colour(0xff315e51));
+                slider.setColour(juce::Slider::backgroundColourId, juce::Colour(0xff183b33));
+                slider.setColour(juce::Slider::thumbColourId, juce::Colour(0xffd18a45));
+                slider.onValueChange = [this, k] {
+                    if (selectedModuleIndex_ < 8U) controller_.setStemEffect(selectedModuleIndex_, k, stemFxSliders_[k].getValue());
+                };
+                addChildComponent(slider);
+                stemFxLabels_[k].setText(utf8(names[k]), juce::dontSendNotification);
+                stemFxLabels_[k].setFont(branding::mono(9.0f, juce::Font::bold));
+                stemFxLabels_[k].setColour(juce::Label::textColourId, juce::Colour(0xffd8b48c));
+                stemFxLabels_[k].setJustificationType(juce::Justification::centred);
+                stemFxLabels_[k].setInterceptsMouseClicks(false, false);
+                addChildComponent(stemFxLabels_[k]);
+            }
+        }
         polyphonyLabel_.setFont(branding::mono(9.0f, juce::Font::bold));
         polyphonyLabel_.setColour(juce::Label::textColourId, juce::Colour(0xffd8b48c));
         polyphonyLabel_.setInterceptsMouseClicks(false, false);
@@ -6802,6 +6833,7 @@ private:
         performanceField_.setSkyState(telemetry, controller_.skyWeb());
         followPercurso(telemetry);
         refreshPolyphonyLabel();
+        refreshStemFx();
         // A faixa com duração: a coda chega 5,2 s antes do alvo (coda 4 s +
         // cauda 1,2 s), e o arquivo fecha em torno do tempo escolhido.
         if (takeTargetSeconds_ > 0.0 && recorder_.recording() && !codaRequested_ && takeSampleRate_ > 0.0
@@ -7313,6 +7345,54 @@ private:
     juce::TextButton mixerVariationButton_;
     juce::TextButton skyWebButton_;
     juce::Slider polyphonySlider_;
+    // CORTE · RES. · ECO · SALA da estrela em foco (6/11): −1 a +1 sobre a
+    // escolha da seed (0); duplo clique volta à seed.
+    std::array<juce::Slider, 4> stemFxSliders_;
+    std::array<juce::Label, 4> stemFxLabels_;
+    std::size_t stemFxSlot_ = 999U;
+    std::uint32_t stemFxSeed_ = 0xFFFFFFFFU;
+    void layoutStemFx(juce::Rectangle<int> area) {
+        if (selectedModuleIndex_ >= 8U) return;
+        const auto cell = area.getWidth() / 4;
+        for (std::size_t k = 0U; k < stemFxSliders_.size(); ++k) {
+            auto c = area.removeFromLeft(cell).reduced(2, 0);
+            stemFxLabels_[k].setBounds(c.removeFromTop(14));
+            stemFxSliders_[k].setBounds(c);
+            stemFxLabels_[k].setVisible(true);
+            stemFxSliders_[k].setVisible(true);
+        }
+    }
+    // Ao trocar a estrela em foco (ou a seed): os valores dela e a dica com o
+    // filtro que a seed escolheu.
+    void refreshStemFx() {
+        const auto slot = selectedModuleIndex_;
+        const auto seed = startupDocument_.territory.seed;
+        if (slot == stemFxSlot_ && seed == stemFxSeed_) return;
+        stemFxSlot_ = slot;
+        stemFxSeed_ = seed;
+        if (slot >= 8U) return;
+        for (std::size_t k = 0U; k < stemFxSliders_.size(); ++k)
+            stemFxSliders_[k].setValue(controller_.stemEffect(slot, k), juce::dontSendNotification);
+        const bool on = PerformanceActorEcology::seedStemFilterOn(seed, slot);
+        const auto type = juce::String::fromUTF8(PerformanceStemFilter::name(PerformanceActorEcology::seedStemFilterType(seed, slot)));
+        const auto filtro = on ? uiText(supportLanguage_, "filtro da seed: ", "the seed's filter: ", "filtre de la seed : ", "filtro de la seed: ") + type
+                               : uiText(supportLanguage_, "a seed não pôs filtro aqui; CORTE e RES. ligam um ", "no filter from the seed here; CUT and RES. switch one on: ",
+                                        "pas de filtre de la seed ici ; COUPE et RÉS. en allument un : ", "la seed no puso filtro aquí; CORTE y RES. encienden uno: ") + type;
+        stemFxSliders_[0].setTooltip(filtro + uiText(supportLanguage_, " · CORTE: −1 fecha, +1 abre; duplo clique volta à seed.",
+                                                     " · CUT: −1 closes, +1 opens; double-click returns to the seed.",
+                                                     " · COUPE : −1 ferme, +1 ouvre ; double-clic : retour à la seed.",
+                                                     " · CORTE: −1 cierra, +1 abre; doble clic vuelve a la seed."));
+        stemFxSliders_[1].setTooltip(filtro + uiText(supportLanguage_, " · RES.: a ressonância do filtro.", " · RES.: the filter's resonance.",
+                                                     " · RÉS. : la résonance du filtre.", " · RES.: la resonancia del filtro."));
+        stemFxSliders_[2].setTooltip(uiText(supportLanguage_, "ECO: quanto esta estrela manda ao eco do céu (no andamento); 0 = a seed.",
+                                            "ECHO: how much this star sends to the sky's echo (in tempo); 0 = the seed.",
+                                            "ÉCHO : combien cette étoile envoie à l'écho du ciel (en tempo) ; 0 = la seed.",
+                                            "ECO: cuánto manda esta estrella al eco del cielo (en el tempo); 0 = la seed."));
+        stemFxSliders_[3].setTooltip(uiText(supportLanguage_, "SALA: quanto esta estrela manda à sala do céu; 0 = a seed.",
+                                            "HALL: how much this star sends to the sky's hall; 0 = the seed.",
+                                            "SALLE : combien cette étoile envoie à la salle du ciel ; 0 = la seed.",
+                                            "SALA: cuánto manda esta estrella a la sala del cielo; 0 = la seed."));
+    }
     juce::Label polyphonyLabel_;
     std::uint32_t polyphonyLabelSeed_ = 0xFFFFFFFFU;
     // A linha do POLIFONIA, logo abaixo de TRAMA e VARIAÇÃO.
