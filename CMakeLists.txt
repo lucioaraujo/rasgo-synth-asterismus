@@ -10,6 +10,12 @@ cmake_minimum_required(VERSION 3.16)
 #   teste é pelo sistema hospedeiro. 10.15: o JUCE 9 pede 10.11, e o código
 #   não usa std::filesystem nem from_chars/to_chars (verificado em 30/10).
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+# O MSVC só define M_PI com _USE_MATH_DEFINES (6/11: a CI do Windows da
+# v0.2.0 parou em Oscillator.hpp, FmFluteVoice.hpp e VosimOscillator.hpp — as
+# cópias do Studio em vendor/ não mudam, a definição vem daqui).
+if(MSVC)
+    add_compile_definitions(_USE_MATH_DEFINES)
+endif()
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "macOS mínimo" FORCE)
     set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Universal 2" FORCE)
