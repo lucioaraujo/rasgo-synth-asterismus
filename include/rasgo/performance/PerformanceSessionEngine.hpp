@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "PerformanceActorEcology.hpp"
+#include "PerformanceSkyCuts.hpp"
 #include "PerformanceContracts.hpp"
 #include "PerformanceLoudnessMeter.hpp"
 #include "PerformanceMasterStage.hpp"
@@ -36,6 +37,7 @@ public:
         master_.prepare(sampleRate);
         meter_.prepare(sampleRate);
         skyPan_.prepare(sampleRate);
+        skyCuts_.prepare(sampleRate);
         prepared_ = true;
         reset();
         if (!morceau_.prepare(sampleRate_, session_.territorySeed)) {
@@ -84,6 +86,7 @@ public:
         deferred_ = false;
         morphActive_ = false;
         ecology_.reset();
+        skyCuts_.reset();
         xrunCount_ = 0U;
         lastStemCount_ = 0U;
         lastStemActorIds_.fill(kInvalidActorId);
@@ -713,6 +716,17 @@ public:
                 rightSample = 0.0;
             } else {
                 masterSilent_ = false;
+                // Os cortes do céu (6/11): parêntese, montagem, apócrifo,
+                // decimação — na soma, antes do master.
+                {
+                    std::uint32_t word = 0U;
+                    const auto cut = ecology_.takeSkyCut(word);
+                    if (cut != 0U && skyCuts_.trigger(static_cast<PerformanceSkyCuts::Kind>(cut), word)) {
+                        lastSkyCut_ = cut;
+                        ++skyCutSerial_;
+                    }
+                }
+                skyCuts_.process(leftSample, rightSample);
                 master_.process(leftSample, rightSample);
                 limiterMaxReduction_ = std::max(limiterMaxReduction_, 1.0 - master_.limiterGain());
             }
@@ -815,6 +829,9 @@ private:
     double masterTrimDb_ = 0.0;
     double lastPeak_ = 0.0;
     PerformanceMasterStage master_{};
+    PerformanceSkyCuts skyCuts_{};
+    std::uint8_t lastSkyCut_ = 0U;
+    std::uint32_t skyCutSerial_ = 0U;
     PerformanceSkyPan skyPan_{};
     std::array<std::uint16_t, PerformanceSkyPan::kStems> skyPanActor_{};
     bool masterSilent_ = false;
@@ -1130,6 +1147,7 @@ private:
             snapshot.skyGrammar = director.grammar();
             snapshot.skyFormPass = director.formPass();
             snapshot.skyGuests = ecology_.guestPacked();
+            snapshot.skyCut = static_cast<std::uint8_t>(((skyCutSerial_ & 0x0fU) << 4U) | (lastSkyCut_ & 0x0fU));
             snapshot.skyTempoMillis = static_cast<std::uint16_t>(std::lround(director.tempoFactor() * 1000.0));
             snapshot.skySwingPercent = static_cast<std::uint8_t>(std::lround(director.swing() * 100.0));
             snapshot.skyGroupingMask = ecology_.skyGroupingMask();

@@ -434,6 +434,13 @@ public:
 
     CodaGesture codaGesture() const noexcept { return codaGesture_; }
     void setPolyphonyBias(double bias) noexcept { director_.setPolyphonyBias(bias); }
+    // O corte do céu pedido (6/11), para o motor: 0 = nenhum.
+    std::uint8_t takeSkyCut(std::uint32_t& word) noexcept {
+        const auto cut = pendingCut_;
+        word = pendingCutWord_;
+        pendingCut_ = 0U;
+        return cut;
+    }
     void setCodaSeconds(double seconds) noexcept {
         if (!codaActive_ && finite(seconds) && seconds >= 0.25 && seconds <= 30.0) codaSeconds_ = seconds;
     }
@@ -1190,11 +1197,17 @@ public:
             // Um gesto do céu (5/11), nunca em cima de um gesto do músico nem
             // de outro recorte em curso.
             PerformanceSkyDirector::SkyGesture gesture{};
-            if (director_.popSkyGesture(gesture) && performerRecutHold_ == 0U
-                && stutterRemainingSamples_ == 0U && tempoShiftRemainingSamples_ == 0U
-                && gesture.slot < activeVoiceCount)
-                applyRecut(gesture.displace ? GestureType::TempoShift : GestureType::Stutter,
-                           voices_[gesture.slot].actorId, gesture.intensity, gesture.duration, gesture.token);
+            if (director_.popSkyGesture(gesture) && performerRecutHold_ == 0U) {
+                if (gesture.cut != 0U) {
+                    // um corte da soma: o motor o aplica (PerformanceSkyCuts)
+                    pendingCut_ = gesture.cut;
+                    pendingCutWord_ = gesture.token;
+                } else if (stutterRemainingSamples_ == 0U && tempoShiftRemainingSamples_ == 0U
+                           && gesture.slot < activeVoiceCount) {
+                    applyRecut(gesture.displace ? GestureType::TempoShift : GestureType::Stutter,
+                               voices_[gesture.slot].actorId, gesture.intensity, gesture.duration, gesture.token);
+                }
+            }
             PerformanceSkyDirector::Cue due{};
             while (director_.popDue(due)) {
                 if (due.slot >= activeVoiceCount) continue;
@@ -2206,6 +2219,8 @@ private:
     double stutterPhase_ = 0.0;
     std::uint32_t stutterRemainingSamples_ = 0U;
     std::uint32_t performerRecutHold_ = 0U;
+    std::uint8_t pendingCut_ = 0U;
+    std::uint32_t pendingCutWord_ = 0U;
     std::uint16_t stutterTargetActorId_ = kInvalidActorId;
     double tempoShiftIntensity_ = 0.0;
     std::uint32_t tempoShiftRemainingSamples_ = 0U;

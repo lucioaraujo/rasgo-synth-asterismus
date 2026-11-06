@@ -196,6 +196,9 @@ public:
     struct SkyGesture {
         std::size_t slot = 0U;
         bool displace = false;
+        // 0: um recorte (STUTTER/DESLOCAR); 1–4: um corte da soma
+        // (PerformanceSkyCuts: parêntese, montagem, apócrifo, decimação).
+        std::uint8_t cut = 0U;
         double intensity = 0.5;
         double duration = 0.4;
         std::uint32_t token = 0U;
@@ -1438,6 +1441,20 @@ private:
             if (count == 0U) return;
             pendingGesture_.slot = lit[word % count];
             pendingGesture_.displace = ((word >> 8U) & 1U) != 0U;
+            // Os cortes do Studio (6/11): mais no contraste, menos no retorno;
+            // no contraste pesam a montagem e o apócrifo (o passado rasgado).
+            {
+                const double chance = section_ == Section::Contrast ? 0.5
+                    : section_ == Section::Development ? 0.35 : 0.25;
+                const auto pick = performanceSeedStream(word, 0xC07U);
+                pendingGesture_.cut = 0U;
+                if (static_cast<double>(pick & 0xffffU) / 65535.0 < chance) {
+                    static constexpr std::array<std::uint8_t, 6> contrastCuts{{2U, 3U, 2U, 3U, 1U, 4U}};
+                    static constexpr std::array<std::uint8_t, 6> otherCuts{{1U, 4U, 1U, 2U, 4U, 1U}};
+                    const auto& cuts = section_ == Section::Contrast ? contrastCuts : otherCuts;
+                    pendingGesture_.cut = cuts[(pick >> 16U) % cuts.size()];
+                }
+            }
             pendingGesture_.intensity = 0.35 + 0.35 * static_cast<double>((word >> 12U) & 0xffU) / 255.0;
             pendingGesture_.duration = 0.2 + 0.4 * static_cast<double>((word >> 20U) & 0xffU) / 255.0;
             pendingGesture_.token = word;

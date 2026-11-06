@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include <rasgo/performance/PerformanceSessionEngine.hpp>
@@ -2067,7 +2068,52 @@ void testContrastInvitesGuestStars() {
     expect(restored, "the guests leave when the contrast ends");
 }
 
+// Os cortes do céu (6/11, glitches do Studio): cada corte fica limitado, dura
+// o que diz e devolve a saída ao sinal vivo; ao longo de uma peça o céu corta.
+void testSkyCuts() {
+    PerformanceSkyCuts cuts;
+    cuts.prepare(48000.0);
+    double phase = 0.0;
+    const auto feed = [&](int samples, double& peak) {
+        for (int i = 0; i < samples; ++i) {
+            phase += 220.0 / 48000.0;
+            double l = 0.5 * std::sin(6.283185307179586 * phase), r = l;
+            cuts.process(l, r);
+            peak = std::max(peak, std::max(std::fabs(l), std::fabs(r)));
+        }
+    };
+    double peak = 0.0;
+    feed(48000 * 20, peak);
+    for (int kind = 1; kind <= 4; ++kind) {
+        expect(cuts.trigger(static_cast<PerformanceSkyCuts::Kind>(kind), 0x1234U + static_cast<std::uint32_t>(kind)),
+               "a sky cut starts once there is enough memory");
+        double cutPeak = 0.0;
+        feed(48000 * 3, cutPeak);
+        expect(cuts.active() == PerformanceSkyCuts::Kind::None, "a sky cut ends by itself");
+        expect(cutPeak <= 1.0, "a sky cut stays bounded");
+    }
+    int changes = 0;
+    for (std::uint32_t seed = 1U; seed <= 4U; ++seed) {
+        const auto document = PerformanceTerritoryFactory::makeForReleasedStems(seed, kPerformanceSafeBodyLimit, true);
+        auto engine = std::make_unique<PerformanceSessionEngine>();
+        expect(engine->prepare(48000.0, 512U, 2U) && engine->setScene(document.scenes[0], document.territory),
+               "cut engine prepares");
+        engine->setSkyInfluence(1.0);
+        engine->setMixerVariation(true);
+        std::array<float, 512> left{}, right{};
+        std::uint8_t last = engine->readTelemetry().skyCut;
+        for (int block = 0; block < 94 * 120; ++block) {
+            engine->processBlock(left.data(), right.data(), 512U);
+            const auto now = engine->readTelemetry().skyCut;
+            if (now != last) { ++changes; last = now; }
+        }
+    }
+    std::cout << "sky cuts: " << changes << " in 4 seeds × 120 s\n";
+    expect(changes >= 1, "the sky cuts the sum now and then");
+}
+
 int main() {
+    testSkyCuts();
     testContrastInvitesGuestStars();
     testSeedChoosesPhenomena();
     testLiveStemReconstruction();
