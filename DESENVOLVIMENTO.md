@@ -199,13 +199,13 @@ real.
 A partir desta pasta, execute o binário recompilado:
 
 ```bash
-./run_performance.sh   # acha o build mais recente (.local-build/host-*)
+./run_asterismus.sh   # acha o build mais recente (.local-build/host-*)
 ```
 
 Ou use o lançador versionado, que verifica a existência do build:
 
 ```bash
-./run_performance.sh
+./run_asterismus.sh
 ```
 
 O lançador verifica volume gravável, memória disponível mínima de 4 GiB e uma
@@ -290,7 +290,7 @@ Antes do próximo ensaio de áudio real, executar:
 
 ```bash
 bash ./check_host_readiness.sh
-./run_performance.sh
+./run_asterismus.sh
 ```
 
 O preflight só confirma que binário, volume, memória, janela e dispositivo
