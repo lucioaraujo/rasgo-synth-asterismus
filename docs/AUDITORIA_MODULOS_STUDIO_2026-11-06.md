@@ -160,3 +160,15 @@ diferença de frequência *entre L e R*; as estrelas do Asterismus são mono
 e soam onde estão no campo (o pan vem da posição). Fazê-lo pede uma estrela
 com saída estéreo própria — uma mudança de arquitetura do caminho das
 estrelas, não só uma voz nova.
+
+**Decisão do autor (7/11): opção B, na 0.4.** O BINAURAL entra como
+**camada do céu**, não como estrela — no padrão da fita e dos cortes
+(`PerformanceSkyCuts`, a camada de fita): uma sombra binaural sobre a frase
+do céu (dois senos, um por canal, com alguns Hz de diferença que andam com
+o caos), nas partes que a seed escolher, em nível baixo. Mantém a regra da
+Constelação (cada estrela soa onde está, mono) e é fiel ao Studio, onde ele
+também era camada aditiva. Só funciona de fone; em caixas vira batimento
+comum — documentar assim, sem promessas de "ondas cerebrais". Fica fora da
+0.3 para não somar mais uma camada a uma versão ainda não ouvida.
+Alternativas recusadas: A (estrela estéreo — mudaria o caminho de todas as
+estrelas, e o stem mono do corpo não guardaria o efeito) e C (ficar de fora).
