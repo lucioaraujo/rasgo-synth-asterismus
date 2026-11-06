@@ -179,6 +179,15 @@ public:
         triadRoot_ = 0;
         triadMajor_ = true;
         harmonicBar_ = 0U;
+        for (std::size_t part = 0U; part < tapeBySection_.size(); ++part) {
+            const auto word = performanceSeedStream(seed, 0x7A90U + static_cast<std::uint32_t>(part));
+            tapeBySection_[part] = (word % 100U) < 45U ? 0.4 + 0.6 * static_cast<double>((word >> 8U) & 0xffU) / 255.0 : 0.0;
+        }
+        const auto tapeWord = performanceSeedStream(seed, 0x7A9FU);
+        tapeDrive_ = 0.2 + 0.6 * static_cast<double>(tapeWord & 0xffU) / 255.0;
+        tapeWowHz_ = 0.3 + 0.9 * static_cast<double>((tapeWord >> 8U) & 0xffU) / 255.0;
+        tapeWowSeconds_ = 0.0005 + 0.002 * static_cast<double>((tapeWord >> 16U) & 0xffU) / 255.0;
+        tapeVinyl_ = ((tapeWord >> 24U) & 1U) != 0U;
         developmentRegion_ = kDevelopmentRegions[performanceSeedStream(seed, 0xF301U) % kDevelopmentRegions.size()];
         chooseSeedMotion();
         chooseDensityGenes();
@@ -214,6 +223,21 @@ public:
     double litLow() const noexcept { return litLow_; }
     double litHigh() const noexcept { return litHigh_; }
     double activityLow() const noexcept { return activityLow_; }
+
+    // A fita do céu (6/11, o TapeSaturator do Studio, e o disco a pedido do
+    // autor: "efeitos de dj, turntable, ruídos de disco"): em que partes da
+    // forma ela entra e com que caráter, pela seed. Por tipo de parte, 45 % de
+    // chance, intensidade de 0,4 a 1. O meio é FITA (saturação, agudos
+    // escuros, wow, chiado leve) ou DISCO (wow do disco empenado, estalos e
+    // chiado do vinil). Drive 0,2–0,8; wow de 0,3 a 1,2 Hz, 0,5 a 2,5 ms.
+    double tapeTarget() const noexcept {
+        if (influence_ <= 0.0) return 0.0;
+        return tapeBySection_[std::min<std::size_t>(static_cast<std::size_t>(section_), 3U)];
+    }
+    bool tapeIsVinyl() const noexcept { return tapeVinyl_; }
+    double tapeDrive() const noexcept { return tapeDrive_; }
+    double tapeWowHz() const noexcept { return tapeWowHz_; }
+    double tapeWowSeconds() const noexcept { return tapeWowSeconds_; }
 
     // A região harmônica da parte que soa, em semitons sobre a raiz da seed.
     // Desde 6/11 (0.3), o centro anda por progressões neo-riemannianas: a
@@ -1048,6 +1072,9 @@ private:
     SkyGesture pendingGesture_{};
     std::uint32_t skyGestures_ = 0U;
     int contrastRegion_ = 0;
+    std::array<double, 4> tapeBySection_{};
+    double tapeDrive_ = 0.4, tapeWowHz_ = 0.6, tapeWowSeconds_ = 0.0015;
+    bool tapeVinyl_ = false;
     // A progressão neo-riemanniana (6/11): a tríade em curso (raiz relativa
     // à raiz da seed e qualidade), o ritmo harmônico e a preferência P/L/R.
     int triadRoot_ = 0;
@@ -1449,8 +1476,10 @@ private:
                 const auto pick = performanceSeedStream(word, 0xC07U);
                 pendingGesture_.cut = 0U;
                 if (static_cast<double>(pick & 0xffffU) / 65535.0 < chance) {
-                    static constexpr std::array<std::uint8_t, 6> contrastCuts{{2U, 3U, 2U, 3U, 1U, 4U}};
-                    static constexpr std::array<std::uint8_t, 6> otherCuts{{1U, 4U, 1U, 2U, 4U, 1U}};
+                    // 1 parêntese, 2 montagem, 3 apócrifo, 4 decimação, 5 tape
+                    // stop, 6 spin back, 7 varispeed (6/11)
+                    static constexpr std::array<std::uint8_t, 9> contrastCuts{{2U, 3U, 2U, 3U, 1U, 4U, 5U, 6U, 7U}};
+                    static constexpr std::array<std::uint8_t, 9> otherCuts{{1U, 4U, 1U, 2U, 4U, 1U, 7U, 5U, 7U}};
                     const auto& cuts = section_ == Section::Contrast ? contrastCuts : otherCuts;
                     pendingGesture_.cut = cuts[(pick >> 16U) % cuts.size()];
                 }

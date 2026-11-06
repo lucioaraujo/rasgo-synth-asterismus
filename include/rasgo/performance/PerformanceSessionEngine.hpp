@@ -9,6 +9,7 @@
 
 #include "PerformanceActorEcology.hpp"
 #include "PerformanceSkyCuts.hpp"
+#include <dsp/TapeSaturator.hpp>
 #include "PerformanceContracts.hpp"
 #include "PerformanceLoudnessMeter.hpp"
 #include "PerformanceMasterStage.hpp"
@@ -38,6 +39,10 @@ public:
         meter_.prepare(sampleRate);
         skyPan_.prepare(sampleRate);
         skyCuts_.prepare(sampleRate);
+        for (auto& tape : tape_) tape.setSampleRate(sampleRate);
+        surface_.prepare(sampleRate);
+        tapeWet_ = 0.0;
+        tapeStep_ = 1.0 / std::max(1.0, sampleRate * 2.0);
         prepared_ = true;
         reset();
         if (!morceau_.prepare(sampleRate_, session_.territorySeed)) {
@@ -726,6 +731,28 @@ public:
                         ++skyCutSerial_;
                     }
                 }
+                // A fita do céu (6/11): o TapeSaturator do Studio no nível de
+                // depois do ganho fixo (a saturação acontece de verdade) e a
+                // superfície (chiado; no disco, estalos e rumble), entrando e
+                // saindo em 2 s nas partes que a seed escolhe.
+                {
+                    const auto& director = ecology_.skyDirector();
+                    tapeWet_ += std::clamp(director.tapeTarget() - tapeWet_, -tapeStep_, tapeStep_);
+                    if (tapeWet_ > 1.0e-4) {
+                        const bool vinyl = director.tapeIsVinyl();
+                        for (auto& tape : tape_) {
+                            tape.setDrive(static_cast<float>(vinyl ? 0.1 : director.tapeDrive()));
+                            tape.setWobbleRate(vinyl ? 0.55 : director.tapeWowHz());
+                            tape.setWobbleDepth(director.tapeWowSeconds());
+                        }
+                        constexpr double level = 30.0;  // ~ o ganho fixo do master
+                        const double noise = surface_.tick(vinyl);
+                        const double tapedLeft = (tape_[0].process(static_cast<float>(leftSample * level)) + noise) / level;
+                        const double tapedRight = (tape_[1].process(static_cast<float>(rightSample * level)) + noise) / level;
+                        leftSample += (tapedLeft - leftSample) * tapeWet_;
+                        rightSample += (tapedRight - rightSample) * tapeWet_;
+                    }
+                }
                 skyCuts_.process(leftSample, rightSample);
                 master_.process(leftSample, rightSample);
                 limiterMaxReduction_ = std::max(limiterMaxReduction_, 1.0 - master_.limiterGain());
@@ -830,6 +857,9 @@ private:
     double lastPeak_ = 0.0;
     PerformanceMasterStage master_{};
     PerformanceSkyCuts skyCuts_{};
+    std::array<rasgo::TapeSaturator, 2> tape_{};
+    PerformanceSurfaceNoise surface_{};
+    double tapeWet_ = 0.0, tapeStep_ = 1.0e-5;
     std::uint8_t lastSkyCut_ = 0U;
     std::uint32_t skyCutSerial_ = 0U;
     PerformanceSkyPan skyPan_{};
@@ -1148,6 +1178,7 @@ private:
             snapshot.skyFormPass = director.formPass();
             snapshot.skyGuests = ecology_.guestPacked();
             snapshot.skyCut = static_cast<std::uint8_t>(((skyCutSerial_ & 0x0fU) << 4U) | (lastSkyCut_ & 0x0fU));
+            snapshot.skyTape = static_cast<std::uint8_t>(std::lround(std::clamp(tapeWet_, 0.0, 1.0) * 100.0));
             snapshot.skyTempoMillis = static_cast<std::uint16_t>(std::lround(director.tempoFactor() * 1000.0));
             snapshot.skySwingPercent = static_cast<std::uint8_t>(std::lround(director.swing() * 100.0));
             snapshot.skyGroupingMask = ecology_.skyGroupingMask();

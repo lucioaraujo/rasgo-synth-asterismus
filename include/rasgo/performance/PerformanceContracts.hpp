@@ -524,6 +524,8 @@ struct PerformanceTelemetrySnapshot {
     std::uint32_t skyGuests = 0U;
     // O último corte do céu (6/11): 4 bits de contador e 4 bits do tipo.
     std::uint8_t skyCut = 0U;
+    // A fita/disco do céu (6/11): quanto dela soa, 0–100.
+    std::uint8_t skyTape = 0U;
     // Tempo maleável: fator de andamento (em milésimos) e swing (% da
     // primeira colcheia, 50 = reto).
     std::uint16_t skyTempoMillis = 1000U;
@@ -654,6 +656,7 @@ public:
         skyFormPass_.store(snapshot.skyFormPass, std::memory_order_relaxed);
         skyGuests_.store(snapshot.skyGuests, std::memory_order_relaxed);
         skyCut_.store(snapshot.skyCut, std::memory_order_relaxed);
+        skyTape_.store(snapshot.skyTape, std::memory_order_relaxed);
         skyTempoMillis_.store(snapshot.skyTempoMillis, std::memory_order_relaxed);
         skySwingPercent_.store(snapshot.skySwingPercent, std::memory_order_relaxed);
         skyGroupingMask_.store(snapshot.skyGroupingMask, std::memory_order_relaxed);
@@ -739,6 +742,7 @@ public:
         out.skyFormPass = skyFormPass_.load(std::memory_order_relaxed);
         out.skyGuests = skyGuests_.load(std::memory_order_relaxed);
         out.skyCut = skyCut_.load(std::memory_order_relaxed);
+        out.skyTape = skyTape_.load(std::memory_order_relaxed);
         out.skyTempoMillis = skyTempoMillis_.load(std::memory_order_relaxed);
         out.skySwingPercent = skySwingPercent_.load(std::memory_order_relaxed);
         out.skyGroupingMask = skyGroupingMask_.load(std::memory_order_relaxed);
@@ -806,6 +810,7 @@ private:
     std::atomic<std::uint8_t> skyFormPass_{0U};
     std::atomic<std::uint32_t> skyGuests_{0U};
     std::atomic<std::uint8_t> skyCut_{0U};
+    std::atomic<std::uint8_t> skyTape_{0U};
     std::atomic<std::uint16_t> skyTempoMillis_{1000U};
     std::atomic<std::uint8_t> skySwingPercent_{50U};
     std::atomic<std::uint16_t> skyGroupingMask_{0U};

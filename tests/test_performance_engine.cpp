@@ -2084,7 +2084,7 @@ void testSkyCuts() {
     };
     double peak = 0.0;
     feed(48000 * 20, peak);
-    for (int kind = 1; kind <= 4; ++kind) {
+    for (int kind = 1; kind <= 7; ++kind) {  // 5–7: tape stop, spin back, varispeed (6/11)
         expect(cuts.trigger(static_cast<PerformanceSkyCuts::Kind>(kind), 0x1234U + static_cast<std::uint32_t>(kind)),
                "a sky cut starts once there is enough memory");
         double cutPeak = 0.0;

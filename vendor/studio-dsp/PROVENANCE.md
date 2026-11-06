@@ -96,3 +96,9 @@ AY-8910, MORPH, RÖSSLER, ENVELOPE PULSE; fora do sorteio das 8 da seed).
 | `src/dsp/MorphOscillator.hpp` | `0538d60b93098752ba25c99a24d5601bd630cb5aa4f769ddf2d79eb70fc2b3d3` |
 | `src/dsp/RosslerMap.hpp` | `673a861a6fcd940e64ba2bcecf180e29bfc1023ac4c89ca3498f8108671524a6` |
 | `src/dsp/EnvelopeLoopPulse.hpp` | `39dc847273ed1afcb1a7b7de8804b0209c3e4fc5bc1bd403640b73a4e48fa9b9` |
+
+## 2026-11-06 — a fita (TapeSaturator)
+
+Mesma origem e regra da cópia acima (bytes integrais, sem transformação):
+`src/dsp/TapeSaturator.hpp` — `5dbd6c394c68a5c5272415890c1e50138bd338e93240847da7b4e9c4d3454504`. Determinístico (sem acaso). A
+adaptação é a "fita do céu" em `PerformanceSessionEngine.hpp`.

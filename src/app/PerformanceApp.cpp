@@ -4571,10 +4571,17 @@ private:
         lastGuests_ = telemetry.skyGuests;
         // Os cortes do céu (6/11) também vão ao registro.
         if (recorder_.recording() && telemetry.skyCut != lastSkyCut_ && (telemetry.skyCut & 0x0fU) != 0U) {
-            static constexpr std::array<const char*, 5> names{{"", "parentese", "montagem", "apocrifo", "decimacao"}};
-            appendTakeTrace(juce::String("corte:") + names[std::min<std::size_t>(telemetry.skyCut & 0x0fU, 4U)]);
+            static constexpr std::array<const char*, 8> names{{"", "parentese", "montagem", "apocrifo", "decimacao",
+                                                               "tape-stop", "spin-back", "varispeed"}};
+            appendTakeTrace(juce::String("corte:") + names[std::min<std::size_t>(telemetry.skyCut & 0x0fU, 7U)]);
         }
         lastSkyCut_ = telemetry.skyCut;
+        // A fita/disco do céu (6/11): quando entra e quando sai.
+        {
+            const bool taped = telemetry.skyTape > 50U;
+            if (recorder_.recording() && taped != lastTaped_) appendTakeTrace(taped ? "fita:entra" : "fita:sai");
+            lastTaped_ = taped;
+        }
         if (section == percursoSection_ && telemetry.skyFormPass == percursoPass_) return;
         // A forma terminou uma passagem da sua gramática (5/11: ciclo, arco,
         // rondó, ondas, kishōtenketsu, choque) — antes, "o retorno acabou"
@@ -7361,6 +7368,7 @@ private:
     std::uint8_t percursoPass_ = 0U;
     std::uint32_t lastGuests_ = 0U;
     std::uint8_t lastSkyCut_ = 0U;
+    bool lastTaped_ = false;
     bool takePercurso_ = false;
     bool takeStartedWithPlay_ = true;
     // A FAIXA com duração (2/11): 1/2/3/5 min, como no Antitotem; 0 = sem

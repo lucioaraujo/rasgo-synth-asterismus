@@ -30,7 +30,10 @@ namespace rasgo::performance {
 
 class PerformanceSkyCuts {
 public:
-    enum class Kind : std::uint8_t { None = 0, Parenthesis, Montage, Apocryphal, Decimate };
+    // TapeStop, SpinBack e Varispeed (6/11, pedido do autor: "efeitos de dj,
+    // turntable… mudanças de rotação de vinil ou fita"): a memória lida em
+    // velocidade variável, como a mão no prato.
+    enum class Kind : std::uint8_t { None = 0, Parenthesis, Montage, Apocryphal, Decimate, TapeStop, SpinBack, Varispeed };
 
     void prepare(double sampleRate, double memorySeconds = 20.0) {
         rate_ = std::max(8000.0, sampleRate);
@@ -79,6 +82,24 @@ public:
             bits_ = 5 + static_cast<int>(unit() * 3.0);
             break;
         }
+        case Kind::TapeStop:
+            // a rotação cai de 1 a 0 em 0,5–1,5 s; depois um instante parado
+            spin_ = 0.5 + unit() * 1.0;
+            length_ = static_cast<std::uint64_t>((spin_ + 0.15) * rate_);
+            origin_ = static_cast<double>(write_);
+            break;
+        case Kind::SpinBack:
+            // para trás, acelerando de 1 a 4 vezes, por 0,6–1,2 s
+            length_ = static_cast<std::uint64_t>((0.6 + unit() * 0.6) * rate_);
+            origin_ = static_cast<double>(write_);
+            break;
+        case Kind::Varispeed:
+            // a rotação oscila ±6–18 % numa onda lenta, por 1,5–3 s
+            length_ = static_cast<std::uint64_t>((1.5 + unit() * 1.5) * rate_);
+            spin_ = 0.06 + unit() * 0.12;
+            varRate_ = 0.4 + unit() * 1.2;
+            origin_ = static_cast<double>(write_) - 0.25 * rate_;
+            break;
         case Kind::Decimate:
             holdMin_ = 4U;
             holdMax_ = 6U + static_cast<std::uint32_t>(unit() * 34.0);
@@ -87,6 +108,7 @@ public:
         case Kind::None: break;
         }
         while (origin_ < 0.0) origin_ += size;
+        head_ = 0.0;
         kind_ = kind;
         return true;
     }
@@ -131,6 +153,28 @@ public:
             cutRight = right * 0.25 + crush(right_[i] * 1.0);
             break;
         }
+        case Kind::TapeStop:
+        case Kind::SpinBack:
+        case Kind::Varispeed: {
+            const double t = static_cast<double>(age_) / rate_;
+            double speed = 1.0;
+            if (kind_ == Kind::TapeStop) speed = t < spin_ ? std::cos(1.5707963267948966 * t / spin_) : 0.0;
+            else if (kind_ == Kind::SpinBack) speed = -(1.0 + 3.0 * std::min(1.0, t / (static_cast<double>(length_) / rate_)));
+            else speed = 1.0 + spin_ * std::sin(6.283185307179586 * varRate_ * t);
+            head_ += speed;
+            double at = origin_ + head_;
+            const double sizeD = static_cast<double>(size);
+            at -= std::floor(at / sizeD) * sizeD;
+            const auto i0 = static_cast<std::size_t>(at) % size;
+            const auto i1 = (i0 + 1U) % size;
+            const double frac = at - std::floor(at);
+            // o volume acompanha a rotação (um prato parando também cala)
+            const double level = kind_ == Kind::TapeStop ? std::min(1.0, std::fabs(speed) * 1.5)
+                : kind_ == Kind::SpinBack ? 0.8 : 1.0;
+            cutLeft = (left_[i0] * (1.0 - frac) + left_[i1] * frac) * level;
+            cutRight = (right_[i0] * (1.0 - frac) + right_[i1] * frac) * level;
+            break;
+        }
         case Kind::Decimate: {
             if (holdLeft_ == 0U) {
                 heldLeft_ = left;
@@ -162,7 +206,41 @@ private:
     std::uint64_t length_ = 0U, age_ = 0U, loop_ = 1024U;
     std::uint32_t random_ = 0x2545F491U, holdMin_ = 4U, holdMax_ = 20U, holdLeft_ = 0U;
     int bits_ = 6;
+    double head_ = 0.0, spin_ = 1.0, varRate_ = 1.0;
     Kind kind_ = Kind::None;
+};
+
+// A superfície do disco e da fita (6/11): chiado (ruído branco filtrado) e,
+// no disco, estalos — impulsos raros e curtos de amplitude variável, com o
+// rumble de um prato. Determinístico (xorshift), sem alocação. Os valores
+// estão no nível de depois do ganho fixo; o motor divide antes de somar.
+class PerformanceSurfaceNoise {
+public:
+    void prepare(double sampleRate) noexcept { rate_ = std::max(8000.0, sampleRate); hiss_ = 0.0; click_ = 0.0; rumble_ = 0.0; }
+    void seed(std::uint32_t s) noexcept { random_ = s == 0U ? 0x51F1EU : s; }
+    double tick(bool vinyl) noexcept {
+        const double white = unit() * 2.0 - 1.0;
+        hiss_ += (white - hiss_) * 0.35;
+        double out = hiss_ * (vinyl ? 0.0035 : 0.0022);
+        if (vinyl) {
+            if (unit() < 9.0 / rate_) click_ = (0.02 + 0.08 * unit()) * (unit() < 0.5 ? -1.0 : 1.0);
+            out += click_;
+            click_ *= 0.55;
+            rumble_ += (white * 0.002 - rumble_) * 0.0008;
+            out += rumble_ * 4.0;
+        }
+        return out;
+    }
+
+private:
+    double unit() noexcept {
+        random_ ^= random_ << 13U;
+        random_ ^= random_ >> 17U;
+        random_ ^= random_ << 5U;
+        return static_cast<double>(random_ >> 8U) / 16777216.0;
+    }
+    double rate_ = 48000.0, hiss_ = 0.0, click_ = 0.0, rumble_ = 0.0;
+    std::uint32_t random_ = 0x51F1EU;
 };
 
 } // namespace rasgo::performance
