@@ -33,3 +33,26 @@ em foco acesos e a estrela que lidera em vermelho), parada num quadro de
 `folha-ceu-da-animacao.png`: grande, pequeno sobre o verde e sobre fundo
 claro (onde as estrelas creme somem: para fundo claro faria falta uma
 variante com estrelas escuras), e ao lado da palavra ASTERISMUS.
+
+## 3ª rodada (6/11): D2 e E2, o céu como carta celeste
+
+Pedido do autor sobre D/E: "traços mais irregulares, melhore as cores";
+"não parecem estrelas, traga mais a ideia de constelação"; "a partir da céu
+animação". D2 (cores do portal) e E2 (cores do Asterismus) mantêm a figura da
+animação (`website/assets/ceu.js`: oito estrelas, nove arestas, dois pares em
+foco, a que lidera em vermelho) e mudam o desenho:
+
+- estrelas de quatro pontas com halo e núcleo claro, em magnitudes
+  diferentes; a que lidera com uma segunda cintilação em diagonal;
+- arestas à mão: tremidas, com arco leve e pressão variável, parando antes
+  das estrelas como nas cartas celestes; os pares em foco mais grossos;
+- poeira de estrelas de fundo e o rastro curto de cada estrela (a fórmula de
+  passeio da animação);
+- cores revistas: ouro/âmbar mais quentes, vermelho mais vivo, halos frios
+  nas estrelas creme, linhas mais claras.
+
+Gerados por `gerar_ceu.py` (determinístico, só biblioteca padrão; mudar as
+paletas ou a magnitude lá e rodar de novo). `folha-ceu-carta-celeste.png`:
+os dois grandes e em 64 px sobre o fundo do site. D e E originais ficam como
+estavam. Pendente: a escolha do autor; em 32/16 px (favicon) a figura
+precisará de uma versão reduzida (menos poeira, sem rastros).
