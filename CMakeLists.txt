@@ -22,6 +22,11 @@ project(RasgoSynthPerformanceContracts VERSION 0.2.0 LANGUAGES C CXX)
 # cópias do Studio em vendor/ não mudam, a definição vem daqui).
 if(MSVC)
     add_compile_definitions(_USE_MATH_DEFINES)
+    # A pilha de 8 MB, a mesma do Linux e do macOS (6/11): o motor ocupa
+    # ~314 KB e os testes que criam dois ou três motores na mesma função
+    # estouravam a pilha padrão do Windows (1 MB) — SegFault nos testes de
+    # motor da CI da v0.2.0. O app guarda o motor no heap.
+    add_link_options(/STACK:8388608)
 endif()
 
 include(CTest)
