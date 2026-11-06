@@ -69,6 +69,13 @@ ganha moldura âmbar). Ícones: `asterismus-favicon.svg`, `favicon-32.png` e
 `../packaging/icon/proposta/` — **a proposta de ícone do app, ainda à espera
 da decisão do autor**; se ela mudar, trocar aqui também.
 
+**O céu na apresentação (6/11):** `assets/ceu.js`, a cena do Asterismus
+da família no portal RASGO (`RASGO_WEBSITE/assets/familia.js`), sozinha e
+nas cores da interface, ao lado do texto de abertura (`.hero` em duas
+colunas; no celular, abaixo). Para conferir um instante:
+`index.html?quadro=3.3`. O script vai com `?v=20261106` no endereço — ao
+mudá-lo, trocar a data.
+
 ## Proveniência das cópias
 
 | Arquivo | Origem | sha256 | Licença |

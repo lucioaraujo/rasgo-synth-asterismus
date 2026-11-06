@@ -308,15 +308,19 @@ def pagina(arquivo, lang):
 <meta name="description" content="{a(t["desc"])}" />
 {icones()}<link rel="stylesheet" href="styles.css" />
 <script src="assets/contact.js" defer></script>
+<script src="assets/ceu.js?v=20261106" defer></script>
 </head>
 <body>
 {cabecalho(lang, "sobre")}
 
 <main id="conteudo">
 <section class="hero" id="top">
-  <span class="status-pill">{e(t["pill"])}</span>
-  <h1>Rasgo <b>Synth</b> Asterismus</h1>
-  <p class="lead">{e(t["lead"])}</p>
+  <div class="hero-text">
+    <span class="status-pill">{e(t["pill"])}</span>
+    <h1>Rasgo <b>Synth</b> Asterismus</h1>
+    <p class="lead">{e(t["lead"])}</p>
+  </div>
+  <div class="hero-art"><canvas data-ceu aria-hidden="true"></canvas></div>
 </section>
 
 <section class="section">
