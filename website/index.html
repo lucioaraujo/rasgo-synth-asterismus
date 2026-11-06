@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Rasgo Synth Asterismus — um céu de estrelas que toca</title>
 <meta name="description" content="Rasgo Synth Asterismus: instrumento ao vivo em que cada módulo de síntese é uma estrela. As estrelas se relacionam, se movem por física, contam os seus ciclos e tocam; uma seed propõe o céu, o músico o toca e grava a peça." />
-<link rel="icon" href="assets/identity/rasgo_logo_2026.svg" type="image/svg+xml" />
+<link rel="icon" href="assets/identity/asterismus-favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="assets/identity/favicon-32.png" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="assets/identity/apple-touch-icon.png" />
 <link rel="stylesheet" href="styles.css" />
 <script src="assets/contact.js" defer></script>
 <!-- SEO:INICIO — gerado por seo.py; editar lá, não aqui -->
@@ -66,17 +68,27 @@
 <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
 <div class="site-header">
-  <a class="brand" href="#top" aria-label="Rasgo Synth Asterismus">
+  <a class="brand" href="index.html" aria-label="Rasgo Synth Asterismus">
     <img src="assets/identity/rasgo_logo_2026.svg" alt="" height="26" />
     <span>RASGO<b>SYNTH</b> · ASTERISMUS</span>
   </a>
-  <nav class="lang-switch" aria-label="Idioma">
+  <div class="header-nav">
+    <nav class="page-nav" aria-label="Páginas">
+      <a href="index.html" aria-current="page">Sobre</a>
+      <a href="tutorial.html">Tutorial</a>
+      <a href="instalacao.html">Instalação</a>
+      <a href="index.html#baixar">Baixar</a>
+      <a href="index.html#studio">Studio</a>
+    </nav>
+    <nav class="lang-switch" aria-label="Idioma">
       <a href="index.html" aria-current="true">PT</a>
       <a href="en.html">EN</a>
       <a href="fr.html">FR</a>
       <a href="es.html">ES</a>
-  </nav>
+    </nav>
+  </div>
 </div>
+
 
 <main id="conteudo">
 <section class="hero" id="top">
@@ -140,6 +152,14 @@
   </div>
 </section>
 
+<section class="section studio-section" id="studio">
+  <h2>Irmão do Rasgo Synth Studio</h2>
+  <p>O Asterismus nasceu do Rasgo Synth Studio, o instrumento generativo da família RASGO que compõe e sintetiza peças e álbuns inteiros. O Studio renderiza a peça; o Asterismus a toca ao vivo. Várias estrelas do céu são vozes do Studio adaptadas para o tempo real, e a ideia da seed, da forma e do modo álbum vem de lá.</p>
+  <div class="contact-row">
+    <a class="button button-primary" href="https://lucioaraujo.github.io/rasgo-synth-studio/">Conhecer o Rasgo Synth Studio →</a>
+  </div>
+</section>
+
 <section class="section section-dark">
   <h2>Proveniência</h2>
   <p>O DSP das estrelas vem do Rasgo Synth Studio, numa cópia fixada com commit de origem e checksums; o estágio de saída e o medidor foram adaptados do Antitotem e do Navalha 2. Cada tomada registra no seu manifesto a seed, as estrelas e as relações de que veio.</p>
@@ -164,6 +184,7 @@
   <span>© Lúcio de Araújo · Rasgo Synth Asterismus 2026 · RASGO</span>
   <nav>
     <a href="https://github.com/lucioaraujo/rasgo-synth-asterismus">GitHub</a> ·
+    <a href="https://lucioaraujo.github.io/rasgo-synth-studio/">Rasgo Synth Studio</a> ·
     <a href="https://github.com/lucioaraujo/rasgo-synth-asterismus/blob/main/CREDITS.md">Créditos</a> ·
     <a href="https://github.com/lucioaraujo/rasgo-synth-asterismus/blob/main/LICENSE">Licença GPLv3+</a>
   </nav>

@@ -276,7 +276,6 @@ def pagina(arquivo, lang):
     t = T[lang]
     e = lambda s: html.escape(s, quote=False)
     a = lambda s: html.escape(s, quote=True)
-    langs = "\n".join('      <a href="%s"%s>%s</a>' % (f, ' aria-current="true"' if f == arquivo else "", c) for f, _, c in PAGINAS)
     ceu = "\n".join('    <li><h3>%s</h3><p>%s</p></li>' % (e(h), e(p)) for h, p in t["sky"])
     tocar = "\n".join('    <li><h3>%s</h3><p>%s</p></li>' % (e(h), e(p)) for h, p in t["play"])
     gravar = "\n".join("    <li>%s</li>" % e(f) for f in t["rec"])
@@ -307,23 +306,11 @@ def pagina(arquivo, lang):
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 {robots}<title>{e(t["title"])}</title>
 <meta name="description" content="{a(t["desc"])}" />
-<link rel="icon" href="assets/identity/rasgo_logo_2026.svg" type="image/svg+xml" />
-<link rel="stylesheet" href="styles.css" />
+{icones()}<link rel="stylesheet" href="styles.css" />
 <script src="assets/contact.js" defer></script>
 </head>
 <body>
-<div class="rasgo-strip"><a href="{PORTAL}">{e(t["strip"])}</a></div>
-<a class="skip-link" href="#conteudo">{e(t["skip"])}</a>
-
-<div class="site-header">
-  <a class="brand" href="#top" aria-label="Rasgo Synth Asterismus">
-    <img src="assets/identity/rasgo_logo_2026.svg" alt="" height="26" />
-    <span>RASGO<b>SYNTH</b> · ASTERISMUS</span>
-  </a>
-  <nav class="lang-switch" aria-label="{a(t["langnav"])}">
-{langs}
-  </nav>
-</div>
+{cabecalho(lang, "sobre")}
 
 <main id="conteudo">
 <section class="hero" id="top">
@@ -368,6 +355,8 @@ def pagina(arquivo, lang):
 {baixar}
 </section>
 
+{secao_studio(lang)}
+
 <section class="section section-dark">
   <h2>{e(t["s_prov"])}</h2>
   <p>{e(t["prov"])}</p>
@@ -388,10 +377,86 @@ def pagina(arquivo, lang):
 </section>
 </main>
 
-<footer class="site-footer">
+{rodape(lang)}"""
+
+
+# ---- menu, páginas novas, Studio e ícones (6/11, pedido do autor: "como
+# fizemos nas páginas de outros instrumentos da família rasgo") ----------
+# O menu e as páginas Tutorial e Instalação seguem o site do Aquorbium
+# (lucioaraujo/aquorbium, website/): tutorial.html, tutorial-en.html…
+
+TIPOS = {"sobre": "", "tutorial": "tutorial", "instalacao": "instalacao"}
+SUFIXO = {"pt-BR": "", "en": "-en", "fr": "-fr", "es": "-es"}
+INDICE = {"pt-BR": "index.html", "en": "en.html", "fr": "fr.html", "es": "es.html"}
+
+
+def arquivo_de(tipo, lang):
+    if tipo == "sobre":
+        return INDICE[lang]
+    return TIPOS[tipo] + SUFIXO[lang] + ".html"
+
+
+MENU = {
+    "pt-BR": [("sobre", "Sobre"), ("tutorial", "Tutorial"), ("instalacao", "Instalação"), ("#baixar", "Baixar"), ("#studio", "Studio")],
+    "en": [("sobre", "About"), ("tutorial", "Tutorial"), ("instalacao", "Installation"), ("#baixar", "Download"), ("#studio", "Studio")],
+    "fr": [("sobre", "À propos"), ("tutorial", "Tutoriel"), ("instalacao", "Installation"), ("#baixar", "Télécharger"), ("#studio", "Studio")],
+    "es": [("sobre", "Acerca"), ("tutorial", "Tutorial"), ("instalacao", "Instalación"), ("#baixar", "Descargar"), ("#studio", "Studio")],
+}
+
+
+def icones():
+    return ('<link rel="icon" href="assets/identity/asterismus-favicon.svg" type="image/svg+xml" />\n'
+            '<link rel="icon" href="assets/identity/favicon-32.png" sizes="32x32" type="image/png" />\n'
+            '<link rel="apple-touch-icon" href="assets/identity/apple-touch-icon.png" />\n')
+
+
+def cabecalho(lang, atual):
+    t = T[lang]
+    e = lambda s: html.escape(s, quote=False)
+    a = lambda s: html.escape(s, quote=True)
+    itens = []
+    for alvo, rotulo in MENU[lang]:
+        if alvo.startswith("#"):
+            href = INDICE[lang] + alvo
+            cur = ""
+        else:
+            href = arquivo_de(alvo, lang)
+            cur = ' aria-current="page"' if alvo == atual else ""
+        itens.append('      <a href="%s"%s>%s</a>' % (href, cur, e(rotulo)))
+    langs = "\n".join('      <a href="%s"%s>%s</a>' % (arquivo_de(atual, l), ' aria-current="true"' if l == lang else "", c)
+                       for _, l, c in PAGINAS)
+    return f"""<div class="rasgo-strip"><a href="{PORTAL}">{e(t["strip"])}</a></div>
+<a class="skip-link" href="#conteudo">{e(t["skip"])}</a>
+
+<div class="site-header">
+  <a class="brand" href="{INDICE[lang]}" aria-label="Rasgo Synth Asterismus">
+    <img src="assets/identity/rasgo_logo_2026.svg" alt="" height="26" />
+    <span>RASGO<b>SYNTH</b> · ASTERISMUS</span>
+  </a>
+  <div class="header-nav">
+    <nav class="page-nav" aria-label="{a(PAGINAS_NAV[lang])}">
+{chr(10).join(itens)}
+    </nav>
+    <nav class="lang-switch" aria-label="{a(t["langnav"])}">
+{langs}
+    </nav>
+  </div>
+</div>
+"""
+
+
+PAGINAS_NAV = {"pt-BR": "Páginas", "en": "Pages", "fr": "Pages", "es": "Páginas"}
+
+
+def rodape(lang):
+    t = T[lang]
+    e = lambda s: html.escape(s, quote=False)
+    a = lambda s: html.escape(s, quote=True)
+    return f"""<footer class="site-footer">
   <span>© Lúcio de Araújo · Rasgo Synth Asterismus 2026 · RASGO</span>
   <nav>
     <a href="{REPO}">GitHub</a> ·
+    <a href="{STUDIO}">Rasgo Synth Studio</a> ·
     <a href="{BLOB}/CREDITS.md">{e(t["footer_credits"])}</a> ·
     <a href="{BLOB}/LICENSE">{e(t["footer_license"])}</a>
   </nav>
@@ -409,9 +474,164 @@ def pagina(arquivo, lang):
 """
 
 
+STUDIO = "https://lucioaraujo.github.io/rasgo-synth-studio/"
+TEXTO_STUDIO = {
+    "pt-BR": ("Irmão do Rasgo Synth Studio",
+              "O Asterismus nasceu do Rasgo Synth Studio, o instrumento generativo da família RASGO que compõe e sintetiza peças e álbuns inteiros. O Studio renderiza a peça; o Asterismus a toca ao vivo. Várias estrelas do céu são vozes do Studio adaptadas para o tempo real, e a ideia da seed, da forma e do modo álbum vem de lá.",
+              "Conhecer o Rasgo Synth Studio →"),
+    "en": ("Sibling of Rasgo Synth Studio",
+           "Asterismus was born from Rasgo Synth Studio, the RASGO family's generative instrument that composes and synthesises whole pieces and albums. The Studio renders the piece; Asterismus plays it live. Many of the sky's stars are Studio voices adapted to real time, and the idea of the seed, the form and the album mode comes from there.",
+           "Discover Rasgo Synth Studio →"),
+    "fr": ("Frère du Rasgo Synth Studio",
+           "L'Asterismus est né du Rasgo Synth Studio, l'instrument génératif de la famille RASGO qui compose et synthétise des pièces et des albums entiers. Le Studio rend la pièce ; l'Asterismus la joue en direct. Plusieurs étoiles du ciel sont des voix du Studio adaptées au temps réel, et l'idée de la seed, de la forme et du mode album vient de là.",
+           "Découvrir le Rasgo Synth Studio →"),
+    "es": ("Hermano del Rasgo Synth Studio",
+           "El Asterismus nació del Rasgo Synth Studio, el instrumento generativo de la familia RASGO que compone y sintetiza piezas y álbumes enteros. El Studio renderiza la pieza; el Asterismus la toca en vivo. Varias estrellas del cielo son voces del Studio adaptadas al tiempo real, y la idea de la seed, de la forma y del modo álbum viene de allí.",
+           "Conocer el Rasgo Synth Studio →"),
+}
+
+
+def secao_studio(lang):
+    h, p, b = TEXTO_STUDIO[lang]
+    e = lambda s: html.escape(s, quote=False)
+    return f"""<section class="section studio-section" id="studio">
+  <h2>{e(h)}</h2>
+  <p>{e(p)}</p>
+  <div class="contact-row">
+    <a class="button button-primary" href="{STUDIO}">{e(b)}</a>
+  </div>
+</section>"""
+
+
+TITULOS = {
+    "tutorial": {"pt-BR": "Tutorial", "en": "Tutorial", "fr": "Tutoriel", "es": "Tutorial"},
+    "instalacao": {"pt-BR": "Instalação", "en": "Installation", "fr": "Installation", "es": "Instalación"},
+}
+INTRO_TUTORIAL = {
+    "pt-BR": "O mesmo guia que abre no botão TUTORIAL do app, em nove partes: da seed à gravação.",
+    "en": "The same guide that opens from the app's GUIDE button, in nine parts: from the seed to the recording.",
+    "fr": "Le même guide que le bouton TUTORIEL de l'app, en neuf parties : de la seed à l'enregistrement.",
+    "es": "La misma guía que abre el botón TUTORIAL de la app, en nueve partes: de la seed a la grabación.",
+}
+CHAVE_TUTORIAL = {"pt-BR": "pt", "en": "en", "fr": "fr", "es": "es"}
+
+
+def corpo_tutorial(lang):
+    import json, re
+    textos = json.loads((AQUI / "tutorial_textos.json").read_text(encoding="utf-8"))
+    texto = textos[CHAVE_TUTORIAL[lang]]
+    e = lambda s: html.escape(s, quote=False)
+    partes = [p for p in re.split(r"\n\n+", texto.strip()) if p.strip()]
+    blocos = []
+    for parte in partes:
+        linhas = parte.split("\n", 1)
+        titulo = linhas[0].strip()
+        resto = linhas[1].strip() if len(linhas) > 1 else ""
+        blocos.append('  <article class="tutorial-part">\n    <h3>%s</h3>\n    %s\n  </article>' % (
+            e(titulo), "".join("<p>%s</p>" % e(l) for l in resto.split("\n") if l.strip())))
+    return '<p class="lead">%s</p>\n<div class="tutorial">\n%s\n</div>' % (e(INTRO_TUTORIAL[lang]), "\n".join(blocos))
+
+
+INSTALACAO = {
+    "pt-BR": [
+        ("Windows", ["Rode o instalador rasgo-synth-asterismus-0.2.0-win64.exe (ou use o .zip portátil).",
+                     "Se aparecer \"O Windows protegeu o computador\" (SmartScreen): Mais informações → Executar assim mesmo.",
+                     "O atalho fica no Menu Iniciar. O runtime do Visual C++ vai dentro do programa."]),
+        ("macOS (Intel e Apple Silicon, 10.15 ou mais novo)", ["Abra o .dmg e arraste Rasgo Synth Asterismus para Aplicativos.",
+                     "Na primeira vez: botão direito no app → Abrir → Abrir (ou Ajustes do Sistema → Privacidade e Segurança → Abrir Mesmo Assim).",
+                     "Se ainda recusar, no Terminal: xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
+        ("Linux", ["Pacote .deb: sudo apt install ./rasgo-synth-asterismus-0.2.0-Linux.deb — o atalho aparece em Som e Vídeo.",
+                   "Arquivo .tar.gz: extraia e rode usr/bin/rasgo-synth-asterismus."]),
+        ("Onde ficam as gravações", ["~/Music/Rasgo Synth Performance/recordings/ (uma pasta por tomada: a mistura em WAV de 24 bits, um WAV por estrela e o manifesto), os álbuns em albuns/ e o diagnóstico em diagnostico/."]),
+    ],
+    "en": [
+        ("Windows", ["Run the installer rasgo-synth-asterismus-0.2.0-win64.exe (or use the portable .zip).",
+                     "If \"Windows protected your PC\" (SmartScreen) appears: More info → Run anyway.",
+                     "The shortcut is in the Start menu. The Visual C++ runtime is inside the program."]),
+        ("macOS (Intel and Apple Silicon, 10.15 or newer)", ["Open the .dmg and drag Rasgo Synth Asterismus to Applications.",
+                     "The first time: right-click the app → Open → Open (or System Settings → Privacy & Security → Open Anyway).",
+                     "If it still refuses, in Terminal: xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
+        ("Linux", [".deb package: sudo apt install ./rasgo-synth-asterismus-0.2.0-Linux.deb — the shortcut appears in Sound & Video.",
+                   ".tar.gz archive: extract it and run usr/bin/rasgo-synth-asterismus."]),
+        ("Where the recordings go", ["~/Music/Rasgo Synth Performance/recordings/ (one folder per take: the mix as a 24-bit WAV, one WAV per star and the manifest), albums in albuns/ and the diagnostics in diagnostico/."]),
+    ],
+    "fr": [
+        ("Windows", ["Lancez l'installeur rasgo-synth-asterismus-0.2.0-win64.exe (ou utilisez le .zip portable).",
+                     "Si « Windows a protégé votre ordinateur » (SmartScreen) apparaît : Informations complémentaires → Exécuter quand même.",
+                     "Le raccourci est dans le menu Démarrer. Le runtime Visual C++ est dans le programme."]),
+        ("macOS (Intel et Apple Silicon, 10.15 ou plus récent)", ["Ouvrez le .dmg et glissez Rasgo Synth Asterismus dans Applications.",
+                     "La première fois : clic droit sur l'app → Ouvrir → Ouvrir (ou Réglages Système → Confidentialité et sécurité → Ouvrir quand même).",
+                     "S'il refuse encore, dans le Terminal : xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
+        ("Linux", ["Paquet .deb : sudo apt install ./rasgo-synth-asterismus-0.2.0-Linux.deb — le raccourci apparaît dans Son et vidéo.",
+                   "Archive .tar.gz : extrayez-la et lancez usr/bin/rasgo-synth-asterismus."]),
+        ("Où vont les enregistrements", ["~/Music/Rasgo Synth Performance/recordings/ (un dossier par prise : le mixage en WAV 24 bits, un WAV par étoile et le manifeste), les albums dans albuns/ et le diagnostic dans diagnostico/."]),
+    ],
+    "es": [
+        ("Windows", ["Ejecute el instalador rasgo-synth-asterismus-0.2.0-win64.exe (o use el .zip portátil).",
+                     "Si aparece «Windows protegió su PC» (SmartScreen): Más información → Ejecutar de todas formas.",
+                     "El acceso directo queda en el menú Inicio. El runtime de Visual C++ va dentro del programa."]),
+        ("macOS (Intel y Apple Silicon, 10.15 o más nuevo)", ["Abra el .dmg y arrastre Rasgo Synth Asterismus a Aplicaciones.",
+                     "La primera vez: clic derecho en la app → Abrir → Abrir (o Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente).",
+                     "Si aún se niega, en la Terminal: xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
+        ("Linux", ["Paquete .deb: sudo apt install ./rasgo-synth-asterismus-0.2.0-Linux.deb — el acceso aparece en Sonido y vídeo.",
+                   "Archivo .tar.gz: extráigalo y ejecute usr/bin/rasgo-synth-asterismus."]),
+        ("Dónde quedan las grabaciones", ["~/Music/Rasgo Synth Performance/recordings/ (una carpeta por toma: la mezcla en WAV de 24 bits, un WAV por estrella y el manifiesto), los álbumes en albuns/ y el diagnóstico en diagnostico/."]),
+    ],
+}
+INTRO_INSTALACAO = {
+    "pt-BR": "Sem assinatura digital paga (decisão do projeto RASGO): o Windows e o macOS mostram um aviso na primeira abertura — é esperado.",
+    "en": "No paid code signing (a RASGO project decision): Windows and macOS show a warning the first time — it is expected.",
+    "fr": "Sans signature payante (décision du projet RASGO) : Windows et macOS affichent un avertissement à la première ouverture — c'est attendu.",
+    "es": "Sin firma digital de pago (decisión del proyecto RASGO): Windows y macOS muestran un aviso la primera vez — es lo esperado.",
+}
+
+
+def corpo_instalacao(lang):
+    e = lambda s: html.escape(s, quote=False)
+    blocos = "\n".join('  <li><h3>%s</h3>%s</li>' % (e(h), "".join("<p>%s</p>" % e(p) for p in ps)) for h, ps in INSTALACAO[lang])
+    return f"""<p class="lead">{e(INTRO_INSTALACAO[lang])}</p>
+<ul class="steps install">
+{blocos}
+</ul>
+<div class="contact-row">
+  <a class="button button-primary" href="{RELEASE}">{e(T[lang]["dl_all"])}</a>
+  <a class="button" href="{BLOB}/INSTALL.md">INSTALL.md</a>
+</div>"""
+
+
+def pagina_interna(tipo, lang):
+    t = T[lang]
+    e = lambda s: html.escape(s, quote=False)
+    a = lambda s: html.escape(s, quote=True)
+    titulo = TITULOS[tipo][lang]
+    corpo = corpo_tutorial(lang) if tipo == "tutorial" else corpo_instalacao(lang)
+    return f"""<!doctype html>
+<html lang="{lang}">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{e(titulo)} — Rasgo Synth Asterismus</title>
+<meta name="description" content="{a(titulo + " — " + t["desc"])}" />
+{icones()}<link rel="stylesheet" href="styles.css" />
+<script src="assets/contact.js" defer></script>
+</head>
+<body>
+{cabecalho(lang, tipo)}
+<main id="conteudo">
+<section class="section page-section">
+  <h1 class="page-title">{e(titulo)}</h1>
+{corpo}
+</section>
+</main>
+
+{rodape(lang)}"""
+
+
 def main():
     for arquivo, lang, _ in PAGINAS:
         (AQUI / arquivo).write_text(pagina(arquivo, lang), encoding="utf-8")
+        for tipo in ("tutorial", "instalacao"):
+            (AQUI / arquivo_de(tipo, lang)).write_text(pagina_interna(tipo, lang), encoding="utf-8")
     print("gerar_paginas.py: %d páginas%s" % (len(PAGINAS), "" if PUBLICADO else " (em preparação, noindex)"))
 
 

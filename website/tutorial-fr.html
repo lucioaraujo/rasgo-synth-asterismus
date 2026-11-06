@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tutoriel — Rasgo Synth Asterismus</title>
+<meta name="description" content="Tutoriel — Rasgo Synth Asterismus : un instrument de scène dans lequel chaque module de synthèse est une étoile. Les étoiles se relient, bougent selon la physique, comptent leurs cycles et jouent ; une seed propose le ciel, le musicien le joue et enregistre la pièce." />
+<link rel="icon" href="assets/identity/asterismus-favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="assets/identity/favicon-32.png" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="assets/identity/apple-touch-icon.png" />
+<link rel="stylesheet" href="styles.css" />
+<script src="assets/contact.js" defer></script>
+<!-- SEO:INICIO — gerado por seo.py; editar lá, não aqui -->
+<link rel="canonical" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/tutorial-fr.html">
+<link rel="alternate" hreflang="pt-BR" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/tutorial.html">
+<link rel="alternate" hreflang="en" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/tutorial-en.html">
+<link rel="alternate" hreflang="fr" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/tutorial-fr.html">
+<link rel="alternate" hreflang="es" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/tutorial-es.html">
+<link rel="alternate" hreflang="x-default" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/tutorial.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rasgo Synth Asterismus">
+<meta property="og:title" content="Tutoriel — Rasgo Synth Asterismus">
+<meta property="og:description" content="Tutoriel — Rasgo Synth Asterismus : un instrument de scène dans lequel chaque module de synthèse est une étoile. Les étoiles se relient, bougent selon la physique, comptent leurs cycles et jouent ; une seed propose le ciel, le musicien le joue et enregistre la pièce.">
+<meta property="og:url" content="https://lucioaraujo.github.io/rasgo-synth-asterismus/tutorial-fr.html">
+<meta property="og:image" content="https://lucioaraujo.github.io/rasgo-synth-asterismus/assets/og-asterismus.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rasgo Synth Asterismus en jeu : l&#x27;Axe des forces, la Constellation aux étoiles mues par la physique et le mixeur des huit étoiles.">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Rasgo Synth Asterismus",
+  "description": "Tutoriel — Rasgo Synth Asterismus : un instrument de scène dans lequel chaque module de synthèse est une étoile. Les étoiles se relient, bougent selon la physique, comptent leurs cycles et jouent ; une seed propose le ciel, le musicien le joue et enregistre la pièce.",
+  "url": "https://lucioaraujo.github.io/rasgo-synth-asterismus/",
+  "inLanguage": "fr",
+  "image": "https://lucioaraujo.github.io/rasgo-synth-asterismus/assets/og-asterismus.jpg",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "Live electronic music instrument",
+  "operatingSystem": "Windows, macOS, Linux",
+  "downloadUrl": "https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/tag/v0.2.0",
+  "softwareVersion": "0.2.0",
+  "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+  "isAccessibleForFree": true,
+  "author": {
+    "@type": "Person",
+    "name": "Lúcio de Araújo"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "RASGO",
+    "url": "https://rasgoinstruments.arquiviagem.net/"
+  },
+  "sameAs": [
+    "https://github.com/lucioaraujo/rasgo-synth-asterismus"
+  ]
+}
+</script>
+<!-- SEO:FIM -->
+</head>
+<body>
+<div class="rasgo-strip"><a href="https://rasgoinstruments.arquiviagem.net/">RASGO — famille d'instruments et de recherche sonore</a></div>
+<a class="skip-link" href="#conteudo">Aller au contenu</a>
+
+<div class="site-header">
+  <a class="brand" href="fr.html" aria-label="Rasgo Synth Asterismus">
+    <img src="assets/identity/rasgo_logo_2026.svg" alt="" height="26" />
+    <span>RASGO<b>SYNTH</b> · ASTERISMUS</span>
+  </a>
+  <div class="header-nav">
+    <nav class="page-nav" aria-label="Pages">
+      <a href="fr.html">À propos</a>
+      <a href="tutorial-fr.html" aria-current="page">Tutoriel</a>
+      <a href="instalacao-fr.html">Installation</a>
+      <a href="fr.html#baixar">Télécharger</a>
+      <a href="fr.html#studio">Studio</a>
+    </nav>
+    <nav class="lang-switch" aria-label="Langue">
+      <a href="tutorial.html">PT</a>
+      <a href="tutorial-en.html">EN</a>
+      <a href="tutorial-fr.html" aria-current="true">FR</a>
+      <a href="tutorial-es.html">ES</a>
+    </nav>
+  </div>
+</div>
+
+<main id="conteudo">
+<section class="section page-section">
+  <h1 class="page-title">Tutoriel</h1>
+<p class="lead">Le même guide que le bouton TUTORIEL de l'app, en neuf parties : de la seed à l'enregistrement.</p>
+<div class="tutorial">
+  <article class="tutorial-part">
+    <h3>1. COMMENCER · SEED ET TERRITOIRE</h3>
+    <p>Une seed ouvre une possibilité musicale : modules, rôles, matière, tempo et narration. Entrez un nombre ou utilisez ALEA. Elle définit aussi les valeurs initiales des modules sans effacer le dessin déjà réalisé dans le Champ.</p>
+  </article>
+  <article class="tutorial-part">
+    <h3>2. COMPOSER DANS LE CHAMP</h3>
+    <p>Glissez les cercles des modules pour établir positions, voisinages et connexions. Le dessin du performeur est une mémoire spatiale et ne change que par une action intentionnelle.</p>
+  </article>
+  <article class="tutorial-part">
+    <h3>3. LIRE LA CONSTELLATION</h3>
+    <p>La Constellation est une orientation, pas un navigateur de presets. Distance, connexion, mouvement et profondeur doivent transformer la musique.</p>
+  </article>
+  <article class="tutorial-part">
+    <h3>4. AXE DES FORCES</h3>
+    <p>Le corps orange contrôle AUTONOMIE, INTERVENTION, MÉMOIRE et RISQUE sans paire inverse : les deux peuvent être à zéro. Le bleu contrôle DENSITÉ, TENSION, ESPACE et PROFONDEUR. Les deux corps ont chacun quatre macros indépendantes. Tout mouvement doit être audible. Les boutons ronds à côté sont les mêmes huit valeurs : l’axe est le geste, les boutons le réglage fin.</p>
+  </article>
+  <article class="tutorial-part">
+    <h3>5. SCÈNES ET GESTES</h3>
+    <p>NASCENTE, ESPIRAL, RASGO et BALANÇO transforment la matière sans interrompre une performance déjà en PLAY. CAPTURAR mémorise une scène ; DESFAZER revient à la capture précédente. HOLD, OUVRIR, DÉCHIRER, RÉPARER, STUTTER et DÉCALER (décale la pulsation et la phase du stem ; le tempo ne change pas) agissent sur la matière existante.</p>
+  </article>
+  <article class="tutorial-part">
+    <h3>6. ÉCOUTER ET ORCHESTRER</h3>
+    <p>Chaque module est une étoile avec son propre stem : jusqu’à huit corps dans le Champ, chacun sur son canal du Champ de matières. Une étoile à présence nulle est éteinte et ne consomme pas de calcul ; monter sa présence l’allume. Les étoiles allumées se relient par la trame du ciel — réponses, contagions, ombres et hoquets — sans que le son de l’une fuie dans le canal de l’autre. Chaque matière a une fonction — pulsation, trajectoire, ligne, champ, rupture, appel, mémoire ou trace. Utilisez présence, mix, mute, solo et contrôles locaux pour révéler ou retirer ces fonctions. MASTER ne règle que le niveau final.</p>
+  </article>
+  <article class="tutorial-part">
+    <h3>7. LE CIEL · TRAME, FORME, TEMPS ET MOUVEMENT</h3>
+    <p>TRAMA allume la trame du ciel : à chaque mesure le ciel choisit des paires en focus (réponse, contagion, ombre, hoquet, pédale, friction, cadence) et la pièce parcourt une forme — OUVERTURE, DÉVELOPPEMENT, CONTRASTE, RETOUR — affichée dans l’en-tête. Le temps respire (TEMPO 1,04×), le swing vient d’une orbite, chaque étoile compte son propre cycle et la mesure se groupe en 3+3+2 et ainsi de suite. Dans le développement une étoile DÉRIVE contre la pulsation ; des lunes calculées amènent des ÉCLIPSES. Dans la Constellation les étoiles bougent par la physique — gravité, ressorts, pendules, billard, magnétisme, effet, mousse — et laissent des traînées ; les chocs forts sonnent. Chaque étoile sonne dans la stéréo là où elle est dans la Constellation (le grave reste au centre) ; ESPAÇO ouvre ce champ. VARIAÇÃO laisse le ciel allumer et éteindre des étoiles dans le mixeur : le fader bouge seul (curseur orange) et revient à votre valeur quand vous le prenez. TRAMA éteinte, l’instrument sonne exactement comme avant.</p>
+  </article>
+  <article class="tutorial-part">
+    <h3>8. LA BIBLIOTHÈQUE · CHANGER ET ÉPINGLER DES ÉTOILES</h3>
+    <p>La seed choisit les étoiles parmi les 28 du ciel (au plus une de CONTRÔLE par ciel) ; la BIBLIOTHÈQUE les range par famille. Cliquez sur une étoile de la Constellation puis sur le bouton BIBLIOTHÈQUE (▾ ; sans étoile au foyer, il demande quel corps) : le menu montre l’étoile du corps, ÉPINGLER CETTE ÉTOILE et les familles — TON, TEXTURE, VOIX, PULSATION et CONTRÔLE. Choisissez une autre étoile et le corps la joue ; RETOUR À L’ÉTOILE DE LA SEED annule. Ou glissez depuis la bande de la BIBLIOTHÈQUE et déposez sur une étoile : le même menu s’ouvre pour elle, même avec les 8 places occupées. Une étoile épinglée (losange ambre) n’est pas éteinte par la VARIATION ni par les éclipses. Les étoiles de CONTRÔLE ne sonnent pas : allumées, elles filtrent les attaques des autres — SIEVE (le crible de Xenakis), POLYMETER (chaque étoile dans son cycle), HOCKET (une attaque à la fois) et RUPTURE (le ciel se tait d’un coup). Le MODAL vit dans un seul corps.</p>
+  </article>
+  <article class="tutorial-part">
+    <h3>9. ENREGISTRER</h3>
+    <p>PLAY joue seulement. REC lance l’enregistrement d’une prise WAV stéréo 24 bits (et lance la lecture si elle est arrêtée) ; en enregistrement, la boîte de transport et le cadre deviennent rouges avec le temps de la prise, et le bouton devient CODA : il demande la coda et ferme le fichier après sa queue — en ambre, CODA · FIN EN COURS. Le chemin du fichier apparaît dans la ligne d’état. PISTE · DURÉE (1, 2, 3 ou 5 MIN) : un clic enregistre aussitôt, avec un compte à rebours ; la forme du ciel s’ajuste à la durée — ouverture, développement, contraste, retour — avec le PARCOURS qui change les scènes, et la coda arrive à la fin. En enregistrement, la pièce se termine aussi d’elle-même quand vous laissez l’instrument jouer sans le toucher pendant un moment (environ 100 à 190 temps), après quelques tours de la seed ; l’en-tête annonce CODA PROCHE. Après la coda, seul l’enregistrement se ferme : le son continue et une nouvelle pièce s’ouvre (dans un ALBUM, la piste suivante entre d’elle-même). Avec le son déjà en cours, la prise s’ouvre par un fondu de 1,5 s. STOP est une interruption technique, pas une coda.</p>
+  </article>
+  <article class="tutorial-part">
+    <h3>RÈGLE CENTRALE</h3>
+    <p>Toute forme et tout contrôle visibles doivent avoir une conséquence musicale claire.</p>
+  </article>
+</div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <span>© Lúcio de Araújo · Rasgo Synth Asterismus 2026 · RASGO</span>
+  <nav>
+    <a href="https://github.com/lucioaraujo/rasgo-synth-asterismus">GitHub</a> ·
+    <a href="https://lucioaraujo.github.io/rasgo-synth-studio/">Rasgo Synth Studio</a> ·
+    <a href="https://github.com/lucioaraujo/rasgo-synth-asterismus/blob/main/CREDITS.md">Crédits</a> ·
+    <a href="https://github.com/lucioaraujo/rasgo-synth-asterismus/blob/main/LICENSE">Licence GPLv3+</a>
+  </nav>
+</footer>
+<dialog class="contact-dialog" data-contact-dialog aria-labelledby="contact-title">
+  <button class="dialog-close" type="button" data-contact-close aria-label="Fermer la fenêtre de contact">×</button>
+  <h2 id="contact-title">CONTACT</h2>
+  <p>Copiez l'adresse e-mail :</p>
+  <code data-contact-address></code>
+  <button class="button button-primary" type="button" data-contact-copy>Copier l'e-mail</button>
+  <p class="contact-feedback" data-contact-feedback data-copied="E-mail copié." data-fallback="Sélectionnez et copiez l&#x27;adresse ci-dessus." aria-live="polite"></p>
+</dialog>
+</body>
+</html>

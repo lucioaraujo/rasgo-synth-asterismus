@@ -12,12 +12,16 @@
 @font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/IBMPlexMono-Bold.ttf") format("truetype"); }
 
 :root {
-  --ink: #e7e3d5;
-  --muted: #a9c3b8;
-  --line: #315e51;
-  --ground: #102d27;
-  --surface: #183b33;
-  --surface-high: #1f4a40;
+  /* 6/11, pedido do autor ("mude a cor do fundo da página, pra valorizar o
+     screenshot"): o fundo sai do verde-noite da interface para uma noite
+     quase preta e quente; o verde fica nas linhas e nas superfícies, e a
+     captura (verde) se destaca. */
+  --ink: #ece7d8;
+  --muted: #b3c2ba;
+  --line: #2a3d37;
+  --ground: #0b0e0d;
+  --surface: #121816;
+  --surface-high: #1a2320;
   --star: #d18a45;
   --star-bg: #2c2521;
   --sky: #5eb6d7;
@@ -37,11 +41,16 @@ a:hover { color: var(--ink); }
 .rasgo-strip a { color: var(--muted); text-decoration: none; font: 700 .68rem "IBM Plex Mono", monospace; letter-spacing: .1em; text-transform: uppercase; }
 .rasgo-strip a:hover { color: var(--star); }
 
-.site-header { position: sticky; top: 1.9rem; z-index: 10; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; flex-wrap: wrap; padding: .9rem clamp(1.2rem, 5vw, 4rem); background: rgba(16, 45, 39, .94); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
+.site-header { position: sticky; top: 1.9rem; z-index: 10; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; flex-wrap: wrap; padding: .9rem clamp(1.2rem, 5vw, 4rem); background: rgba(11, 14, 13, .94); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
 .brand { display: flex; align-items: center; gap: .8rem; text-decoration: none; }
 .brand img { display: block; height: 1.6rem; width: auto; }
 .brand span { font: 700 1.5rem/1 "Big Shoulders Display", sans-serif; letter-spacing: .04em; color: var(--ink); }
 .brand span b { color: var(--star); font-weight: 700; }
+.header-nav { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
+.page-nav { display: flex; gap: 1rem; flex-wrap: wrap; }
+.page-nav a { color: var(--muted); text-decoration: none; font: 700 .74rem "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; padding-bottom: .15rem; }
+.page-nav a:hover { color: var(--star); }
+.page-nav a[aria-current] { color: var(--star); border-bottom: 2px solid var(--star); }
 .lang-switch { display: flex; gap: .4rem; }
 .lang-switch a { padding: .3rem .55rem; border: 1px solid var(--line); color: var(--muted); text-decoration: none; font: .72rem "IBM Plex Mono", monospace; letter-spacing: .06em; }
 .lang-switch a[aria-current="true"] { color: var(--star); border-color: var(--star); }
@@ -73,7 +82,7 @@ a:hover { color: var(--ink); }
 .example { border-left: 2px solid var(--star); padding: .2rem 0 .2rem 1rem; background: var(--star-bg); }
 
 figure.shot { margin: 1.4rem 0 0; max-width: 1100px; }
-figure.shot img { display: block; width: 100%; height: auto; border: 1px solid var(--line); }
+figure.shot img { display: block; width: 100%; height: auto; border: 1px solid rgba(209, 138, 69, .45); box-shadow: 0 18px 60px rgba(0, 0, 0, .55), 0 0 0 6px rgba(209, 138, 69, .06); }
 figure.shot figcaption { margin-top: .6rem; color: var(--muted); font: .76rem/1.5 "IBM Plex Mono", monospace; max-width: 820px; }
 
 .button { display: inline-block; padding: .65rem 1.1rem; border: 1px solid var(--line); color: var(--ink); text-decoration: none; font: .86rem "IBM Plex Mono", monospace; cursor: pointer; background: none; }
@@ -101,3 +110,18 @@ figure.shot figcaption { margin-top: .6rem; color: var(--muted); font: .76rem/1.
   .site-header { flex-direction: column; align-items: flex-start; gap: .7rem; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* o irmão: o Rasgo Synth Studio (6/11) */
+.studio-section { background: var(--surface); border-left: 3px solid var(--star); }
+.studio-section h2 { color: var(--star); }
+
+/* páginas Tutorial e Instalação (6/11, no padrão do site do Aquorbium) */
+.page-title { margin: 0 0 1rem; font: 700 clamp(2.2rem, 6vw, 3.6rem)/1.05 "Big Shoulders Display", sans-serif; }
+.page-section .lead { max-width: 760px; color: var(--muted); font-size: 1.05rem; }
+.tutorial { display: grid; gap: 1rem; max-width: 900px; margin-top: 1.6rem; }
+.tutorial-part { padding: 1.2rem 1.4rem; background: var(--surface); border: 1px solid var(--line); border-left: 2px solid var(--star); }
+.tutorial-part h3 { margin: 0 0 .5rem; font: 700 .95rem "IBM Plex Mono", monospace; color: var(--star); letter-spacing: .04em; }
+.tutorial-part p { margin: .4rem 0 0; color: var(--muted); max-width: 820px; }
+.steps.install { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.steps.install p { margin: .3rem 0 0; }
+@media (max-width: 760px) { .header-nav { gap: .7rem; } .page-nav { gap: .7rem; } }

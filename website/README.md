@@ -53,6 +53,22 @@ python3 gerar_paginas.py && python3 seo.py
 | `assets/og-asterismus.jpg` | o mesmo instantâneo, recorte central 1200×630, JPEG q85 |
 | `assets/identity/rasgo_logo_2026.svg` | a logo RASGO do cabeçalho do app (`../assets/rasgo_logo_2026.svg`), arte de Lúcio de Araújo; na cópia do site o preto vira o âmbar `#d18a45`, a mesma troca que o app faz ao desenhá-la (6/11: em preto ela sumia no fundo verde) |
 
+## Páginas, menu e ícones (6/11/2026)
+
+Pedidos do autor: menu, tutoriais, a ligação com o Studio, favicon e ícones,
+fundo que valorize a captura — "como fizemos nas páginas de outros
+instrumentos da família rasgo". Seguindo o site do Aquorbium: menu
+(Sobre · Tutorial · Instalação · Baixar · Studio) em todas as páginas;
+`tutorial*.html` com o tutorial do app (texto extraído de
+`src/app/PerformanceApp.cpp` para `tutorial_textos.json`, nos 4 idiomas —
+ao mudar o tutorial do app, extrair de novo); `instalacao*.html` (resumo do
+`INSTALL.md`, com FR e ES traduzidos aqui); a seção **Irmão do Rasgo Synth
+Studio** (`#studio`) e o link no rodapé; fundo `#0b0e0d` (a captura verde
+ganha moldura âmbar). Ícones: `asterismus-favicon.svg`, `favicon-32.png` e
+`apple-touch-icon.png` (180, reduzido do 512) vêm de
+`../packaging/icon/proposta/` — **a proposta de ícone do app, ainda à espera
+da decisão do autor**; se ela mudar, trocar aqui também.
+
 ## Proveniência das cópias
 
 | Arquivo | Origem | sha256 | Licença |
