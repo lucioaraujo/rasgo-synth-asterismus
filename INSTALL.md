@@ -44,10 +44,10 @@ first release they had not yet been opened on a real Windows or Mac machine
 
 ### Where the recordings go
 
-`~/Music/Rasgo Synth Performance/recordings/` (the mixed take as a 24-bit WAV
+`~/Music/Rasgo Synth Asterismus/recordings/` (the mixed take as a 24-bit WAV
 with dither, one WAV per star and a JSON manifest, one folder per take),
-albums in `~/Music/Rasgo Synth Performance/albuns/`, and the diagnostics in
-`~/Music/Rasgo Synth Performance/diagnostico/`.
+albums in `~/Music/Rasgo Synth Asterismus/albuns/`, and the diagnostics in
+`~/Music/Rasgo Synth Asterismus/diagnostico/`.
 
 ### Building from source
 
@@ -118,10 +118,10 @@ verdade (ver a matriz de plataformas no README).
 
 ### Onde ficam as gravações
 
-`~/Music/Rasgo Synth Performance/recordings/` (a tomada mixada em WAV de 24 bits
+`~/Music/Rasgo Synth Asterismus/recordings/` (a tomada mixada em WAV de 24 bits
 com dither, um WAV por estrela e o manifesto JSON, uma pasta por tomada), os
-álbuns em `~/Music/Rasgo Synth Performance/albuns/` e o diagnóstico em
-`~/Music/Rasgo Synth Performance/diagnostico/`.
+álbuns em `~/Music/Rasgo Synth Asterismus/albuns/` e o diagnóstico em
+`~/Music/Rasgo Synth Asterismus/diagnostico/`.
 
 ### Compilar a partir do código
 

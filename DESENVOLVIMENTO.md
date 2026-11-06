@@ -20,9 +20,11 @@ Localização atual (2026-10-27): `RASGO/PROJETOS_AUTORAIS/RASGO_SYNTH_ASTERISMU
 Os atalhos com o nome antigo foram removidos em 2026-10-27/28 (o da raiz na
 arrumação do RASGO; o de `PROJETOS_AUTORAIS/` depois que o Codex tirou o
 atalho interno do Studio). Registros históricos que citam
-`RASGO_SYNTH_PERFORMANCE` ficam como proveniência. Como no Studio, a pasta de gravações e o formato
-das tomadas mantêm o nome antigo (`~/Music/Rasgo Synth Performance`,
-`RASGO_PERFORMANCE_TAKE`), para as tomadas já gravadas continuarem legíveis;
+`RASGO_SYNTH_PERFORMANCE` ficam como proveniência. A pasta de gravações passou a
+`~/Music/Rasgo Synth Asterismus` em 2026-11-07 (pedido do autor; as tomadas
+antigas foram movidas para ela, `AUDIOS_RASGO/Asterismus`); o formato das
+tomadas mantém o nome antigo (`RASGO_PERFORMANCE_TAKE`), para as já gravadas
+continuarem legíveis;
 os nomes internos do código (`Performance*`) descrevem o ato de tocar e ficam.
 Criação e desenvolvimento são a finalidade; autoria, licença e identidade
 permanecem próprias. Ler [as instruções RASGO](../../AGENTS.md) e a continuidade

@@ -42,8 +42,11 @@ int runLayoutTests() {
            "first header row shares one vertical alignment");
     expect(header.alea.x - (header.seedEditor.x + header.seedEditor.width) == 6,
            "ALEA stays close to the seed number box");
-    expect(header.tempo.width == 210 && header.master.width == 210,
+    expect(header.tempo.width == 175 && header.master.width == 175,
            "tempo and master sliders keep the same header geometry");
+    expect(header.learn.y == header.master.y && header.learn.width >= 64
+               && header.learn.x > header.master.right() && header.learn.right() < header.tutorial.x,
+           "LEARN sits in the first row, between MASTER and TUTORIAL");
     expect(header.tutorial.width == 86 && header.about.width == 86
                && header.tutorial.y == header.master.y && header.about.y == header.master.y,
            "tutorial and about occupy their own first-row system targets");

@@ -30,14 +30,21 @@ and [`docs/`](docs/).
   timing (swing, a late snare, a late hat), ghost snares and accents, and
   every four bars ends with an answer (a ghost snare and a 2–4 hat ratchet).
 
-- **LEARN:** a fiche for every star (and the MODAL), in the four
-  languages — what it is, how it works, the three controls, what to listen
-  for and where it comes from — opened from the LIBRARY menu (LEARN ·
-  <star>), with a picker to browse all 37; the star tooltips now use its
-  one-line summary in the interface language.
+- **LEARN:** as in the other RASGO instruments, a LEARN button in the header:
+  switched on, a panel under the Constellation explains whatever is under
+  the mouse — a star, one of its three controls, any button. Behind it, a
+  fiche for every star (and the MODAL) in the four languages — what it is,
+  how it works, the three controls, what to listen for and where it comes
+  from — also opened whole from the LIBRARY menu (LEARN · <star>), with a
+  picker to browse all 37. TEMPO and MASTER are a little narrower to make
+  room for it.
 - **Fix:** moving any knob of any star no longer reconfigures the FM FLUTE
   (its envelope mid-note) and the THEREMIN (its vibrato restarted); each
   voice is reconfigured only when its own control changes.
+- **Recordings folder:** `~/Music/Rasgo Synth Asterismus/` (recordings,
+  albums, diagnostics); until 0.2.0 it was `~/Music/Rasgo Synth Performance/`,
+  the instrument's former name — move older takes there by hand if you want
+  them together.
 - **Texts:** the in-app tutorial describes the 36 stars, POLYPHONY, the
   CUT · RES. · ECHO · HALL controls, the sky's cuts and tape, and the
   FORM · PATH / ALBUM box, and uses in each language the same labels as the
