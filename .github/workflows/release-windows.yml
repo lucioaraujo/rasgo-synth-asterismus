@@ -1,0 +1,136 @@
+name: Release — rebuild Windows only
+
+# 2026-11-06: the v0.2.0 release run (42133093481) passed on Linux and macOS
+# but Windows stopped at configure — git turned LF into CRLF on checkout and
+# the SHA-256 check of vendor/studio-dsp (ModalResonator.hpp) failed. The fix
+# is .gitattributes (vendor/** -text). To avoid paying the whole matrix again
+# (macOS counts ×10), this workflow builds and tests Windows only, takes the
+# Linux and macOS packages from the earlier run and creates the release.
+# Manual only. The Windows steps are the ones of package.yml.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (must exist)'
+        default: 'v0.2.0'
+        required: true
+      run_id:
+        description: 'Earlier package.yml run with the Linux and macOS packages'
+        default: '42133093481'
+        required: true
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Asterismus
+        uses: actions/checkout@v4
+
+      - name: Checkout JUCE
+        uses: actions/checkout@v4
+        with:
+          repository: juce-framework/JUCE
+          ref: '9.0.0'
+          path: JUCE-checkout
+
+      - name: Install NSIS
+        run: choco install nsis -y
+
+      - name: Configure
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DRASGO_PERFORMANCE_BUILD_APP=ON
+          -DRASGO_PERFORMANCE_JUCE_ROOT=${{ github.workspace }}/JUCE-checkout
+
+      - name: Build (app and tests)
+        run: cmake --build build --config Release --parallel 2
+
+      - name: Test
+        working-directory: build
+        run: ctest -C Release --output-on-failure --timeout 900
+
+      - name: No dynamic VC++ runtime
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Recurse -Path build -Filter "Rasgo Synth Asterismus.exe" | Select-Object -First 1
+          if (-not $exe) { Write-Error 'Rasgo Synth Asterismus.exe not found'; exit 1 }
+          $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+          $dumpbin = Get-ChildItem -Recurse -Path "$vs\VC\Tools\MSVC" -Filter dumpbin.exe | Where-Object { $_.FullName -match 'Hostx64\\x64' } | Select-Object -First 1
+          $deps = & $dumpbin.FullName /DEPENDENTS $exe.FullName
+          $deps
+          $bad = $deps | Select-String -Pattern 'VCRUNTIME|MSVCP|api-ms-win-crt'
+          if ($bad) { Write-Error "the .exe depends on the dynamic Visual C++ runtime: $bad"; exit 1 }
+          "ok: no dependency on the Visual C++ Redistributable"
+
+      - name: Package
+        working-directory: build
+        shell: bash
+        run: cpack -G NSIS -C Release
+
+      - name: Portable .zip
+        working-directory: build
+        run: cpack -G ZIP -C Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: asterismus-windows-latest
+          path: |
+            build/*.exe
+            build/*.zip
+          if-no-files-found: error
+
+  release:
+    needs: [windows]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Windows package (this run)
+        uses: actions/download-artifact@v4
+        with:
+          name: asterismus-windows-latest
+          path: pkgs/windows
+
+      - name: Linux package (earlier run)
+        uses: actions/download-artifact@v4
+        with:
+          name: asterismus-ubuntu-22.04
+          path: pkgs/linux
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: macOS package (earlier run)
+        uses: actions/download-artifact@v4
+        with:
+          name: asterismus-macos-latest
+          path: pkgs/macos
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Check what arrived
+        run: |
+          find pkgs -type f -print
+          for ext in deb tar.gz dmg exe zip; do
+            find pkgs -type f -name "*.$ext" | grep -q . \
+              || { echo "::error::no .$ext package among the artifacts"; exit 1; }
+          done
+
+      - name: Create the release with the packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ inputs.tag }}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "Rasgo Synth Asterismus ${{ inputs.tag }}" \
+            --verify-tag \
+            --notes "Install: see [INSTALL.md](https://github.com/${GITHUB_REPOSITORY}/blob/${{ inputs.tag }}/INSTALL.md) — on first launch Windows and macOS show a security warning; it is expected (no paid signing). Instalação: veja o INSTALL.md.
+
+          Stated limitation: the Windows and macOS packages were built and tested by CI, not yet opened on real Windows/macOS machines; the macOS package is ad-hoc signed. The Linux and macOS packages come from run ${{ inputs.run_id }} (the tag); the Windows package was rebuilt from main with only .gitattributes added (line endings of vendor/), the same source." \
+            $(find pkgs -type f \( -name '*.deb' -o -name '*.tar.gz' -o -name '*.dmg' -o -name '*.exe' -o -name '*.zip' \))
