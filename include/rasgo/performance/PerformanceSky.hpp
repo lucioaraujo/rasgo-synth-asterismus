@@ -326,7 +326,7 @@ inline constexpr std::array<const char*, 3> performanceStarControlNames(
     case PerformanceModuleBody::Theremin: return {"ALTURA", "PRES.", "DERIVA"};
     case PerformanceModuleBody::Scat: return {"CORPO", "VOGAL", "FRASE"};
     case PerformanceModuleBody::Choir: return {"CORPO", "ABERT.", "FRASE"};
-    case PerformanceModuleBody::Vosim: return {"PULSO", "FORM.", "DECAY"};
+    case PerformanceModuleBody::Vosim: return {"PULSO", "FORM.", "DECAIM."};
     case PerformanceModuleBody::Walsh: return {"ALTURA", "SEQUÊNCIA", "CORTE"};
     case PerformanceModuleBody::HardSync: return {"RAZÃO", "CORPO", "VARRED."};
     case PerformanceModuleBody::AtariPunk: return {"CLOCK", "PULSO", "ATAQUE"};

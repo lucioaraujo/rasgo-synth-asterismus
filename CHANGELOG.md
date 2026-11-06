@@ -30,6 +30,14 @@ and [`docs/`](docs/).
   timing (swing, a late snare, a late hat), ghost snares and accents, and
   every four bars ends with an answer (a ghost snare and a 2–4 hat ratchet).
 
+- **Texts:** the in-app tutorial describes the 36 stars, POLYPHONY, the
+  CUT · RES. · ECHO · HALL controls, the sky's cuts and tape, and the
+  FORM · PATH / ALBUM box, and uses in each language the same labels as the
+  interface (it said TRAMA, VARIAÇÃO, CAPTURAR in English, French and
+  Spanish); every star control is now translated (most showed in
+  Portuguese in any language), and so are the CUT · RES. · ECHO · HALL
+  labels.
+
 ## 0.2.0 — first public version (2026-11-06)
 
 The first public version of the Asterismus, a live instrument in which every
