@@ -1,0 +1,2589 @@
+{
+ "familias": {
+  "Tone": {
+   "pt": "TOM",
+   "en": "TONE",
+   "fr": "TON",
+   "es": "TONO"
+  },
+  "Texture": {
+   "pt": "TEXTURA",
+   "en": "TEXTURE",
+   "fr": "TEXTURE",
+   "es": "TEXTURA"
+  },
+  "Voice": {
+   "pt": "VOZ",
+   "en": "VOICE",
+   "fr": "VOIX",
+   "es": "VOZ"
+  },
+  "Pulse": {
+   "pt": "PULSO",
+   "en": "PULSE",
+   "fr": "PULSATION",
+   "es": "PULSO"
+  },
+  "Control": {
+   "pt": "CONTROLE",
+   "en": "CONTROL",
+   "fr": "CONTRÔLE",
+   "es": "CONTROL"
+  }
+ },
+ "fichas": [
+  {
+   "corpo": "Acid",
+   "rapido": {
+    "pt": "Um baixo ácido de filtro ressonante, que canta a frase do circuito.",
+    "en": "An acid bass with a resonant filter, singing the circuit's phrase.",
+    "fr": "Une basse acide à filtre résonant, qui chante la phrase du circuit.",
+    "es": "Un bajo ácido de filtro resonante, que canta la frase del circuito."
+   },
+   "como": {
+    "pt": "Uma voz de baixo com filtro passa-baixa ressonante e envelope que abre o filtro a cada nota; a frase de 16 passos vem da seed, e o céu, a densidade e a tensão abrem ou fecham o timbre.",
+    "en": "A bass voice with a resonant low-pass filter and an envelope that opens the filter on every note; the 16-step phrase comes from the seed, and the sky's density and tension open or close the timbre.",
+    "fr": "Une voix de basse avec un filtre passe-bas résonant et une enveloppe qui ouvre le filtre à chaque note ; la phrase de 16 pas vient de la seed, et la densité et la tension du ciel ouvrent ou ferment le timbre.",
+    "es": "Una voz de bajo con filtro pasa bajos resonante y una envolvente que abre el filtro en cada nota; la frase de 16 pasos viene de la seed, y la densidad y la tensión del cielo abren o cierran el timbre."
+   },
+   "controles": [
+    {
+     "pt": "onde o filtro corta: grave e abafado à esquerda, aberto à direita.",
+     "en": "where the filter cuts: low and muffled on the left, open on the right.",
+     "fr": "où le filtre coupe : grave et étouffé à gauche, ouvert à droite.",
+     "es": "dónde corta el filtro: grave y apagado a la izquierda, abierto a la derecha."
+    },
+    {
+     "pt": "a ressonância do filtro: o assobio em volta do corte.",
+     "en": "the filter's resonance: the whistle around the cutoff.",
+     "fr": "la résonance du filtre : le sifflement autour de la coupure.",
+     "es": "la resonancia del filtro: el silbido alrededor del corte."
+    },
+    {
+     "pt": "quanto o envelope abre o filtro em cada nota: do macio ao estalado.",
+     "en": "how much the envelope opens the filter on each note: from soft to snappy.",
+     "fr": "combien l’enveloppe ouvre le filtre à chaque note : du doux au claquant.",
+     "es": "cuánto abre la envolvente el filtro en cada nota: de suave a chasqueante."
+    }
+   ],
+   "ouvir": {
+    "pt": "Deixe CORTE baixo e suba ARTIC: cada nota abre e fecha sozinha.",
+    "en": "Keep CUT low and raise ARTIC: each note opens and closes by itself.",
+    "fr": "Gardez COUPE bas et montez ARTIC : chaque note s’ouvre et se ferme toute seule.",
+    "es": "Deje CORTE bajo y suba ARTIC: cada nota se abre y se cierra sola."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio, a voz ACID; a linhagem dos baixos de filtro ressonante.",
+    "en": "Rasgo Synth Studio, the ACID voice; the lineage of resonant-filter basses.",
+    "fr": "Rasgo Synth Studio, la voix ACID ; la lignée des basses à filtre résonant.",
+    "es": "Rasgo Synth Studio, la voz ACID; el linaje de los bajos de filtro resonante."
+   },
+   "nome": "ACID",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "CORTE",
+     "en": "CUT",
+     "fr": "COUPE",
+     "es": "CORTE"
+    },
+    {
+     "pt": "RESO",
+     "en": "RESO",
+     "fr": "RÉSO",
+     "es": "RESO"
+    },
+    {
+     "pt": "ARTIC",
+     "en": "ARTIC",
+     "fr": "ARTIC",
+     "es": "ARTIC"
+    }
+   ]
+  },
+  {
+   "corpo": "Gendyn",
+   "rapido": {
+    "pt": "Uma onda que se refaz a cada ciclo: matéria estocástica.",
+    "en": "A wave remade on every cycle: stochastic matter.",
+    "fr": "Une onde refaite à chaque cycle : matière stochastique.",
+    "es": "Una onda que se rehace en cada ciclo: materia estocástica."
+   },
+   "como": {
+    "pt": "A forma de onda é uma linha de pontos que andam ao acaso, em amplitude e em duração, a cada volta — a síntese dinâmica estocástica de Xenakis. Parada, é quase um tom; agitada, vira ruído com altura.",
+    "en": "The waveform is a line of points that wander at random, in amplitude and in duration, on every turn — Xenakis's dynamic stochastic synthesis. Still, it is almost a tone; stirred, it becomes pitched noise.",
+    "fr": "La forme d’onde est une ligne de points qui errent au hasard, en amplitude et en durée, à chaque tour — la synthèse dynamique stochastique de Xenakis. Calme, c’est presque un son ; agitée, elle devient un bruit à hauteur.",
+    "es": "La forma de onda es una línea de puntos que andan al azar, en amplitud y en duración, en cada vuelta — la síntesis dinámica estocástica de Xenakis. Quieta, es casi un tono; agitada, se vuelve ruido con altura."
+   },
+   "controles": [
+    {
+     "pt": "o tamanho do passo de amplitude de cada ponto: do tom estável ao áspero.",
+     "en": "the size of each point's amplitude step: from a steady tone to a rough one.",
+     "fr": "la taille du pas d’amplitude de chaque point : du son stable au rugueux.",
+     "es": "el tamaño del paso de amplitud de cada punto: del tono estable al áspero."
+    },
+    {
+     "pt": "o tamanho do passo de duração: quanto a altura escorrega.",
+     "en": "the size of the duration step: how much the pitch slides.",
+     "fr": "la taille du pas de durée : combien la hauteur glisse.",
+     "es": "el tamaño del paso de duración: cuánto se desliza la altura."
+    },
+    {
+     "pt": "o quanto o sinal empurra a saturação: mais fluxo, mais presença.",
+     "en": "how hard the signal drives the saturation: more flow, more presence.",
+     "fr": "combien le signal pousse la saturation : plus de flux, plus de présence.",
+     "es": "cuánto empuja la señal la saturación: más flujo, más presencia."
+    }
+   ],
+   "ouvir": {
+    "pt": "Com PASSO e TEMPO quase em zero, ouça o tom nascer; suba devagar até ele se desfazer.",
+    "en": "With STEP and TEMPO near zero, hear the tone being born; raise them slowly until it comes apart.",
+    "fr": "Avec PAS et TEMPO presque à zéro, écoutez le son naître ; montez lentement jusqu’à ce qu’il se défasse.",
+    "es": "Con PASO y TEMPO casi en cero, oiga nacer el tono; súbalos despacio hasta que se deshaga."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (GendynOscillator); GENDYN, Iannis Xenakis.",
+    "en": "Rasgo Synth Studio (GendynOscillator); GENDYN, Iannis Xenakis.",
+    "fr": "Rasgo Synth Studio (GendynOscillator) ; GENDYN, Iannis Xenakis.",
+    "es": "Rasgo Synth Studio (GendynOscillator); GENDYN, Iannis Xenakis."
+   },
+   "nome": "GENDYN",
+   "familia": "Texture",
+   "nomes_controles": [
+    {
+     "pt": "PASSO",
+     "en": "STEP",
+     "fr": "PAS",
+     "es": "PASO"
+    },
+    {
+     "pt": "TEMPO",
+     "en": "TEMPO",
+     "fr": "TEMPO",
+     "es": "TEMPO"
+    },
+    {
+     "pt": "FLUXO",
+     "en": "FLOW",
+     "fr": "FLUX",
+     "es": "FLUJO"
+    }
+   ]
+  },
+  {
+   "corpo": "Percussion",
+   "rapido": {
+    "pt": "A bateria do céu: bumbo, caixa, chimbal e o kit da seed.",
+    "en": "The sky's drum kit: kick, snare, hat and the seed's kit.",
+    "fr": "La batterie du ciel : grosse caisse, caisse claire, charleston et le kit de la seed.",
+    "es": "La batería del cielo: bombo, caja, hi-hat y el kit de la seed."
+   },
+   "como": {
+    "pt": "Bumbo, caixa e chimbal seguem as células do circuito e o divisor polirrítmico; a seed acrescenta cowbell, palmas, prato e maracas, e em boa parte das seeds a DRUMS toca famílias de groove que mudam a cada parte da forma.",
+    "en": "Kick, snare and hat follow the circuit's cells and the polyrhythmic divider; the seed adds cowbell, clap, cymbal and maracas, and in many seeds the DRUMS play groove families that change with each part of the form.",
+    "fr": "Grosse caisse, caisse claire et charleston suivent les cellules du circuit et le diviseur polyrythmique ; la seed ajoute cloche, claps, cymbale et maracas, et dans bien des seeds la DRUMS joue des familles de groove qui changent à chaque partie de la forme.",
+    "es": "Bombo, caja y hi-hat siguen las células del circuito y el divisor polirrítmico; la seed añade cencerro, palmas, platillo y maracas, y en muchas seeds la DRUMS toca familias de groove que cambian con cada parte de la forma."
+   },
+   "controles": [
+    {
+     "pt": "a atividade: mais bumbos e ataques quando o céu está denso.",
+     "en": "activity: more kicks and hits when the sky is dense.",
+     "fr": "l’activité : plus de grosses caisses et de frappes quand le ciel est dense.",
+     "es": "la actividad: más bombos y golpes cuando el cielo está denso."
+    },
+    {
+     "pt": "a fragmentação: caixas e chimbais fora dos lugares de sempre.",
+     "en": "fragmentation: snares and hats off their usual places.",
+     "fr": "la fragmentation : caisses et charlestons hors de leurs places habituelles.",
+     "es": "la fragmentación: cajas y hi-hats fuera de sus lugares de siempre."
+    },
+    {
+     "pt": "a abertura do chimbal: do fechado ao aberto.",
+     "en": "how open the hat is: from closed to open.",
+     "fr": "l’ouverture du charleston : du fermé à l’ouvert.",
+     "es": "la apertura del hi-hat: de cerrado a abierto."
+    }
+   ],
+   "ouvir": {
+    "pt": "Mute as outras estrelas e ouça como o groove muda de família no contraste.",
+    "en": "Mute the other stars and hear the groove change family in the contrast.",
+    "fr": "Coupez les autres étoiles et écoutez le groove changer de famille dans le contraste.",
+    "es": "Silencie las otras estrellas y oiga el groove cambiar de familia en el contraste."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (DrumVoices, PolyrhythmDivider, GrooveDialogue como conceito); vozes inspiradas na TR-808.",
+    "en": "Rasgo Synth Studio (DrumVoices, PolyrhythmDivider, GrooveDialogue as a concept); voices inspired by the TR-808.",
+    "fr": "Rasgo Synth Studio (DrumVoices, PolyrhythmDivider, GrooveDialogue comme concept) ; voix inspirées de la TR-808.",
+    "es": "Rasgo Synth Studio (DrumVoices, PolyrhythmDivider, GrooveDialogue como concepto); voces inspiradas en la TR-808."
+   },
+   "nome": "DRUMS",
+   "familia": "Pulse",
+   "nomes_controles": [
+    {
+     "pt": "ATIV.",
+     "en": "ACTIV.",
+     "fr": "ACTIV.",
+     "es": "ACTIV."
+    },
+    {
+     "pt": "FRAG.",
+     "en": "FRAG.",
+     "fr": "FRAG.",
+     "es": "FRAG."
+    },
+    {
+     "pt": "ABERT.",
+     "en": "OPEN.",
+     "fr": "OUVR.",
+     "es": "ABIER."
+    }
+   ]
+  },
+  {
+   "corpo": "FmFlute",
+   "rapido": {
+    "pt": "Uma flauta de FM, soprada frase a frase.",
+    "en": "An FM flute, blown phrase by phrase.",
+    "fr": "Une flûte FM, soufflée phrase par phrase.",
+    "es": "Una flauta FM, soplada frase a frase."
+   },
+   "como": {
+    "pt": "Uma voz de síntese FM com sopro: cada passo da frase do céu acende uma nota, com a duração do gesto; a tensão e as mutações do céu a deixam mais tensa.",
+    "en": "An FM voice with breath: each step of the sky's phrase starts a note, as long as the gesture; the sky's tension and mutations make it tenser.",
+    "fr": "Une voix FM avec souffle : chaque pas de la phrase du ciel lance une note, aussi longue que le geste ; la tension et les mutations du ciel la tendent.",
+    "es": "Una voz FM con soplo: cada paso de la frase del cielo enciende una nota, tan larga como el gesto; la tensión y las mutaciones del cielo la tensan."
+   },
+   "controles": [
+    {
+     "pt": "o corpo do sopro: quanto a voz entra na saturação.",
+     "en": "the body of the breath: how far the voice goes into saturation.",
+     "fr": "le corps du souffle : combien la voix entre en saturation.",
+     "es": "el cuerpo del soplo: cuánto entra la voz en saturación."
+    },
+    {
+     "pt": "o brilho: o índice de FM — o sopro do ataque e o timbre de cada nota.",
+     "en": "brightness: the FM index — the breath of the attack and the timbre of each note.",
+     "fr": "la brillance : l’indice de FM — le souffle de l’attaque et le timbre de chaque note.",
+     "es": "el brillo: el índice de FM — el soplo del ataque y el timbre de cada nota."
+    },
+    {
+     "pt": "a duração de cada nota da frase: do staccato ao ligado.",
+     "en": "the length of each note of the phrase: from staccato to legato.",
+     "fr": "la durée de chaque note de la phrase : du staccato au legato.",
+     "es": "la duración de cada nota de la frase: del staccato al legato."
+    }
+   ],
+   "ouvir": {
+    "pt": "Suba FRASE: as notas viram linhas longas que se cruzam com as outras estrelas.",
+    "en": "Raise PHRASE: the notes become long lines crossing the other stars.",
+    "fr": "Montez PHRASE : les notes deviennent de longues lignes qui croisent les autres étoiles.",
+    "es": "Suba FRASE: las notas se vuelven líneas largas que se cruzan con las otras estrellas."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (FmFluteVoice).",
+    "en": "Rasgo Synth Studio (FmFluteVoice).",
+    "fr": "Rasgo Synth Studio (FmFluteVoice).",
+    "es": "Rasgo Synth Studio (FmFluteVoice)."
+   },
+   "nome": "FM FLUTE",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "CORPO",
+     "en": "BODY",
+     "fr": "CORPS",
+     "es": "CUERPO"
+    },
+    {
+     "pt": "BRILHO",
+     "en": "BRIGHT",
+     "fr": "BRILL.",
+     "es": "BRILLO"
+    },
+    {
+     "pt": "FRASE",
+     "en": "PHRASE",
+     "fr": "PHRASE",
+     "es": "FRASE"
+    }
+   ]
+  },
+  {
+   "corpo": "Theremin",
+   "rapido": {
+    "pt": "Uma linha contínua, que desliza de uma altura à outra.",
+    "en": "A continuous line, gliding from one pitch to the next.",
+    "fr": "Une ligne continue, qui glisse d’une hauteur à l’autre.",
+    "es": "Una línea continua, que se desliza de una altura a otra."
+   },
+   "como": {
+    "pt": "Um tom sem ataque que persegue a altura do corpo e desliza até ela; o arco da partitura, a intervenção e as mutações do céu o empurram para cima.",
+    "en": "A tone without attack that chases the body's pitch and glides to it; the score's arc, the intervention and the sky's mutations push it upwards.",
+    "fr": "Un son sans attaque qui poursuit la hauteur du corps et y glisse ; l’arc de la partition, l’intervention et les mutations du ciel le poussent vers le haut.",
+    "es": "Un tono sin ataque que persigue la altura del cuerpo y se desliza hasta ella; el arco de la partitura, la intervención y las mutaciones del cielo lo empujan hacia arriba."
+   },
+   "controles": [
+    {
+     "pt": "o registro: quanto acima ou abaixo da altura do corpo.",
+     "en": "the register: how far above or below the body's pitch.",
+     "fr": "le registre : combien au-dessus ou au-dessous de la hauteur du corps.",
+     "es": "el registro: cuánto por encima o por debajo de la altura del cuerpo."
+    },
+    {
+     "pt": "a presença: o volume e o quanto a voz satura.",
+     "en": "presence: the volume and how much the voice saturates.",
+     "fr": "la présence : le volume et la saturation de la voix.",
+     "es": "la presencia: el volumen y cuánto satura la voz."
+    },
+    {
+     "pt": "o vibrato: mais lento e raso à esquerda, mais rápido e fundo à direita.",
+     "en": "the vibrato: slower and shallower on the left, faster and deeper on the right.",
+     "fr": "le vibrato : plus lent et léger à gauche, plus rapide et profond à droite.",
+     "es": "el vibrato: más lento y leve a la izquierda, más rápido y hondo a la derecha."
+    }
+   ],
+   "ouvir": {
+    "pt": "Use-o como fio entre estrelas de ataque: ele preenche o espaço entre as notas.",
+    "en": "Use it as a thread between percussive stars: it fills the space between notes.",
+    "fr": "Utilisez-le comme fil entre des étoiles percussives : il remplit l’espace entre les notes.",
+    "es": "Úselo como hilo entre estrellas de ataque: llena el espacio entre las notas."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (ThereminVoice).",
+    "en": "Rasgo Synth Studio (ThereminVoice).",
+    "fr": "Rasgo Synth Studio (ThereminVoice).",
+    "es": "Rasgo Synth Studio (ThereminVoice)."
+   },
+   "nome": "THEREMIN",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "ALTURA",
+     "en": "PITCH",
+     "fr": "HAUTEUR",
+     "es": "ALTURA"
+    },
+    {
+     "pt": "PRES.",
+     "en": "PRES.",
+     "fr": "PRÉS.",
+     "es": "PRES."
+    },
+    {
+     "pt": "DERIVA",
+     "en": "DRIFT",
+     "fr": "DÉRIVE",
+     "es": "DERIVA"
+    }
+   ]
+  },
+  {
+   "corpo": "Scat",
+   "rapido": {
+    "pt": "Sílabas sintéticas: uma voz que improvisa sem palavras.",
+    "en": "Synthetic syllables: a voice improvising without words.",
+    "fr": "Des syllabes synthétiques : une voix qui improvise sans mots.",
+    "es": "Sílabas sintéticas: una voz que improvisa sin palabras."
+   },
+   "como": {
+    "pt": "Uma voz de formantes que canta uma sílaba a cada passo da frase do céu, trocando de vogal; a memória e as mutações do céu alongam as sílabas.",
+    "en": "A formant voice that sings one syllable on each step of the sky's phrase, changing vowel; the sky's memory and mutations stretch the syllables.",
+    "fr": "Une voix à formants qui chante une syllabe à chaque pas de la phrase du ciel, en changeant de voyelle ; la mémoire et les mutations du ciel allongent les syllabes.",
+    "es": "Una voz de formantes que canta una sílaba en cada paso de la frase del cielo, cambiando de vocal; la memoria y las mutaciones del cielo alargan las sílabas."
+   },
+   "controles": [
+    {
+     "pt": "o corpo: quanto a voz satura e pesa.",
+     "en": "the body: how heavy the voice is and how much it saturates.",
+     "fr": "le corps : le poids de la voix et sa saturation.",
+     "es": "el cuerpo: el peso de la voz y cuánto satura."
+    },
+    {
+     "pt": "a vogal de partida (a, e, i, o, u, que então giram).",
+     "en": "the starting vowel (a, e, i, o, u, which then rotate).",
+     "fr": "la voyelle de départ (a, e, i, o, u, qui tournent ensuite).",
+     "es": "la vocal de partida (a, e, i, o, u, que luego giran)."
+    },
+    {
+     "pt": "a duração de cada sílaba.",
+     "en": "the length of each syllable.",
+     "fr": "la durée de chaque syllabe.",
+     "es": "la duración de cada sílaba."
+    }
+   ],
+   "ouvir": {
+    "pt": "Ponha SCAT ao lado da DRUMS: a voz responde ao groove.",
+    "en": "Put SCAT next to the DRUMS: the voice answers the groove.",
+    "fr": "Mettez SCAT à côté de la DRUMS : la voix répond au groove.",
+    "es": "Ponga SCAT junto a la DRUMS: la voz responde al groove."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (ScatVoice).",
+    "en": "Rasgo Synth Studio (ScatVoice).",
+    "fr": "Rasgo Synth Studio (ScatVoice).",
+    "es": "Rasgo Synth Studio (ScatVoice)."
+   },
+   "nome": "SCAT",
+   "familia": "Voice",
+   "nomes_controles": [
+    {
+     "pt": "CORPO",
+     "en": "BODY",
+     "fr": "CORPS",
+     "es": "CUERPO"
+    },
+    {
+     "pt": "VOGAL",
+     "en": "VOWEL",
+     "fr": "VOYELLE",
+     "es": "VOCAL"
+    },
+    {
+     "pt": "FRASE",
+     "en": "PHRASE",
+     "fr": "PHRASE",
+     "es": "FRASE"
+    }
+   ]
+  },
+  {
+   "corpo": "Choir",
+   "rapido": {
+    "pt": "Um coro de vozes sintéticas num acorde menor com sétima.",
+    "en": "A choir of synthetic voices on a minor seventh chord.",
+    "fr": "Un chœur de voix synthétiques sur un accord mineur septième.",
+    "es": "Un coro de voces sintéticas en un acorde menor con séptima."
+   },
+   "como": {
+    "pt": "A cada frase, um acorde de quatro vozes (raiz, terça menor, quinta, sétima) é cantado numa vogal; o registro vem da seed e do CORPO.",
+    "en": "On every phrase, a four-voice chord (root, minor third, fifth, seventh) is sung on a vowel; the register comes from the seed and from BODY.",
+    "fr": "À chaque phrase, un accord à quatre voix (fondamentale, tierce mineure, quinte, septième) est chanté sur une voyelle ; le registre vient de la seed et du CORPS.",
+    "es": "En cada frase, un acorde de cuatro voces (raíz, tercera menor, quinta, séptima) se canta en una vocal; el registro viene de la seed y del CUERPO."
+   },
+   "controles": [
+    {
+     "pt": "o registro e o peso do coro: até uma oitava e meia acima.",
+     "en": "the register and weight of the choir: up to an octave and a half higher.",
+     "fr": "le registre et le poids du chœur : jusqu’à une octave et demie plus haut.",
+     "es": "el registro y el peso del coro: hasta una octava y media más arriba."
+    },
+    {
+     "pt": "a vogal de abertura e o quanto as vozes se afastam.",
+     "en": "the opening vowel and how far apart the voices spread.",
+     "fr": "la voyelle d’ouverture et l’écart entre les voix.",
+     "es": "la vocal de apertura y cuánto se separan las voces."
+    },
+    {
+     "pt": "a duração da frase e a vogal com que ela acaba.",
+     "en": "the length of the phrase and the vowel it ends on.",
+     "fr": "la durée de la phrase et la voyelle sur laquelle elle finit.",
+     "es": "la duración de la frase y la vocal en que termina."
+    }
+   ],
+   "ouvir": {
+    "pt": "Deixe o coro sozinho com uma TEXTURE baixa: o céu vira campo.",
+    "en": "Leave the choir alone with a quiet TEXTURE: the sky becomes a field.",
+    "fr": "Laissez le chœur seul avec une TEXTURE discrète : le ciel devient champ.",
+    "es": "Deje el coro solo con una TEXTURE baja: el cielo se vuelve campo."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (ChoirEnsemble).",
+    "en": "Rasgo Synth Studio (ChoirEnsemble).",
+    "fr": "Rasgo Synth Studio (ChoirEnsemble).",
+    "es": "Rasgo Synth Studio (ChoirEnsemble)."
+   },
+   "nome": "CHOIR",
+   "familia": "Voice",
+   "nomes_controles": [
+    {
+     "pt": "CORPO",
+     "en": "BODY",
+     "fr": "CORPS",
+     "es": "CUERPO"
+    },
+    {
+     "pt": "ABERT.",
+     "en": "OPEN.",
+     "fr": "OUVR.",
+     "es": "ABIER."
+    },
+    {
+     "pt": "FRASE",
+     "en": "PHRASE",
+     "fr": "PHRASE",
+     "es": "FRASE"
+    }
+   ]
+  },
+  {
+   "corpo": "Vosim",
+   "rapido": {
+    "pt": "Um formante pulsado: uma voz feita de pulsos que decaem.",
+    "en": "A pulsed formant: a voice made of decaying pulses.",
+    "fr": "Un formant pulsé : une voix faite d’impulsions qui décroissent.",
+    "es": "Un formante pulsado: una voz hecha de pulsos que decaen."
+   },
+   "como": {
+    "pt": "Trens de pulsos em seno ao quadrado que decaem: a repetição dá a altura, a largura de cada pulso dá o formante — a técnica VOSIM.",
+    "en": "Trains of squared-sine pulses that decay: the repetition gives the pitch, the width of each pulse gives the formant — the VOSIM technique.",
+    "fr": "Des trains d’impulsions en sinus au carré qui décroissent : la répétition donne la hauteur, la largeur de chaque impulsion donne le formant — la technique VOSIM.",
+    "es": "Trenes de pulsos en seno al cuadrado que decaen: la repetición da la altura, el ancho de cada pulso da el formante — la técnica VOSIM."
+   },
+   "controles": [
+    {
+     "pt": "a altura do pulso.",
+     "en": "the pitch of the pulse.",
+     "fr": "la hauteur de l’impulsion.",
+     "es": "la altura del pulso."
+    },
+    {
+     "pt": "o formante: de uma vogal escura a uma clara.",
+     "en": "the formant: from a dark vowel to a bright one.",
+     "fr": "le formant : d’une voyelle sombre à une claire.",
+     "es": "el formante: de una vocal oscura a una clara."
+    },
+    {
+     "pt": "o decaimento de cada pulso: do nasal ao aberto.",
+     "en": "the decay of each pulse: from nasal to open.",
+     "fr": "le déclin de chaque impulsion : du nasal à l’ouvert.",
+     "es": "la caída de cada pulso: de lo nasal a lo abierto."
+    }
+   ],
+   "ouvir": {
+    "pt": "Mexa só em FORM.: é a mesma nota com outra boca.",
+    "en": "Move only FORM.: the same note with another mouth.",
+    "fr": "Ne bougez que FORM. : la même note avec une autre bouche.",
+    "es": "Mueva solo FORM.: la misma nota con otra boca."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (VosimOscillator); VOSIM, Instituto de Sonologia de Utrecht (Werner Kaegi; análise de Stan Tempelaars).",
+    "en": "Rasgo Synth Studio (VosimOscillator); VOSIM, Institute of Sonology, Utrecht (Werner Kaegi; analysis by Stan Tempelaars).",
+    "fr": "Rasgo Synth Studio (VosimOscillator) ; VOSIM, Institut de sonologie d’Utrecht (Werner Kaegi ; analyse de Stan Tempelaars).",
+    "es": "Rasgo Synth Studio (VosimOscillator); VOSIM, Instituto de Sonología de Utrecht (Werner Kaegi; análisis de Stan Tempelaars)."
+   },
+   "nome": "VOSIM",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "PULSO",
+     "en": "PULSE",
+     "fr": "POULS",
+     "es": "PULSO"
+    },
+    {
+     "pt": "FORM.",
+     "en": "FORM.",
+     "fr": "FORM.",
+     "es": "FORM."
+    },
+    {
+     "pt": "DECAIM.",
+     "en": "DECAY",
+     "fr": "DÉCLIN",
+     "es": "CAÍDA"
+    }
+   ]
+  },
+  {
+   "corpo": "Walsh",
+   "rapido": {
+    "pt": "Um tom feito de funções de Walsh: degraus, não senos.",
+    "en": "A tone made of Walsh functions: steps, not sines.",
+    "fr": "Un son fait de fonctions de Walsh : des marches, pas des sinus.",
+    "es": "Un tono hecho de funciones de Walsh: escalones, no senos."
+   },
+   "como": {
+    "pt": "A onda é a soma de funções de Walsh (ondas quadradas de ordens diferentes), por isso soa digital e oca; a matéria e as mutações do céu sobem a sua altura.",
+    "en": "The wave is a sum of Walsh functions (square waves of different orders), so it sounds digital and hollow; the sky's matter and mutations raise its pitch.",
+    "fr": "L’onde est une somme de fonctions de Walsh (ondes carrées d’ordres différents), d’où son côté numérique et creux ; la matière et les mutations du ciel montent sa hauteur.",
+    "es": "La onda es una suma de funciones de Walsh (ondas cuadradas de órdenes distintos), por eso suena digital y hueca; la materia y las mutaciones del cielo suben su altura."
+   },
+   "controles": [
+    {
+     "pt": "a altura.",
+     "en": "the pitch.",
+     "fr": "la hauteur.",
+     "es": "la altura."
+    },
+    {
+     "pt": "a intensidade: mais alto, mais áspero.",
+     "en": "intensity: louder, rougher.",
+     "fr": "l’intensité : plus fort, plus rugueux.",
+     "es": "la intensidad: más fuerte, más áspero."
+    },
+    {
+     "pt": "sobe a altura e a aspereza juntas.",
+     "en": "raises pitch and roughness together.",
+     "fr": "monte la hauteur et la rugosité ensemble.",
+     "es": "sube la altura y la aspereza juntas."
+    }
+   ],
+   "ouvir": {
+    "pt": "Compare com o MORPH: os dois fazem tons, um por degraus, o outro por formas.",
+    "en": "Compare it with MORPH: both make tones, one by steps, the other by shapes.",
+    "fr": "Comparez avec MORPH : les deux font des sons, l’un par marches, l’autre par formes.",
+    "es": "Compárelo con el MORPH: los dos hacen tonos, uno por escalones, el otro por formas."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (WalshOscillator); funções de Joseph L. Walsh.",
+    "en": "Rasgo Synth Studio (WalshOscillator); functions by Joseph L. Walsh.",
+    "fr": "Rasgo Synth Studio (WalshOscillator) ; fonctions de Joseph L. Walsh.",
+    "es": "Rasgo Synth Studio (WalshOscillator); funciones de Joseph L. Walsh."
+   },
+   "nome": "WALSH",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "ALTURA",
+     "en": "PITCH",
+     "fr": "HAUTEUR",
+     "es": "ALTURA"
+    },
+    {
+     "pt": "SEQUÊNCIA",
+     "en": "SEQUENCE",
+     "fr": "SÉQUENCE",
+     "es": "SECUENCIA"
+    },
+    {
+     "pt": "CORTE",
+     "en": "CUT",
+     "fr": "COUPE",
+     "es": "CORTE"
+    }
+   ]
+  },
+  {
+   "corpo": "HardSync",
+   "rapido": {
+    "pt": "Um oscilador preso a outro: a ruptura harmônica do sync.",
+    "en": "One oscillator locked to another: the harmonic tear of sync.",
+    "fr": "Un oscillateur attaché à un autre : la déchirure harmonique du sync.",
+    "es": "Un oscilador atado a otro: el desgarro armónico del sync."
+   },
+   "como": {
+    "pt": "Um oscilador escravo é zerado a cada ciclo do mestre; quanto mais rápido o escravo, mais rasgado o timbre — e a tensão e o RASGAR do céu o aceleram.",
+    "en": "A slave oscillator is reset on every cycle of the master; the faster the slave, the more torn the timbre — and the sky's tension and TEAR speed it up.",
+    "fr": "Un oscillateur esclave est remis à zéro à chaque cycle du maître ; plus l’esclave est rapide, plus le timbre se déchire — et la tension et le DÉCHIRER du ciel l’accélèrent.",
+    "es": "Un oscilador esclavo se reinicia en cada ciclo del maestro; cuanto más rápido el esclavo, más desgarrado el timbre — y la tensión y el RASGAR del cielo lo aceleran."
+   },
+   "controles": [
+    {
+     "pt": "a razão entre o escravo e o mestre: o timbre.",
+     "en": "the ratio between slave and master: the timbre.",
+     "fr": "le rapport entre l’esclave et le maître : le timbre.",
+     "es": "la razón entre esclavo y maestro: el timbre."
+    },
+    {
+     "pt": "o corpo: o nível e a saturação.",
+     "en": "the body: level and saturation.",
+     "fr": "le corps : le niveau et la saturation.",
+     "es": "el cuerpo: el nivel y la saturación."
+    },
+    {
+     "pt": "uma varredura extra do escravo: mais grito.",
+     "en": "an extra sweep of the slave: more scream.",
+     "fr": "un balayage en plus de l’esclave : plus de cri.",
+     "es": "un barrido extra del esclavo: más grito."
+    }
+   ],
+   "ouvir": {
+    "pt": "Suba VARRED. devagar: é o som clássico do sync abrindo.",
+    "en": "Raise SWEEP slowly: the classic sound of sync opening up.",
+    "fr": "Montez BALAY. lentement : le son classique du sync qui s’ouvre.",
+    "es": "Suba BARRIDO despacio: el sonido clásico del sync que se abre."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (HardSyncVoice).",
+    "en": "Rasgo Synth Studio (HardSyncVoice).",
+    "fr": "Rasgo Synth Studio (HardSyncVoice).",
+    "es": "Rasgo Synth Studio (HardSyncVoice)."
+   },
+   "nome": "HARD SYNC",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "RAZÃO",
+     "en": "RATIO",
+     "fr": "RAPPORT",
+     "es": "RAZÓN"
+    },
+    {
+     "pt": "CORPO",
+     "en": "BODY",
+     "fr": "CORPS",
+     "es": "CUERPO"
+    },
+    {
+     "pt": "VARRED.",
+     "en": "SWEEP",
+     "fr": "BALAY.",
+     "es": "BARRIDO"
+    }
+   ]
+  },
+  {
+   "corpo": "AtariPunk",
+   "rapido": {
+    "pt": "Um pulso escalonado de dois osciladores: o Atari Punk Console.",
+    "en": "A stepped pulse from two oscillators: the Atari Punk Console.",
+    "fr": "Une impulsion en marches de deux oscillateurs : l’Atari Punk Console.",
+    "es": "Un pulso escalonado de dos osciladores: el Atari Punk Console."
+   },
+   "como": {
+    "pt": "Um oscilador astável dispara um monoestável: sai um trem de pulsos em degraus, que segue o andamento e o tempo do céu.",
+    "en": "An astable oscillator fires a monostable: out comes a train of stepped pulses that follows the tempo and the sky's time.",
+    "fr": "Un oscillateur astable déclenche un monostable : il en sort un train d’impulsions en marches qui suit le tempo et le temps du ciel.",
+    "es": "Un oscilador astable dispara un monoestable: sale un tren de pulsos escalonados que sigue el tempo y el tiempo del cielo."
+   },
+   "controles": [
+    {
+     "pt": "a frequência do clock: da batida ao zumbido.",
+     "en": "the clock frequency: from beat to buzz.",
+     "fr": "la fréquence de l’horloge : du battement au bourdon.",
+     "es": "la frecuencia del reloj: del latido al zumbido."
+    },
+    {
+     "pt": "a largura do pulso: do clique ao tom.",
+     "en": "the pulse width: from click to tone.",
+     "fr": "la largeur d’impulsion : du clic au son.",
+     "es": "el ancho del pulso: del clic al tono."
+    },
+    {
+     "pt": "o ataque: o nível e a saturação.",
+     "en": "the attack: level and saturation.",
+     "fr": "l’attaque : le niveau et la saturation.",
+     "es": "el ataque: el nivel y la saturación."
+    }
+   ],
+   "ouvir": {
+    "pt": "Com CLOCK baixo ele é ritmo; com CLOCK alto, timbre.",
+    "en": "With CLOCK low it is rhythm; with CLOCK high, timbre.",
+    "fr": "Avec HORLOGE basse, c’est du rythme ; avec HORLOGE haute, du timbre.",
+    "es": "Con RELOJ bajo es ritmo; con RELOJ alto, timbre."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (AtariPunkConsole); Stepped Tone Generator de Forrest M. Mims III.",
+    "en": "Rasgo Synth Studio (AtariPunkConsole); Stepped Tone Generator by Forrest M. Mims III.",
+    "fr": "Rasgo Synth Studio (AtariPunkConsole) ; Stepped Tone Generator de Forrest M. Mims III.",
+    "es": "Rasgo Synth Studio (AtariPunkConsole); Stepped Tone Generator de Forrest M. Mims III."
+   },
+   "nome": "ATARI PUNK",
+   "familia": "Pulse",
+   "nomes_controles": [
+    {
+     "pt": "CLOCK",
+     "en": "CLOCK",
+     "fr": "HORLOGE",
+     "es": "RELOJ"
+    },
+    {
+     "pt": "PULSO",
+     "en": "PULSE",
+     "fr": "POULS",
+     "es": "PULSO"
+    },
+    {
+     "pt": "ATAQUE",
+     "en": "ATTACK",
+     "fr": "ATTAQUE",
+     "es": "ATAQUE"
+    }
+   ]
+  },
+  {
+   "corpo": "DejaVu",
+   "rapido": {
+    "pt": "Memória estatística: o que já soou volta, parecido.",
+    "en": "Statistical memory: what already sounded comes back, alike.",
+    "fr": "Mémoire statistique : ce qui a sonné revient, ressemblant.",
+    "es": "Memoria estadística: lo que ya sonó vuelve, parecido."
+   },
+   "como": {
+    "pt": "A estrela acompanha a altura e a densidade do céu e, nas batidas de memória, toca algo que se parece com o que passou.",
+    "en": "The star follows the sky's pitch and density and, on memory beats, plays something that resembles what went by.",
+    "fr": "L’étoile suit la hauteur et la densité du ciel et, sur les battements de mémoire, joue quelque chose qui ressemble à ce qui est passé.",
+    "es": "La estrella sigue la altura y la densidad del cielo y, en los pulsos de memoria, toca algo que se parece a lo que pasó."
+   },
+   "controles": [
+    {
+     "pt": "o quanto a lembrança se impõe.",
+     "en": "how strongly the memory imposes itself.",
+     "fr": "combien le souvenir s’impose.",
+     "es": "cuánto se impone el recuerdo."
+    },
+    {
+     "pt": "o brilho da lembrança.",
+     "en": "the brightness of the memory.",
+     "fr": "la brillance du souvenir.",
+     "es": "el brillo del recuerdo."
+    },
+    {
+     "pt": "a duração de cada volta.",
+     "en": "the length of each return.",
+     "fr": "la durée de chaque retour.",
+     "es": "la duración de cada vuelta."
+    }
+   ],
+   "ouvir": {
+    "pt": "Ouça depois de um contraste: o DEJA VU traz de volta o começo.",
+    "en": "Listen after a contrast: the DEJA VU brings the beginning back.",
+    "fr": "Écoutez après un contraste : le DEJA VU ramène le début.",
+    "es": "Escuche después de un contraste: el DEJA VU trae de vuelta el comienzo."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (DejaVuVoice).",
+    "en": "Rasgo Synth Studio (DejaVuVoice).",
+    "fr": "Rasgo Synth Studio (DejaVuVoice).",
+    "es": "Rasgo Synth Studio (DejaVuVoice)."
+   },
+   "nome": "DEJA VU",
+   "familia": "Texture",
+   "nomes_controles": [
+    {
+     "pt": "LEMBRANÇA",
+     "en": "REMEMBER",
+     "fr": "SOUVENIR",
+     "es": "RECUERDO"
+    },
+    {
+     "pt": "BRILHO",
+     "en": "BRIGHT",
+     "fr": "BRILL.",
+     "es": "BRILLO"
+    },
+    {
+     "pt": "DURAÇÃO",
+     "en": "DURATION",
+     "fr": "DURÉE",
+     "es": "DURACIÓN"
+    }
+   ]
+  },
+  {
+   "corpo": "Atropelo",
+   "rapido": {
+    "pt": "Uma voz quase falada, que atropela as sílabas.",
+    "en": "An almost spoken voice, tripping over its syllables.",
+    "fr": "Une voix presque parlée, qui bouscule ses syllabes.",
+    "es": "Una voz casi hablada, que atropella las sílabas."
+   },
+   "como": {
+    "pt": "Sílabas curtas nas batidas de memória, com altura que sobe com a tensão e as mutações do céu.",
+    "en": "Short syllables on the memory beats, with a pitch that rises with the sky's tension and mutations.",
+    "fr": "Des syllabes courtes sur les battements de mémoire, avec une hauteur qui monte avec la tension et les mutations du ciel.",
+    "es": "Sílabas cortas en los pulsos de memoria, con una altura que sube con la tensión y las mutaciones del cielo."
+   },
+   "controles": [
+    {
+     "pt": "a altura da fala.",
+     "en": "the pitch of the speech.",
+     "fr": "la hauteur de la parole.",
+     "es": "la altura del habla."
+    },
+    {
+     "pt": "o corpo: o peso e a saturação.",
+     "en": "the body: weight and saturation.",
+     "fr": "le corps : le poids et la saturation.",
+     "es": "el cuerpo: el peso y la saturación."
+    },
+    {
+     "pt": "a duração de cada sílaba.",
+     "en": "the length of each syllable.",
+     "fr": "la durée de chaque syllabe.",
+     "es": "la duración de cada sílaba."
+    }
+   ],
+   "ouvir": {
+    "pt": "Com SÍLABA curta e muita densidade, vira fala nervosa.",
+    "en": "With a short SYLLABLE and a dense sky, it becomes nervous speech.",
+    "fr": "Avec SYLLABE courte et un ciel dense, elle devient parole nerveuse.",
+    "es": "Con SÍLABA corta y mucha densidad, se vuelve habla nerviosa."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (AtropeloVoice).",
+    "en": "Rasgo Synth Studio (AtropeloVoice).",
+    "fr": "Rasgo Synth Studio (AtropeloVoice).",
+    "es": "Rasgo Synth Studio (AtropeloVoice)."
+   },
+   "nome": "ATROPELO",
+   "familia": "Voice",
+   "nomes_controles": [
+    {
+     "pt": "ALTURA",
+     "en": "PITCH",
+     "fr": "HAUTEUR",
+     "es": "ALTURA"
+    },
+    {
+     "pt": "CORPO",
+     "en": "BODY",
+     "fr": "CORPS",
+     "es": "CUERPO"
+    },
+    {
+     "pt": "SÍLABA",
+     "en": "SYLLABLE",
+     "fr": "SYLLABE",
+     "es": "SÍLABA"
+    }
+   ]
+  },
+  {
+   "corpo": "Galo",
+   "rapido": {
+    "pt": "Uma chamada ressonante, de tempos em tempos.",
+    "en": "A resonant call, now and then.",
+    "fr": "Un appel résonant, de temps en temps.",
+    "es": "Una llamada resonante, de vez en cuando."
+   },
+   "como": {
+    "pt": "Um grito ressonante que chama nas batidas de memória — em todas, numa em duas ou numa em quatro.",
+    "en": "A resonant cry that calls on the memory beats — on all of them, one in two or one in four.",
+    "fr": "Un cri résonant qui appelle sur les battements de mémoire — sur tous, un sur deux ou un sur quatre.",
+    "es": "Un grito resonante que llama en los pulsos de memoria — en todos, uno de cada dos o uno de cada cuatro."
+   },
+   "controles": [
+    {
+     "pt": "quantas batidas chamam: todas, uma em duas, uma em quatro.",
+     "en": "how many beats call: all, one in two, one in four.",
+     "fr": "combien de battements appellent : tous, un sur deux, un sur quatre.",
+     "es": "cuántos pulsos llaman: todos, uno de cada dos, uno de cada cuatro."
+    },
+    {
+     "pt": "o registro da chamada.",
+     "en": "the register of the call.",
+     "fr": "le registre de l’appel.",
+     "es": "el registro de la llamada."
+    },
+    {
+     "pt": "a cauda de cada chamada.",
+     "en": "the tail of each call.",
+     "fr": "la queue de chaque appel.",
+     "es": "la cola de cada llamada."
+    }
+   ],
+   "ouvir": {
+    "pt": "Use-o raro: uma chamada a cada quatro batidas marca a forma.",
+    "en": "Keep it rare: one call every four beats marks the form.",
+    "fr": "Gardez-le rare : un appel tous les quatre battements marque la forme.",
+    "es": "Úselo poco: una llamada cada cuatro pulsos marca la forma."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (GaloVoice).",
+    "en": "Rasgo Synth Studio (GaloVoice).",
+    "fr": "Rasgo Synth Studio (GaloVoice).",
+    "es": "Rasgo Synth Studio (GaloVoice)."
+   },
+   "nome": "GALO",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "CHAMADA",
+     "en": "CALL",
+     "fr": "APPEL",
+     "es": "LLAMADA"
+    },
+    {
+     "pt": "REGISTRO",
+     "en": "REGISTER",
+     "fr": "REGISTRE",
+     "es": "REGISTRO"
+    },
+    {
+     "pt": "CAUDA",
+     "en": "TAIL",
+     "fr": "QUEUE",
+     "es": "COLA"
+    }
+   ]
+  },
+  {
+   "corpo": "Tuba",
+   "rapido": {
+    "pt": "Um sopro grave: uma tuba de ressonâncias.",
+    "en": "A low breath: a tuba of resonances.",
+    "fr": "Un souffle grave : un tuba de résonances.",
+    "es": "Un soplo grave: una tuba de resonancias."
+   },
+   "como": {
+    "pt": "Sopro com ruído excitando ressonâncias graves; o sopro respira com o arco da peça e a densidade do céu.",
+    "en": "Noisy breath exciting low resonances; the breath follows the piece's arc and the sky's density.",
+    "fr": "Un souffle bruité qui excite des résonances graves ; le souffle suit l’arc de la pièce et la densité du ciel.",
+    "es": "Soplo con ruido que excita resonancias graves; el soplo sigue el arco de la pieza y la densidad del cielo."
+   },
+   "controles": [
+    {
+     "pt": "o registro: do muito grave ao grave.",
+     "en": "the register: from very low to low.",
+     "fr": "le registre : du très grave au grave.",
+     "es": "el registro: de muy grave a grave."
+    },
+    {
+     "pt": "a força do sopro.",
+     "en": "the strength of the breath.",
+     "fr": "la force du souffle.",
+     "es": "la fuerza del soplo."
+    },
+    {
+     "pt": "o brilho das ressonâncias.",
+     "en": "the brightness of the resonances.",
+     "fr": "la brillance des résonances.",
+     "es": "el brillo de las resonancias."
+    }
+   ],
+   "ouvir": {
+    "pt": "Ela sustenta a peça por baixo: tente-a no lugar do BASS.",
+    "en": "It holds the piece from below: try it in place of the BASS.",
+    "fr": "Il tient la pièce par le bas : essayez-le à la place du BASS.",
+    "es": "Sostiene la pieza por abajo: pruébela en lugar del BASS."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (OrganismStem::Tuba); voz local TubaBreathVoice.",
+    "en": "Rasgo Synth Studio (OrganismStem::Tuba); local TubaBreathVoice.",
+    "fr": "Rasgo Synth Studio (OrganismStem::Tuba) ; voix locale TubaBreathVoice.",
+    "es": "Rasgo Synth Studio (OrganismStem::Tuba); voz local TubaBreathVoice."
+   },
+   "nome": "TUBA",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "ALTURA",
+     "en": "PITCH",
+     "fr": "HAUTEUR",
+     "es": "ALTURA"
+    },
+    {
+     "pt": "SOPRO",
+     "en": "BREATH",
+     "fr": "SOUFFLE",
+     "es": "SOPLO"
+    },
+    {
+     "pt": "BRILHO",
+     "en": "BRIGHT",
+     "fr": "BRILL.",
+     "es": "BRILLO"
+    }
+   ]
+  },
+  {
+   "corpo": "Footnote",
+   "rapido": {
+    "pt": "Uma nota de rodapé: um sininho levemente fora, raro.",
+    "en": "A footnote: a small bell, slightly off, rare.",
+    "fr": "Une note de bas de page : une clochette un peu fausse, rare.",
+    "es": "Una nota al pie: una campanita un poco desafinada, rara."
+   },
+   "como": {
+    "pt": "Um sino de duas parciais numa razão que nunca é limpa (de 1,18 a 1,94, longe da quinta), tocado nas batidas de memória.",
+    "en": "A two-partial bell at a ratio that is never clean (1.18 to 1.94, away from the fifth), played on the memory beats.",
+    "fr": "Une cloche à deux partiels dans un rapport jamais propre (de 1,18 à 1,94, loin de la quinte), jouée sur les battements de mémoire.",
+    "es": "Una campana de dos parciales en una razón nunca limpia (de 1,18 a 1,94, lejos de la quinta), tocada en los pulsos de memoria."
+   },
+   "controles": [
+    {
+     "pt": "a altura: até duas oitavas acima.",
+     "en": "the pitch: up to two octaves higher.",
+     "fr": "la hauteur : jusqu’à deux octaves plus haut.",
+     "es": "la altura: hasta dos octavas más arriba."
+    },
+    {
+     "pt": "a razão entre as parciais: o quanto soa fora.",
+     "en": "the ratio between the partials: how off it sounds.",
+     "fr": "le rapport entre les partiels : à quel point elle sonne faux.",
+     "es": "la razón entre los parciales: cuán desafinada suena."
+    },
+    {
+     "pt": "o decaimento: de 0,15 a 1,6 s.",
+     "en": "the decay: from 0.15 to 1.6 s.",
+     "fr": "le déclin : de 0,15 à 1,6 s.",
+     "es": "la caída: de 0,15 a 1,6 s."
+    }
+   ],
+   "ouvir": {
+    "pt": "Deixe-o raro e quieto: ele comenta, não lidera.",
+    "en": "Keep it rare and quiet: it comments, it does not lead.",
+    "fr": "Gardez-la rare et discrète : elle commente, elle ne mène pas.",
+    "es": "Déjela rara y callada: comenta, no lidera."
+   },
+   "origem": {
+    "pt": "Rasgo Synth (FootnotePluck).",
+    "en": "Rasgo Synth (FootnotePluck).",
+    "fr": "Rasgo Synth (FootnotePluck).",
+    "es": "Rasgo Synth (FootnotePluck)."
+   },
+   "nome": "FOOTNOTE",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "ALTURA",
+     "en": "PITCH",
+     "fr": "HAUTEUR",
+     "es": "ALTURA"
+    },
+    {
+     "pt": "INARMONIA",
+     "en": "INHARM.",
+     "fr": "INHARM.",
+     "es": "INARMONÍA"
+    },
+    {
+     "pt": "DECAIM.",
+     "en": "DECAY",
+     "fr": "DÉCLIN",
+     "es": "CAÍDA"
+    }
+   ]
+  },
+  {
+   "corpo": "Bluff",
+   "rapido": {
+    "pt": "Sinal, blefe e confiança: um chamado que às vezes mente.",
+    "en": "Signal, bluff and trust: a call that sometimes lies.",
+    "fr": "Signal, bluff et confiance : un appel qui parfois ment.",
+    "es": "Señal, farol y confianza: una llamada que a veces miente."
+   },
+   "como": {
+    "pt": "A estrela dá sinais; só os genuínos recebem a resposta (uma quinta acima), com o ganho da confiança — e depois de uma traição a resposta se cala até a forma se reorganizar.",
+    "en": "The star gives signals; only the genuine ones get the answer (a fifth above), weighted by trust — and after a betrayal the answer falls silent until the form reorganises.",
+    "fr": "L’étoile donne des signaux ; seuls les vrais reçoivent la réponse (une quinte au-dessus), pondérée par la confiance — et après une trahison la réponse se tait jusqu’à ce que la forme se réorganise.",
+    "es": "La estrella da señales; solo las genuinas reciben la respuesta (una quinta arriba), con el peso de la confianza — y tras una traición la respuesta calla hasta que la forma se reorganiza."
+   },
+   "controles": [
+    {
+     "pt": "quanto dos sinais é verdadeiro.",
+     "en": "how many of the signals are true.",
+     "fr": "combien des signaux sont vrais.",
+     "es": "cuántas de las señales son verdaderas."
+    },
+    {
+     "pt": "a janela de expectativa: de 1 a 4 batidas.",
+     "en": "the window of expectation: 1 to 4 beats.",
+     "fr": "la fenêtre d’attente : de 1 à 4 battements.",
+     "es": "la ventana de expectativa: de 1 a 4 pulsos."
+    },
+    {
+     "pt": "a altura do chamado.",
+     "en": "the pitch of the call.",
+     "fr": "la hauteur de l’appel.",
+     "es": "la altura de la llamada."
+    }
+   ],
+   "ouvir": {
+    "pt": "Baixe VERDADE: ouça a resposta sumir.",
+    "en": "Lower TRUTH: hear the answer disappear.",
+    "fr": "Baissez VÉRITÉ : écoutez la réponse disparaître.",
+    "es": "Baje VERDAD: oiga desaparecer la respuesta."
+   },
+   "origem": {
+    "pt": "Rasgo Synth (BluffSignal).",
+    "en": "Rasgo Synth (BluffSignal).",
+    "fr": "Rasgo Synth (BluffSignal).",
+    "es": "Rasgo Synth (BluffSignal)."
+   },
+   "nome": "BLUFF",
+   "familia": "Pulse",
+   "nomes_controles": [
+    {
+     "pt": "VERDADE",
+     "en": "TRUTH",
+     "fr": "VÉRITÉ",
+     "es": "VERDAD"
+    },
+    {
+     "pt": "JANELA",
+     "en": "WINDOW",
+     "fr": "FENÊTRE",
+     "es": "VENTANA"
+    },
+    {
+     "pt": "ALTURA",
+     "en": "PITCH",
+     "fr": "HAUTEUR",
+     "es": "ALTURA"
+    }
+   ]
+  },
+  {
+   "corpo": "Spectral",
+   "rapido": {
+    "pt": "Um objeto espectral: a altura é ritmo.",
+    "en": "A spectral object: pitch is rhythm.",
+    "fr": "Un objet spectral : la hauteur est rythme.",
+    "es": "Un objeto espectral: la altura es ritmo."
+   },
+   "como": {
+    "pt": "Cada parcial p soa em f0·p e pulsa p vezes por período: o mesmo número é altura e ritmo. A cada oito períodos, uma peneira abre buracos novos no espectro.",
+    "en": "Each partial p sounds at f0·p and pulses p times per period: the same number is pitch and rhythm. Every eight periods, a sieve opens new holes in the spectrum.",
+    "fr": "Chaque partiel p sonne à f0·p et pulse p fois par période : le même nombre est hauteur et rythme. Toutes les huit périodes, un crible ouvre de nouveaux trous dans le spectre.",
+    "es": "Cada parcial p suena en f0·p y pulsa p veces por período: el mismo número es altura y ritmo. Cada ocho períodos, una criba abre agujeros nuevos en el espectro."
+   },
+   "controles": [
+    {
+     "pt": "a fundamental.",
+     "en": "the fundamental.",
+     "fr": "la fondamentale.",
+     "es": "la fundamental."
+    },
+    {
+     "pt": "a inarmonia: o quanto as parciais se esticam.",
+     "en": "inharmonicity: how far the partials stretch.",
+     "fr": "l’inharmonicité : combien les partiels s’étirent.",
+     "es": "la inarmonía: cuánto se estiran los parciales."
+    },
+    {
+     "pt": "o período: 1, 2 ou 4 batidas.",
+     "en": "the period: 1, 2 or 4 beats.",
+     "fr": "la période : 1, 2 ou 4 battements.",
+     "es": "el período: 1, 2 o 4 pulsos."
+    }
+   ],
+   "ouvir": {
+    "pt": "Com PERÍODO longo, ouça as parciais acenderem uma a uma.",
+    "en": "With a long PERIOD, hear the partials light up one by one.",
+    "fr": "Avec une PÉRIODE longue, écoutez les partiels s’allumer un à un.",
+    "es": "Con PERÍODO largo, oiga encenderse los parciales uno a uno."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (OrganismStem::Spectral).",
+    "en": "Rasgo Synth Studio (OrganismStem::Spectral).",
+    "fr": "Rasgo Synth Studio (OrganismStem::Spectral).",
+    "es": "Rasgo Synth Studio (OrganismStem::Spectral)."
+   },
+   "nome": "SPECTRAL",
+   "familia": "Texture",
+   "nomes_controles": [
+    {
+     "pt": "ALTURA",
+     "en": "PITCH",
+     "fr": "HAUTEUR",
+     "es": "ALTURA"
+    },
+    {
+     "pt": "INARMONIA",
+     "en": "INHARM.",
+     "fr": "INHARM.",
+     "es": "INARMONÍA"
+    },
+    {
+     "pt": "PERÍODO",
+     "en": "PERIOD",
+     "fr": "PÉRIODE",
+     "es": "PERÍODO"
+    }
+   ]
+  },
+  {
+   "corpo": "Sieve",
+   "rapido": {
+    "pt": "Estrela de controle: a peneira de Xenakis nos ataques do céu.",
+    "en": "Control star: Xenakis's sieve on the sky's attacks.",
+    "fr": "Étoile de contrôle : le crible de Xenakis sur les attaques du ciel.",
+    "es": "Estrella de control: la criba de Xenakis en los ataques del cielo."
+   },
+   "como": {
+    "pt": "Não soa. Deixa passar só os ataques que caem na peneira (A, 0) ∪ (B, R), contados por estrela.",
+    "en": "It makes no sound. It lets through only the attacks that fall in the sieve (A, 0) ∪ (B, R), counted per star.",
+    "fr": "Elle ne sonne pas. Elle ne laisse passer que les attaques qui tombent dans le crible (A, 0) ∪ (B, R), comptées par étoile.",
+    "es": "No suena. Deja pasar solo los ataques que caen en la criba (A, 0) ∪ (B, R), contados por estrella."
+   },
+   "controles": [
+    {
+     "pt": "o módulo A: de 2 a 7.",
+     "en": "modulus A: 2 to 7.",
+     "fr": "le module A : de 2 à 7.",
+     "es": "el módulo A: de 2 a 7."
+    },
+    {
+     "pt": "o módulo B: de 3 a 11.",
+     "en": "modulus B: 3 to 11.",
+     "fr": "le module B : de 3 à 11.",
+     "es": "el módulo B: de 3 a 11."
+    },
+    {
+     "pt": "o resíduo de B: onde a segunda classe começa.",
+     "en": "the residue of B: where the second class starts.",
+     "fr": "le résidu de B : où commence la seconde classe.",
+     "es": "el residuo de B: dónde empieza la segunda clase."
+    }
+   ],
+   "ouvir": {
+    "pt": "Acenda-a numa seed densa: o céu ganha buracos com lógica.",
+    "en": "Light it in a dense seed: the sky gets holes with a logic.",
+    "fr": "Allumez-la dans une seed dense : le ciel prend des trous avec une logique.",
+    "es": "Enciéndala en una seed densa: el cielo gana agujeros con lógica."
+   },
+   "origem": {
+    "pt": "Teoria de crivos de Iannis Xenakis (\"Sieves\", 1990).",
+    "en": "Iannis Xenakis's theory of sieves (\"Sieves\", 1990).",
+    "fr": "Théorie des cribles d’Iannis Xenakis (« Sieves », 1990).",
+    "es": "Teoría de cribas de Iannis Xenakis («Sieves», 1990)."
+   },
+   "nome": "SIEVE",
+   "familia": "Control",
+   "nomes_controles": [
+    {
+     "pt": "MÓDULO A",
+     "en": "MODULUS A",
+     "fr": "MODULE A",
+     "es": "MÓDULO A"
+    },
+    {
+     "pt": "MÓDULO B",
+     "en": "MODULUS B",
+     "fr": "MODULE B",
+     "es": "MÓDULO B"
+    },
+    {
+     "pt": "RESÍDUO",
+     "en": "RESIDUE",
+     "fr": "RÉSIDU",
+     "es": "RESIDUO"
+    }
+   ]
+  },
+  {
+   "corpo": "Polymeter",
+   "rapido": {
+    "pt": "Estrela de controle: cada estrela no seu próprio ciclo.",
+    "en": "Control star: each star in its own cycle.",
+    "fr": "Étoile de contrôle : chaque étoile dans son propre cycle.",
+    "es": "Estrella de control: cada estrella en su propio ciclo."
+   },
+   "como": {
+    "pt": "Não soa. Cada estrela conta um ciclo próprio e só ataca em parte dos passos; os ciclos se defasam.",
+    "en": "It makes no sound. Each star counts its own cycle and attacks on only some of the steps; the cycles drift apart.",
+    "fr": "Elle ne sonne pas. Chaque étoile compte son propre cycle et n’attaque que sur une partie des pas ; les cycles se décalent.",
+    "es": "No suena. Cada estrella cuenta un ciclo propio y ataca solo en parte de los pasos; los ciclos se desfasan."
+   },
+   "controles": [
+    {
+     "pt": "o comprimento do ciclo: de 3 a 9 passos.",
+     "en": "the length of the cycle: 3 to 9 steps.",
+     "fr": "la longueur du cycle : de 3 à 9 pas.",
+     "es": "la longitud del ciclo: de 3 a 9 pasos."
+    },
+    {
+     "pt": "quantos passos atacam: de 20 a 90 %.",
+     "en": "how many steps attack: 20 to 90 %.",
+     "fr": "combien de pas attaquent : de 20 à 90 %.",
+     "es": "cuántos pasos atacan: de 20 a 90 %."
+    },
+    {
+     "pt": "o quanto os ciclos se espalham entre as estrelas.",
+     "en": "how much the cycles spread among the stars.",
+     "fr": "combien les cycles se dispersent entre les étoiles.",
+     "es": "cuánto se dispersan los ciclos entre las estrellas."
+    }
+   ],
+   "ouvir": {
+    "pt": "Com CICLO ímpar e ESPALHA alto, o céu vira polimetria.",
+    "en": "With an odd CYCLE and a high SPREAD, the sky becomes polymetric.",
+    "fr": "Avec un CYCLE impair et DISPERS. haut, le ciel devient polymétrique.",
+    "es": "Con CICLO impar y DISPERS. alto, el cielo se vuelve polimétrico."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (OrganismStem::Polymeter).",
+    "en": "Rasgo Synth Studio (OrganismStem::Polymeter).",
+    "fr": "Rasgo Synth Studio (OrganismStem::Polymeter).",
+    "es": "Rasgo Synth Studio (OrganismStem::Polymeter)."
+   },
+   "nome": "POLYMETER",
+   "familia": "Control",
+   "nomes_controles": [
+    {
+     "pt": "CICLO",
+     "en": "CYCLE",
+     "fr": "CYCLE",
+     "es": "CICLO"
+    },
+    {
+     "pt": "PULSOS",
+     "en": "PULSES",
+     "fr": "IMPULS.",
+     "es": "PULSOS"
+    },
+    {
+     "pt": "ESPALHA",
+     "en": "SPREAD",
+     "fr": "DISPERS.",
+     "es": "DISPERS."
+    }
+   ]
+  },
+  {
+   "corpo": "Hocket",
+   "rapido": {
+    "pt": "Estrela de controle: hoquetus, um ataque por vez.",
+    "en": "Control star: hocket, one attack at a time.",
+    "fr": "Étoile de contrôle : le hoquet, une attaque à la fois.",
+    "es": "Estrella de control: hoquetus, un ataque a la vez."
+   },
+   "como": {
+    "pt": "Não soa. As estrelas se alternam: quem atacou espera a vez dos outros.",
+    "en": "It makes no sound. The stars take turns: the one that attacked waits for the others.",
+    "fr": "Elle ne sonne pas. Les étoiles alternent : celle qui a attaqué attend le tour des autres.",
+    "es": "No suena. Las estrellas se turnan: la que atacó espera el turno de las otras."
+   },
+   "controles": [
+    {
+     "pt": "quantas estrelas dividem a linha: de 2 a 4.",
+     "en": "how many stars share the line: 2 to 4.",
+     "fr": "combien d’étoiles se partagent la ligne : de 2 à 4.",
+     "es": "cuántas estrellas comparten la línea: de 2 a 4."
+    },
+    {
+     "pt": "quantas vezes uma estrela espera.",
+     "en": "how many times a star waits.",
+     "fr": "combien de fois une étoile attend.",
+     "es": "cuántas veces espera una estrella."
+    },
+    {
+     "pt": "o alcance: quantas estrelas entram no jogo.",
+     "en": "the reach: how many stars join the game.",
+     "fr": "la portée : combien d’étoiles entrent dans le jeu.",
+     "es": "el alcance: cuántas estrellas entran en el juego."
+    }
+   ],
+   "ouvir": {
+    "pt": "Ouça com estrelas de ataque curto: a melodia se divide entre elas.",
+    "en": "Listen with short-attack stars: the melody is split among them.",
+    "fr": "Écoutez avec des étoiles à attaque courte : la mélodie se partage entre elles.",
+    "es": "Escuche con estrellas de ataque corto: la melodía se reparte entre ellas."
+   },
+   "origem": {
+    "pt": "Hoquetus medieval; Rasgo Synth Studio (OrganismStem::Hocket).",
+    "en": "Medieval hocket; Rasgo Synth Studio (OrganismStem::Hocket).",
+    "fr": "Hoquet médiéval ; Rasgo Synth Studio (OrganismStem::Hocket).",
+    "es": "Hoquetus medieval; Rasgo Synth Studio (OrganismStem::Hocket)."
+   },
+   "nome": "HOCKET",
+   "familia": "Control",
+   "nomes_controles": [
+    {
+     "pt": "GRUPO",
+     "en": "GROUP",
+     "fr": "GROUPE",
+     "es": "GRUPO"
+    },
+    {
+     "pt": "PACIÊNCIA",
+     "en": "PATIENCE",
+     "fr": "PATIENCE",
+     "es": "PACIENCIA"
+    },
+    {
+     "pt": "ALCANCE",
+     "en": "RANGE",
+     "fr": "PORTÉE",
+     "es": "ALCANCE"
+    }
+   ]
+  },
+  {
+   "corpo": "Rupture",
+   "rapido": {
+    "pt": "Estrela de controle: o céu se cala de repente.",
+    "en": "Control star: the sky falls silent all of a sudden.",
+    "fr": "Étoile de contrôle : le ciel se tait d’un coup.",
+    "es": "Estrella de control: el cielo calla de golpe."
+   },
+   "como": {
+    "pt": "Não soa. De tempos em tempos o céu inteiro corta em ~3 ms e volta em ~20 ms.",
+    "en": "It makes no sound. Now and then the whole sky cuts in ~3 ms and comes back in ~20 ms.",
+    "fr": "Elle ne sonne pas. De temps en temps tout le ciel coupe en ~3 ms et revient en ~20 ms.",
+    "es": "No suena. De vez en cuando todo el cielo corta en ~3 ms y vuelve en ~20 ms."
+   },
+   "controles": [
+    {
+     "pt": "o período: de 4 a 16 batidas.",
+     "en": "the period: 4 to 16 beats.",
+     "fr": "la période : de 4 à 16 battements.",
+     "es": "el período: de 4 a 16 pulsos."
+    },
+    {
+     "pt": "a duração do silêncio: de 1 a 4 batidas.",
+     "en": "the length of the silence: 1 to 4 beats.",
+     "fr": "la durée du silence : de 1 à 4 battements.",
+     "es": "la duración del silencio: de 1 a 4 pulsos."
+    },
+    {
+     "pt": "a chance de cada ruptura acontecer.",
+     "en": "the chance of each rupture happening.",
+     "fr": "la chance que chaque rupture arrive.",
+     "es": "la probabilidad de que cada ruptura ocurra."
+    }
+   ],
+   "ouvir": {
+    "pt": "Use DURAÇÃO curta: o silêncio vira acento.",
+    "en": "Use a short DURATION: the silence becomes an accent.",
+    "fr": "Utilisez une DURÉE courte : le silence devient accent.",
+    "es": "Use DURACIÓN corta: el silencio se vuelve acento."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (OrganismStem::Rupture).",
+    "en": "Rasgo Synth Studio (OrganismStem::Rupture).",
+    "fr": "Rasgo Synth Studio (OrganismStem::Rupture).",
+    "es": "Rasgo Synth Studio (OrganismStem::Rupture)."
+   },
+   "nome": "RUPTURE",
+   "familia": "Control",
+   "nomes_controles": [
+    {
+     "pt": "PERÍODO",
+     "en": "PERIOD",
+     "fr": "PÉRIODE",
+     "es": "PERÍODO"
+    },
+    {
+     "pt": "DURAÇÃO",
+     "en": "DURATION",
+     "fr": "DURÉE",
+     "es": "DURACIÓN"
+    },
+    {
+     "pt": "CHANCE",
+     "en": "CHANCE",
+     "fr": "CHANCE",
+     "es": "PROBAB."
+    }
+   ]
+  },
+  {
+   "corpo": "Harmonaig",
+   "rapido": {
+    "pt": "Um acorde de quatro vozes que anda em quartas.",
+    "en": "A four-voice chord moving in fourths.",
+    "fr": "Un accord à quatre voix qui avance par quartes.",
+    "es": "Un acorde de cuatro voces que avanza por cuartas."
+   },
+   "como": {
+    "pt": "Raiz, terça, quinta e sétima no modo do céu, que avançam em quartas a cada 1, 2 ou 4 batidas.",
+    "en": "Root, third, fifth and seventh in the sky's mode, moving up a fourth every 1, 2 or 4 beats.",
+    "fr": "Fondamentale, tierce, quinte et septième dans le mode du ciel, qui montent d’une quarte tous les 1, 2 ou 4 battements.",
+    "es": "Raíz, tercera, quinta y séptima en el modo del cielo, que suben una cuarta cada 1, 2 o 4 pulsos."
+   },
+   "controles": [
+    {
+     "pt": "que tom vai ao grave.",
+     "en": "which tone goes to the bass.",
+     "fr": "quel son va à la basse.",
+     "es": "qué tono va al bajo."
+    },
+    {
+     "pt": "uma ou duas oitavas de abertura.",
+     "en": "one or two octaves of spread.",
+     "fr": "une ou deux octaves d’ouverture.",
+     "es": "una o dos octavas de apertura."
+    },
+    {
+     "pt": "o andamento do acorde: a cada 4, 2 ou 1 batida.",
+     "en": "the chord's pace: every 4, 2 or 1 beat.",
+     "fr": "l’allure de l’accord : tous les 4, 2 ou 1 battement.",
+     "es": "el paso del acorde: cada 4, 2 o 1 pulso."
+    }
+   ],
+   "ouvir": {
+    "pt": "Ponha a HARMONAIG embaixo de uma voz: ela vira harmonia.",
+    "en": "Put HARMONAIG under a voice: it becomes harmony.",
+    "fr": "Mettez HARMONAIG sous une voix : elle devient harmonie.",
+    "es": "Ponga la HARMONAIG debajo de una voz: se vuelve armonía."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (OrganismStem::Harmonaig); harmonàig de Jason Lim / Instruō.",
+    "en": "Rasgo Synth Studio (OrganismStem::Harmonaig); harmonàig by Jason Lim / Instruō.",
+    "fr": "Rasgo Synth Studio (OrganismStem::Harmonaig) ; harmonàig de Jason Lim / Instruō.",
+    "es": "Rasgo Synth Studio (OrganismStem::Harmonaig); harmonàig de Jason Lim / Instruō."
+   },
+   "nome": "HARMONAIG",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "INVERSÃO",
+     "en": "INVERSION",
+     "fr": "RENVERS.",
+     "es": "INVERSIÓN"
+    },
+    {
+     "pt": "ABERTURA",
+     "en": "SPREAD",
+     "fr": "OUVERTURE",
+     "es": "APERTURA"
+    },
+    {
+     "pt": "MOVIMENTO",
+     "en": "MOTION",
+     "fr": "MOUVEMENT",
+     "es": "MOVIMIENTO"
+    }
+   ]
+  },
+  {
+   "corpo": "Bloom",
+   "rapido": {
+    "pt": "Uma melodia fractal: tronco e galho.",
+    "en": "A fractal melody: trunk and branch.",
+    "fr": "Une mélodie fractale : tronc et branche.",
+    "es": "Una melodía fractal: tronco y rama."
+   },
+   "como": {
+    "pt": "Cada batida da frase toca o próximo passo do tronco (5 notas) ou do galho (25); ao fim da volta, a estrela pode trocar de nível.",
+    "en": "Each beat of the phrase plays the next step of the trunk (5 notes) or of the branch (25); at the end of the turn, the star may switch level.",
+    "fr": "Chaque battement de la phrase joue le pas suivant du tronc (5 notes) ou de la branche (25) ; à la fin du tour, l’étoile peut changer de niveau.",
+    "es": "Cada pulso de la frase toca el paso siguiente del tronco (5 notas) o de la rama (25); al final de la vuelta, la estrella puede cambiar de nivel."
+   },
+   "controles": [
+    {
+     "pt": "a chance de trocar de nível no fim da volta.",
+     "en": "the chance of switching level at the end of the turn.",
+     "fr": "la chance de changer de niveau à la fin du tour.",
+     "es": "la probabilidad de cambiar de nivel al final de la vuelta."
+    },
+    {
+     "pt": "uma oitava abaixo, a altura do corpo ou uma acima.",
+     "en": "an octave below, the body's pitch or an octave above.",
+     "fr": "une octave en dessous, la hauteur du corps ou une au-dessus.",
+     "es": "una octava abajo, la altura del cuerpo o una arriba."
+    },
+    {
+     "pt": "a duração de cada nota.",
+     "en": "the length of each note.",
+     "fr": "la durée de chaque note.",
+     "es": "la duración de cada nota."
+    }
+   ],
+   "ouvir": {
+    "pt": "Ouça uma volta inteira: o galho repete o tronco em miniatura.",
+    "en": "Listen to a whole turn: the branch repeats the trunk in miniature.",
+    "fr": "Écoutez un tour entier : la branche répète le tronc en miniature.",
+    "es": "Escuche una vuelta entera: la rama repite el tronco en miniatura."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (OrganismStem::Bloom).",
+    "en": "Rasgo Synth Studio (OrganismStem::Bloom).",
+    "fr": "Rasgo Synth Studio (OrganismStem::Bloom).",
+    "es": "Rasgo Synth Studio (OrganismStem::Bloom)."
+   },
+   "nome": "BLOOM",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "CAMINHO",
+     "en": "PATH",
+     "fr": "CHEMIN",
+     "es": "CAMINO"
+    },
+    {
+     "pt": "REGISTRO",
+     "en": "REGISTER",
+     "fr": "REGISTRE",
+     "es": "REGISTRO"
+    },
+    {
+     "pt": "DURAÇÃO",
+     "en": "DURATION",
+     "fr": "DURÉE",
+     "es": "DURACIÓN"
+    }
+   ]
+  },
+  {
+   "corpo": "ThermalStatic",
+   "rapido": {
+    "pt": "Vida térmica: esquenta, morre, volta.",
+    "en": "Thermal life: it heats up, dies, comes back.",
+    "fr": "Vie thermique : elle chauffe, meurt, revient.",
+    "es": "Vida térmica: se calienta, muere, vuelve."
+   },
+   "como": {
+    "pt": "Um tom que esquenta, morre — devagar ou de repente — esfria e volta, com estalos de estática mais densos quanto mais quente.",
+    "en": "A tone that heats up, dies — slowly or suddenly — cools down and returns, with static crackles denser the hotter it gets.",
+    "fr": "Un son qui chauffe, meurt — lentement ou d’un coup — refroidit et revient, avec des craquements de statique plus denses quand il est plus chaud.",
+    "es": "Un tono que se calienta, muere — despacio o de golpe — se enfría y vuelve, con chasquidos de estática más densos cuanto más caliente."
+   },
+   "controles": [
+    {
+     "pt": "o calor: o quanto a vida sobe.",
+     "en": "the heat: how high life rises.",
+     "fr": "la chaleur : jusqu’où la vie monte.",
+     "es": "el calor: cuánto sube la vida."
+    },
+    {
+     "pt": "a chance de morrer de repente.",
+     "en": "the chance of dying suddenly.",
+     "fr": "la chance de mourir d’un coup.",
+     "es": "la probabilidad de morir de golpe."
+    },
+    {
+     "pt": "os estalos.",
+     "en": "the crackles.",
+     "fr": "les craquements.",
+     "es": "los chasquidos."
+    }
+   ],
+   "ouvir": {
+    "pt": "Com MORTE alta, a estrela vira um acontecimento.",
+    "en": "With DEATH high, the star becomes an event.",
+    "fr": "Avec MORT haut, l’étoile devient un événement.",
+    "es": "Con MUERTE alta, la estrella se vuelve un acontecimiento."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (OrganismStem, vida térmica).",
+    "en": "Rasgo Synth Studio (OrganismStem, thermal life).",
+    "fr": "Rasgo Synth Studio (OrganismStem, vie thermique).",
+    "es": "Rasgo Synth Studio (OrganismStem, vida térmica)."
+   },
+   "nome": "THERMAL",
+   "familia": "Texture",
+   "nomes_controles": [
+    {
+     "pt": "CALOR",
+     "en": "HEAT",
+     "fr": "CHALEUR",
+     "es": "CALOR"
+    },
+    {
+     "pt": "MORTE",
+     "en": "DEATH",
+     "fr": "MORT",
+     "es": "MUERTE"
+    },
+    {
+     "pt": "ESTÁTICA",
+     "en": "STATIC",
+     "fr": "STATIQUE",
+     "es": "ESTÁTICA"
+    }
+   ]
+  },
+  {
+   "corpo": "Core",
+   "rapido": {
+    "pt": "Uma voz de FM cruzado na frase do céu.",
+    "en": "A cross-FM voice on the sky's phrase.",
+    "fr": "Une voix de FM croisée sur la phrase du ciel.",
+    "es": "Una voz de FM cruzada en la frase del cielo."
+   },
+   "como": {
+    "pt": "Um par de osciladores em que o modulador recebe a saída anterior da portadora; cada passo da frase acende uma nota.",
+    "en": "A pair of oscillators in which the modulator receives the carrier's previous output; each step of the phrase starts a note.",
+    "fr": "Une paire d’oscillateurs où le modulateur reçoit la sortie précédente de la porteuse ; chaque pas de la phrase lance une note.",
+    "es": "Un par de osciladores en el que el modulador recibe la salida anterior de la portadora; cada paso de la frase enciende una nota."
+   },
+   "controles": [
+    {
+     "pt": "o índice da modulação: do puro ao metálico.",
+     "en": "the modulation index: from pure to metallic.",
+     "fr": "l’indice de modulation : du pur au métallique.",
+     "es": "el índice de modulación: de lo puro a lo metálico."
+    },
+    {
+     "pt": "a razão do modulador: de 1 a 3,5, em razões harmônicas.",
+     "en": "the modulator's ratio: 1 to 3.5, in harmonic ratios.",
+     "fr": "le rapport du modulateur : de 1 à 3,5, en rapports harmoniques.",
+     "es": "la razón del modulador: de 1 a 3,5, en razones armónicas."
+    },
+    {
+     "pt": "o decaimento: de 0,12 a 1,6 s.",
+     "en": "the decay: 0.12 to 1.6 s.",
+     "fr": "le déclin : de 0,12 à 1,6 s.",
+     "es": "la caída: de 0,12 a 1,6 s."
+    }
+   ],
+   "ouvir": {
+    "pt": "Suba FM numa nota longa: o timbre se abre em sinos.",
+    "en": "Raise FM on a long note: the timbre opens into bells.",
+    "fr": "Montez FM sur une note longue : le timbre s’ouvre en cloches.",
+    "es": "Suba FM en una nota larga: el timbre se abre en campanas."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (OrganismStem::Core).",
+    "en": "Rasgo Synth Studio (OrganismStem::Core).",
+    "fr": "Rasgo Synth Studio (OrganismStem::Core).",
+    "es": "Rasgo Synth Studio (OrganismStem::Core)."
+   },
+   "nome": "CORE",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "FM",
+     "en": "FM",
+     "fr": "FM",
+     "es": "FM"
+    },
+    {
+     "pt": "RAZÃO",
+     "en": "RATIO",
+     "fr": "RAPPORT",
+     "es": "RAZÓN"
+    },
+    {
+     "pt": "DECAIM.",
+     "en": "DECAY",
+     "fr": "DÉCLIN",
+     "es": "CAÍDA"
+    }
+   ]
+  },
+  {
+   "corpo": "Texture",
+   "rapido": {
+    "pt": "Uma cama de ruído colorido.",
+    "en": "A bed of coloured noise.",
+    "fr": "Un lit de bruit coloré.",
+    "es": "Una cama de ruido de colores."
+   },
+   "como": {
+    "pt": "Ruído filtrado numa banda que anda com a densidade do céu.",
+    "en": "Noise filtered in a band that moves with the sky's density.",
+    "fr": "Du bruit filtré dans une bande qui bouge avec la densité du ciel.",
+    "es": "Ruido filtrado en una banda que se mueve con la densidad del cielo."
+   },
+   "controles": [
+    {
+     "pt": "a cor: do branco ao rosa e ao marrom.",
+     "en": "the colour: from white to pink to brown.",
+     "fr": "la couleur : du blanc au rose puis au brun.",
+     "es": "el color: del blanco al rosa y al marrón."
+    },
+    {
+     "pt": "o foco: a ressonância da banda.",
+     "en": "the focus: the resonance of the band.",
+     "fr": "le foyer : la résonance de la bande.",
+     "es": "el foco: la resonancia de la banda."
+    },
+    {
+     "pt": "a velocidade com que a banda anda.",
+     "en": "how fast the band moves.",
+     "fr": "la vitesse à laquelle la bande bouge.",
+     "es": "la velocidad con que se mueve la banda."
+    }
+   ],
+   "ouvir": {
+    "pt": "Baixa e escura, ela vira o ar da sala.",
+    "en": "Low and dark, it becomes the air of the room.",
+    "fr": "Basse et sombre, elle devient l’air de la pièce.",
+    "es": "Baja y oscura, se vuelve el aire de la sala."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (OrganismStem::Texture).",
+    "en": "Rasgo Synth Studio (OrganismStem::Texture).",
+    "fr": "Rasgo Synth Studio (OrganismStem::Texture).",
+    "es": "Rasgo Synth Studio (OrganismStem::Texture)."
+   },
+   "nome": "TEXTURE",
+   "familia": "Texture",
+   "nomes_controles": [
+    {
+     "pt": "COR",
+     "en": "COLOUR",
+     "fr": "COULEUR",
+     "es": "COLOR"
+    },
+    {
+     "pt": "FOCO",
+     "en": "FOCUS",
+     "fr": "FOYER",
+     "es": "FOCO"
+    },
+    {
+     "pt": "MOVIMENTO",
+     "en": "MOTION",
+     "fr": "MOUVEMENT",
+     "es": "MOVIMIENTO"
+    }
+   ]
+  },
+  {
+   "corpo": "BassFallback",
+   "rapido": {
+    "pt": "Um baixo fraseado.",
+    "en": "A phrased bass.",
+    "fr": "Une basse phrasée.",
+    "es": "Un bajo fraseado."
+   },
+   "como": {
+    "pt": "Um seno com saturação suave que toca nas batidas de memória, numa de três oitavas.",
+    "en": "A softly saturated sine that plays on the memory beats, in one of three octaves.",
+    "fr": "Un sinus doucement saturé qui joue sur les battements de mémoire, dans l’une de trois octaves.",
+    "es": "Un seno con saturación suave que toca en los pulsos de memoria, en una de tres octavas."
+   },
+   "controles": [
+    {
+     "pt": "a oitava: duas abaixo, uma abaixo ou a do corpo.",
+     "en": "the octave: two below, one below or the body's.",
+     "fr": "l’octave : deux en dessous, une en dessous ou celle du corps.",
+     "es": "la octava: dos abajo, una abajo o la del cuerpo."
+    },
+    {
+     "pt": "o ataque: de 2 a 80 ms.",
+     "en": "the attack: 2 to 80 ms.",
+     "fr": "l’attaque : de 2 à 80 ms.",
+     "es": "el ataque: de 2 a 80 ms."
+    },
+    {
+     "pt": "a duração de cada nota.",
+     "en": "the length of each note.",
+     "fr": "la durée de chaque note.",
+     "es": "la duración de cada nota."
+    }
+   ],
+   "ouvir": {
+    "pt": "Com ATAQUE lento, o baixo respira em vez de bater.",
+    "en": "With a slow ATTACK, the bass breathes instead of hitting.",
+    "fr": "Avec une ATTAQUE lente, la basse respire au lieu de frapper.",
+    "es": "Con ATAQUE lento, el bajo respira en vez de golpear."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (OrganismStem::BassFallback).",
+    "en": "Rasgo Synth Studio (OrganismStem::BassFallback).",
+    "fr": "Rasgo Synth Studio (OrganismStem::BassFallback).",
+    "es": "Rasgo Synth Studio (OrganismStem::BassFallback)."
+   },
+   "nome": "BASS",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "REGISTRO",
+     "en": "REGISTER",
+     "fr": "REGISTRE",
+     "es": "REGISTRO"
+    },
+    {
+     "pt": "ATAQUE",
+     "en": "ATTACK",
+     "fr": "ATTAQUE",
+     "es": "ATAQUE"
+    },
+    {
+     "pt": "DURAÇÃO",
+     "en": "DURATION",
+     "fr": "DURÉE",
+     "es": "DURACIÓN"
+    }
+   ]
+  },
+  {
+   "corpo": "AyChip",
+   "rapido": {
+    "pt": "O chip de som de 8 bits: três tons, ruído e envelope.",
+    "en": "The 8-bit sound chip: three tones, noise and envelope.",
+    "fr": "La puce sonore 8 bits : trois sons, bruit et enveloppe.",
+    "es": "El chip de sonido de 8 bits: tres tonos, ruido y envolvente."
+   },
+   "como": {
+    "pt": "Um modelo do AY-3-8910: três tons em arpejo, o ruído do registrador e o envelope de hardware em laço.",
+    "en": "A model of the AY-3-8910: three tones in arpeggio, the register's noise and the hardware envelope in a loop.",
+    "fr": "Un modèle de l’AY-3-8910 : trois sons en arpège, le bruit du registre et l’enveloppe matérielle en boucle.",
+    "es": "Un modelo del AY-3-8910: tres tonos en arpegio, el ruido del registro y la envolvente de hardware en bucle."
+   },
+   "controles": [
+    {
+     "pt": "o arpejo: da oitava à tríade aberta.",
+     "en": "the arpeggio: from the octave to the open triad.",
+     "fr": "l’arpège : de l’octave à l’accord ouvert.",
+     "es": "el arpegio: de la octava a la tríada abierta."
+    },
+    {
+     "pt": "o ruído: acima de um terço ele entra, e a sua cor sobe.",
+     "en": "the noise: above a third it comes in, and its colour rises.",
+     "fr": "le bruit : au-delà d’un tiers il entre, et sa couleur monte.",
+     "es": "el ruido: pasado un tercio entra, y su color sube."
+    },
+    {
+     "pt": "a velocidade do envelope em laço.",
+     "en": "the speed of the looping envelope.",
+     "fr": "la vitesse de l’enveloppe en boucle.",
+     "es": "la velocidad de la envolvente en bucle."
+    }
+   ],
+   "ouvir": {
+    "pt": "Suba ENVELOPE: o som de jogo antigo começa a pulsar.",
+    "en": "Raise ENVELOPE: the old game sound starts to pulse.",
+    "fr": "Montez ENVELOPPE : le son de vieux jeu se met à pulser.",
+    "es": "Suba ENVOLVENTE: el sonido de videojuego antiguo empieza a latir."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (AY8910Chip); General Instrument AY-3-8910.",
+    "en": "Rasgo Synth Studio (AY8910Chip); General Instrument AY-3-8910.",
+    "fr": "Rasgo Synth Studio (AY8910Chip) ; General Instrument AY-3-8910.",
+    "es": "Rasgo Synth Studio (AY8910Chip); General Instrument AY-3-8910."
+   },
+   "nome": "AY-8910",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "ARPEJO",
+     "en": "ARPEGGIO",
+     "fr": "ARPÈGE",
+     "es": "ARPEGIO"
+    },
+    {
+     "pt": "RUÍDO",
+     "en": "NOISE",
+     "fr": "BRUIT",
+     "es": "RUIDO"
+    },
+    {
+     "pt": "ENVELOPE",
+     "en": "ENVELOPE",
+     "fr": "ENVELOPPE",
+     "es": "ENVOLVENTE"
+    }
+   ]
+  },
+  {
+   "corpo": "Morph",
+   "rapido": {
+    "pt": "Um tom que passa entre formas de onda.",
+    "en": "A tone moving between waveforms.",
+    "fr": "Un son qui passe d’une forme d’onde à l’autre.",
+    "es": "Un tono que pasa entre formas de onda."
+   },
+   "como": {
+    "pt": "Seno, triângulo, serra e quadrada num mesmo oscilador; a forma pode andar sozinha, e cada frase reacende o envelope.",
+    "en": "Sine, triangle, saw and square in one oscillator; the shape can wander by itself, and each phrase restarts the envelope.",
+    "fr": "Sinus, triangle, dent de scie et carré dans un même oscillateur ; la forme peut errer seule, et chaque phrase relance l’enveloppe.",
+    "es": "Seno, triángulo, sierra y cuadrada en un mismo oscilador; la forma puede andar sola, y cada frase reenciende la envolvente."
+   },
+   "controles": [
+    {
+     "pt": "a forma de onda.",
+     "en": "the waveform.",
+     "fr": "la forme d’onde.",
+     "es": "la forma de onda."
+    },
+    {
+     "pt": "o quanto a forma anda sozinha.",
+     "en": "how much the shape wanders by itself.",
+     "fr": "combien la forme erre seule.",
+     "es": "cuánto anda sola la forma."
+    },
+    {
+     "pt": "a duração do envelope: de 0,1 a 1,8 s.",
+     "en": "the length of the envelope: 0.1 to 1.8 s.",
+     "fr": "la durée de l’enveloppe : de 0,1 à 1,8 s.",
+     "es": "la duración de la envolvente: de 0,1 a 1,8 s."
+    }
+   ],
+   "ouvir": {
+    "pt": "Com DERIVA alta, a mesma nota muda de cor enquanto soa.",
+    "en": "With DRIFT high, the same note changes colour while it sounds.",
+    "fr": "Avec DÉRIVE haute, la même note change de couleur pendant qu’elle sonne.",
+    "es": "Con DERIVA alta, la misma nota cambia de color mientras suena."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (MorphOscillator).",
+    "en": "Rasgo Synth Studio (MorphOscillator).",
+    "fr": "Rasgo Synth Studio (MorphOscillator).",
+    "es": "Rasgo Synth Studio (MorphOscillator)."
+   },
+   "nome": "MORPH",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "FORMA",
+     "en": "SHAPE",
+     "fr": "FORME",
+     "es": "FORMA"
+    },
+    {
+     "pt": "DERIVA",
+     "en": "DRIFT",
+     "fr": "DÉRIVE",
+     "es": "DERIVA"
+    },
+    {
+     "pt": "DURAÇÃO",
+     "en": "DURATION",
+     "fr": "DURÉE",
+     "es": "DURACIÓN"
+    }
+   ]
+  },
+  {
+   "corpo": "Rossler",
+   "rapido": {
+    "pt": "Um atrator caótico de Rössler, com erupções.",
+    "en": "A chaotic Rössler attractor, with eruptions.",
+    "fr": "Un attracteur chaotique de Rössler, avec des éruptions.",
+    "es": "Un atractor caótico de Rössler, con erupciones."
+   },
+   "como": {
+    "pt": "O atrator de Rössler usado como fonte: um passeio caótico com tom; cada erupção do eixo z é um ataque.",
+    "en": "The Rössler attractor as a source: a pitched chaotic walk; each eruption of the z axis is an attack.",
+    "fr": "L’attracteur de Rössler comme source : une marche chaotique à hauteur ; chaque éruption de l’axe z est une attaque.",
+    "es": "El atractor de Rössler como fuente: un paseo caótico con altura; cada erupción del eje z es un ataque."
+   },
+   "controles": [
+    {
+     "pt": "a velocidade do passeio: o tom do ruído caótico.",
+     "en": "the speed of the walk: the pitch of the chaotic noise.",
+     "fr": "la vitesse de la marche : la hauteur du bruit chaotique.",
+     "es": "la velocidad del paseo: la altura del ruido caótico."
+    },
+    {
+     "pt": "o caos: de órbita quase periódica a caos pleno.",
+     "en": "chaos: from an almost periodic orbit to full chaos.",
+     "fr": "le chaos : d’une orbite presque périodique au chaos plein.",
+     "es": "el caos: de una órbita casi periódica al caos pleno."
+    },
+    {
+     "pt": "o brilho: quanto do sinal passa.",
+     "en": "brightness: how much of the signal comes through.",
+     "fr": "la brillance : combien du signal passe.",
+     "es": "el brillo: cuánto de la señal pasa."
+    }
+   ],
+   "ouvir": {
+    "pt": "Suba CAOS devagar: ouça a órbita se desfazer.",
+    "en": "Raise CHAOS slowly: hear the orbit come apart.",
+    "fr": "Montez CHAOS lentement : écoutez l’orbite se défaire.",
+    "es": "Suba CAOS despacio: oiga deshacerse la órbita."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (RosslerMap); atrator de Otto E. Rössler.",
+    "en": "Rasgo Synth Studio (RosslerMap); attractor by Otto E. Rössler.",
+    "fr": "Rasgo Synth Studio (RosslerMap) ; attracteur d’Otto E. Rössler.",
+    "es": "Rasgo Synth Studio (RosslerMap); atractor de Otto E. Rössler."
+   },
+   "nome": "RÖSSLER",
+   "familia": "Texture",
+   "nomes_controles": [
+    {
+     "pt": "TAXA",
+     "en": "RATE",
+     "fr": "TAUX",
+     "es": "TASA"
+    },
+    {
+     "pt": "CAOS",
+     "en": "CHAOS",
+     "fr": "CHAOS",
+     "es": "CAOS"
+    },
+    {
+     "pt": "BRILHO",
+     "en": "BRIGHT",
+     "fr": "BRILL.",
+     "es": "BRILLO"
+    }
+   ]
+  },
+  {
+   "corpo": "EnvelopePulse",
+   "rapido": {
+    "pt": "Um pulso que se repete sozinho.",
+    "en": "A pulse that repeats by itself.",
+    "fr": "Une impulsion qui se répète toute seule.",
+    "es": "Un pulso que se repite solo."
+   },
+   "como": {
+    "pt": "Um envelope em laço que golpeia um tom: ritmo e timbre saem do mesmo laço.",
+    "en": "A looping envelope striking a tone: rhythm and timbre come from the same loop.",
+    "fr": "Une enveloppe en boucle qui frappe un son : rythme et timbre sortent de la même boucle.",
+    "es": "Una envolvente en bucle que golpea un tono: ritmo y timbre salen del mismo bucle."
+   },
+   "controles": [
+    {
+     "pt": "a velocidade do laço.",
+     "en": "the speed of the loop.",
+     "fr": "la vitesse de la boucle.",
+     "es": "la velocidad del bucle."
+    },
+    {
+     "pt": "o decaimento de cada golpe.",
+     "en": "the decay of each stroke.",
+     "fr": "le déclin de chaque frappe.",
+     "es": "la caída de cada golpe."
+    },
+    {
+     "pt": "a altura do tom.",
+     "en": "the pitch of the tone.",
+     "fr": "la hauteur du son.",
+     "es": "la altura del tono."
+    }
+   ],
+   "ouvir": {
+    "pt": "Com VELOCIDADE alta, os golpes viram um tom novo.",
+    "en": "With SPEED high, the strokes turn into a new tone.",
+    "fr": "Avec VITESSE haute, les frappes deviennent un nouveau son.",
+    "es": "Con VELOCIDAD alta, los golpes se vuelven un tono nuevo."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (EnvelopeLoopPulse).",
+    "en": "Rasgo Synth Studio (EnvelopeLoopPulse).",
+    "fr": "Rasgo Synth Studio (EnvelopeLoopPulse).",
+    "es": "Rasgo Synth Studio (EnvelopeLoopPulse)."
+   },
+   "nome": "ENV PULSE",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "VELOCIDADE",
+     "en": "SPEED",
+     "fr": "VITESSE",
+     "es": "VELOCIDAD"
+    },
+    {
+     "pt": "DECAIM.",
+     "en": "DECAY",
+     "fr": "DÉCLIN",
+     "es": "CAÍDA"
+    },
+    {
+     "pt": "ALTURA",
+     "en": "PITCH",
+     "fr": "HAUTEUR",
+     "es": "ALTURA"
+    }
+   ]
+  },
+  {
+   "corpo": "Granular",
+   "rapido": {
+    "pt": "Uma nuvem de grãos do passado recente.",
+    "en": "A cloud of grains from the recent past.",
+    "fr": "Un nuage de grains du passé récent.",
+    "es": "Una nube de granos del pasado reciente."
+   },
+   "como": {
+    "pt": "Grãos curtos lidos do último segundo e meio de uma frase própria, com desvio de altura.",
+    "en": "Short grains read from the last second and a half of a phrase of its own, with a pitch deviation.",
+    "fr": "Des grains courts lus dans la dernière seconde et demie d’une phrase à elle, avec un écart de hauteur.",
+    "es": "Granos cortos leídos del último segundo y medio de una frase propia, con desvío de altura."
+   },
+   "controles": [
+    {
+     "pt": "de 2 a 40 grãos por segundo.",
+     "en": "2 to 40 grains per second.",
+     "fr": "de 2 à 40 grains par seconde.",
+     "es": "de 2 a 40 granos por segundo."
+    },
+    {
+     "pt": "o quanto atrás os grãos vão: até 1,6 s.",
+     "en": "how far back the grains reach: up to 1.6 s.",
+     "fr": "jusqu’où les grains remontent : jusqu’à 1,6 s.",
+     "es": "cuánto atrás van los granos: hasta 1,6 s."
+    },
+    {
+     "pt": "o desvio de altura de cada grão: até 7 semitons.",
+     "en": "each grain's pitch deviation: up to 7 semitones.",
+     "fr": "l’écart de hauteur de chaque grain : jusqu’à 7 demi-tons.",
+     "es": "el desvío de altura de cada grano: hasta 7 semitonos."
+    }
+   ],
+   "ouvir": {
+    "pt": "Com DENSIDADE alta e ESPALHAR baixo, a frase vira uma névoa.",
+    "en": "With DENSITY high and SPREAD low, the phrase becomes a mist.",
+    "fr": "Avec DENSITÉ haute et DISPERS. bas, la phrase devient brume.",
+    "es": "Con DENSIDAD alta y DISPERS. bajo, la frase se vuelve niebla."
+   },
+   "origem": {
+    "pt": "Reescrita a partir do GranularCloud do Rasgo Synth Studio; a ideia do Clouds, Émilie Gillet / Mutable Instruments.",
+    "en": "Rewritten from the Rasgo Synth Studio's GranularCloud; the idea of Clouds, Émilie Gillet / Mutable Instruments.",
+    "fr": "Réécrite à partir du GranularCloud du Rasgo Synth Studio ; l’idée de Clouds, Émilie Gillet / Mutable Instruments.",
+    "es": "Reescrita a partir del GranularCloud del Rasgo Synth Studio; la idea de Clouds, Émilie Gillet / Mutable Instruments."
+   },
+   "nome": "GRANULAR",
+   "familia": "Texture",
+   "nomes_controles": [
+    {
+     "pt": "DENSIDADE",
+     "en": "DENSITY",
+     "fr": "DENSITÉ",
+     "es": "DENSIDAD"
+    },
+    {
+     "pt": "ESPALHAR",
+     "en": "SPREAD",
+     "fr": "DISPERS.",
+     "es": "DISPERS."
+    },
+    {
+     "pt": "ALTURA",
+     "en": "PITCH",
+     "fr": "HAUTEUR",
+     "es": "ALTURA"
+    }
+   ]
+  },
+  {
+   "corpo": "Turing",
+   "rapido": {
+    "pt": "Uma melodia em laço que muda aos poucos.",
+    "en": "A looping melody that changes little by little.",
+    "fr": "Une mélodie en boucle qui change peu à peu.",
+    "es": "Una melodía en bucle que cambia poco a poco."
+   },
+   "como": {
+    "pt": "O registrador de 16 bits da \"Turing Machine\": a cada passo o bit que sai volta ou é trocado por um novo; os bits escolhem a nota.",
+    "en": "The 16-bit register of the \"Turing Machine\": on each step the outgoing bit comes back or is swapped for a new one; the bits pick the note.",
+    "fr": "Le registre de 16 bits de la « Turing Machine » : à chaque pas le bit qui sort revient ou est remplacé par un nouveau ; les bits choisissent la note.",
+    "es": "El registro de 16 bits de la «Turing Machine»: en cada paso el bit que sale vuelve o se cambia por uno nuevo; los bits eligen la nota."
+   },
+   "controles": [
+    {
+     "pt": "a chance de um bit novo: 0 trava o laço, 0,6 quase nunca repete.",
+     "en": "the chance of a new bit: 0 locks the loop, 0.6 almost never repeats.",
+     "fr": "la chance d’un bit nouveau : 0 verrouille la boucle, 0,6 ne répète presque jamais.",
+     "es": "la probabilidad de un bit nuevo: 0 traba el bucle, 0,6 casi nunca repite."
+    },
+    {
+     "pt": "o timbre: do seno à quadrada.",
+     "en": "the timbre: from sine to square.",
+     "fr": "le timbre : du sinus au carré.",
+     "es": "el timbre: del seno a la cuadrada."
+    },
+    {
+     "pt": "a cauda de cada nota.",
+     "en": "the tail of each note.",
+     "fr": "la queue de chaque note.",
+     "es": "la cola de cada nota."
+    }
+   ],
+   "ouvir": {
+    "pt": "Comece com MUDANÇA em zero: ouça o laço, e então o deixe mudar.",
+    "en": "Start with CHANGE at zero: hear the loop, then let it change.",
+    "fr": "Commencez avec CHANGEMENT à zéro : écoutez la boucle, puis laissez-la changer.",
+    "es": "Empiece con CAMBIO en cero: oiga el bucle, y luego déjelo cambiar."
+   },
+   "origem": {
+    "pt": "Reescrita a partir do KSRandomizerCore do Rasgo Synth Studio; a Turing Machine de Tom Whitwell / Music Thing Modular.",
+    "en": "Rewritten from the Rasgo Synth Studio's KSRandomizerCore; the Turing Machine by Tom Whitwell / Music Thing Modular.",
+    "fr": "Réécrite à partir du KSRandomizerCore du Rasgo Synth Studio ; la Turing Machine de Tom Whitwell / Music Thing Modular.",
+    "es": "Reescrita a partir del KSRandomizerCore del Rasgo Synth Studio; la Turing Machine de Tom Whitwell / Music Thing Modular."
+   },
+   "nome": "TURING",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "MUDANÇA",
+     "en": "CHANGE",
+     "fr": "CHANGEMENT",
+     "es": "CAMBIO"
+    },
+    {
+     "pt": "FORMA",
+     "en": "SHAPE",
+     "fr": "FORME",
+     "es": "FORMA"
+    },
+    {
+     "pt": "DURAÇÃO",
+     "en": "DURATION",
+     "fr": "DURÉE",
+     "es": "DURACIÓN"
+    }
+   ]
+  },
+  {
+   "corpo": "SpectralGhost",
+   "rapido": {
+    "pt": "O fantasma espectral do que o céu toca.",
+    "en": "The spectral ghost of what the sky is playing.",
+    "fr": "Le fantôme spectral de ce que joue le ciel.",
+    "es": "El fantasma espectral de lo que toca el cielo."
+   },
+   "como": {
+    "pt": "Ouve as estrelas acesas, guarda a força de cada faixa de frequência e troca a fase por uma que deriva: fica a harmonia, sem ataque nem altura nítida.",
+    "en": "It listens to the lit stars, keeps the strength of each frequency band and swaps the phase for a drifting one: the harmony stays, without attack or clear pitch.",
+    "fr": "Il écoute les étoiles allumées, garde la force de chaque bande de fréquences et remplace la phase par une phase qui dérive : l’harmonie reste, sans attaque ni hauteur nette.",
+    "es": "Escucha las estrellas encendidas, guarda la fuerza de cada banda de frecuencia y cambia la fase por una que deriva: queda la armonía, sin ataque ni altura nítida."
+   },
+   "controles": [
+    {
+     "pt": "de um fantasma coerente a um borrão.",
+     "en": "from a coherent ghost to a blur.",
+     "fr": "d’un fantôme cohérent à un flou.",
+     "es": "de un fantasma coherente a un borrón."
+    },
+    {
+     "pt": "o quanto o fantasma demora a esquecer: até ~0,4 s.",
+     "en": "how long the ghost takes to forget: up to ~0.4 s.",
+     "fr": "le temps que le fantôme met à oublier : jusqu’à ~0,4 s.",
+     "es": "cuánto tarda el fantasma en olvidar: hasta ~0,4 s."
+    },
+    {
+     "pt": "o corte: do escuro ao aberto.",
+     "en": "the cutoff: from dark to open.",
+     "fr": "la coupure : du sombre à l’ouvert.",
+     "es": "el corte: de lo oscuro a lo abierto."
+    }
+   ],
+   "ouvir": {
+    "pt": "Ponha-o junto de estrelas de ataque: ele as transforma em halo.",
+    "en": "Put it next to percussive stars: it turns them into a halo.",
+    "fr": "Mettez-le près d’étoiles percussives : il les change en halo.",
+    "es": "Póngalo junto a estrellas de ataque: las vuelve halo."
+   },
+   "origem": {
+    "pt": "Reescrita a partir do SpectralGhost do Rasgo Synth Studio; a randomização de fase do modo espectral do Clouds/Beads.",
+    "en": "Rewritten from the Rasgo Synth Studio's SpectralGhost; the phase randomisation of the Clouds/Beads spectral mode.",
+    "fr": "Réécrite à partir du SpectralGhost du Rasgo Synth Studio ; la randomisation de phase du mode spectral de Clouds/Beads.",
+    "es": "Reescrita a partir del SpectralGhost del Rasgo Synth Studio; la aleatorización de fase del modo espectral de Clouds/Beads."
+   },
+   "nome": "GHOST",
+   "familia": "Texture",
+   "nomes_controles": [
+    {
+     "pt": "DERIVA",
+     "en": "DRIFT",
+     "fr": "DÉRIVE",
+     "es": "DERIVA"
+    },
+    {
+     "pt": "MEMÓRIA",
+     "en": "MEMORY",
+     "fr": "MÉMOIRE",
+     "es": "MEMORIA"
+    },
+    {
+     "pt": "BRILHO",
+     "en": "BRIGHT",
+     "fr": "BRILL.",
+     "es": "BRILLO"
+    }
+   ]
+  },
+  {
+   "corpo": "Vector",
+   "rapido": {
+    "pt": "Quatro timbres num ponto que gira.",
+    "en": "Four timbres on a point that orbits.",
+    "fr": "Quatre timbres sur un point qui tourne.",
+    "es": "Cuatro timbres en un punto que gira."
+   },
+   "como": {
+    "pt": "Quatro cantos — onda estocástica, Walsh, Atari Punk e ruído rosa — misturados pela posição de um ponto num quadrado.",
+    "en": "Four corners — stochastic wave, Walsh, Atari Punk and pink noise — blended by the position of a point on a square.",
+    "fr": "Quatre coins — onde stochastique, Walsh, Atari Punk et bruit rose — mélangés par la position d’un point sur un carré.",
+    "es": "Cuatro esquinas — onda estocástica, Walsh, Atari Punk y ruido rosa — mezcladas por la posición de un punto en un cuadrado."
+   },
+   "controles": [
+    {
+     "pt": "a posição horizontal do ponto.",
+     "en": "the point's horizontal position.",
+     "fr": "la position horizontale du point.",
+     "es": "la posición horizontal del punto."
+    },
+    {
+     "pt": "a posição vertical do ponto.",
+     "en": "the point's vertical position.",
+     "fr": "la position verticale du point.",
+     "es": "la posición vertical del punto."
+    },
+    {
+     "pt": "o quanto o ponto gira em volta, numa figura lenta.",
+     "en": "how much the point circles around, on a slow figure.",
+     "fr": "combien le point tourne autour, sur une figure lente.",
+     "es": "cuánto gira el punto alrededor, en una figura lenta."
+    }
+   ],
+   "ouvir": {
+    "pt": "Ponha ÓRBITA em zero e percorra os cantos com X e Y.",
+    "en": "Set ORBIT to zero and travel the corners with X and Y.",
+    "fr": "Mettez ORBITE à zéro et parcourez les coins avec X et Y.",
+    "es": "Ponga ÓRBITA en cero y recorra las esquinas con X e Y."
+   },
+   "origem": {
+    "pt": "Reescrita da síntese vetorial do Rasgo Synth Studio; Prophet VS, Chris Meyer / Sequential Circuits.",
+    "en": "Rewrite of the Rasgo Synth Studio's vector synthesis; Prophet VS, Chris Meyer / Sequential Circuits.",
+    "fr": "Réécriture de la synthèse vectorielle du Rasgo Synth Studio ; Prophet VS, Chris Meyer / Sequential Circuits.",
+    "es": "Reescritura de la síntesis vectorial del Rasgo Synth Studio; Prophet VS, Chris Meyer / Sequential Circuits."
+   },
+   "nome": "VECTOR",
+   "familia": "Texture",
+   "nomes_controles": [
+    {
+     "pt": "X",
+     "en": "X",
+     "fr": "X",
+     "es": "X"
+    },
+    {
+     "pt": "Y",
+     "en": "Y",
+     "fr": "Y",
+     "es": "Y"
+    },
+    {
+     "pt": "ÓRBITA",
+     "en": "ORBIT",
+     "fr": "ORBITE",
+     "es": "ÓRBITA"
+    }
+   ]
+  },
+  {
+   "corpo": "ModalResonator",
+   "rapido": {
+    "pt": "Um corpo que ressoa: memória e ressonância.",
+    "en": "A resonating body: memory and resonance.",
+    "fr": "Un corps qui résonne : mémoire et résonance.",
+    "es": "Un cuerpo que resuena: memoria y resonancia."
+   },
+   "como": {
+    "pt": "Um banco de seis modos (as parciais de um sino ou de uma placa) excitado pelo céu; a pressão das relações desafina os modos, a memória alonga a cauda. Fica num corpo só.",
+    "en": "A bank of six modes (the partials of a bell or a plate) excited by the sky; the pressure of the relations detunes the modes, memory lengthens the tail. It lives in one body only.",
+    "fr": "Un banc de six modes (les partiels d’une cloche ou d’une plaque) excité par le ciel ; la pression des relations désaccorde les modes, la mémoire allonge la queue. Il vit dans un seul corps.",
+    "es": "Un banco de seis modos (los parciales de una campana o una placa) excitado por el cielo; la presión de las relaciones desafina los modos, la memoria alarga la cola. Vive en un solo cuerpo."
+   },
+   "controles": [
+    {
+     "pt": "a altura do corpo que ressoa.",
+     "en": "the pitch of the resonating body.",
+     "fr": "la hauteur du corps qui résonne.",
+     "es": "la altura del cuerpo que resuena."
+    },
+    {
+     "pt": "o brilho: quanto dos modos agudos aparece.",
+     "en": "brightness: how much of the high modes comes through.",
+     "fr": "la brillance : combien des modes aigus passent.",
+     "es": "el brillo: cuánto de los modos agudos aparece."
+    },
+    {
+     "pt": "a cauda: quanto o corpo demora a calar.",
+     "en": "the tail: how long the body takes to fall silent.",
+     "fr": "la queue : le temps que le corps met à se taire.",
+     "es": "la cola: cuánto tarda el cuerpo en callar."
+    }
+   ],
+   "ouvir": {
+    "pt": "Ponha CAUDA alta e deixe as outras estrelas o tocarem.",
+    "en": "Set TAIL high and let the other stars play it.",
+    "fr": "Mettez QUEUE haut et laissez les autres étoiles en jouer.",
+    "es": "Ponga COLA alta y deje que las otras estrellas lo toquen."
+   },
+   "origem": {
+    "pt": "Rasgo Synth Studio (ModalResonator); a ideia do Rings, Émilie Gillet / Mutable Instruments.",
+    "en": "Rasgo Synth Studio (ModalResonator); the idea of Rings, Émilie Gillet / Mutable Instruments.",
+    "fr": "Rasgo Synth Studio (ModalResonator) ; l’idée de Rings, Émilie Gillet / Mutable Instruments.",
+    "es": "Rasgo Synth Studio (ModalResonator); la idea de Rings, Émilie Gillet / Mutable Instruments."
+   },
+   "nome": "MODAL",
+   "familia": "Tone",
+   "nomes_controles": [
+    {
+     "pt": "CORPO",
+     "en": "BODY",
+     "fr": "CORPS",
+     "es": "CUERPO"
+    },
+    {
+     "pt": "BRILHO",
+     "en": "BRIGHT",
+     "fr": "BRILL.",
+     "es": "BRILLO"
+    },
+    {
+     "pt": "CAUDA",
+     "en": "TAIL",
+     "fr": "QUEUE",
+     "es": "COLA"
+    }
+   ]
+  }
+ ]
+}

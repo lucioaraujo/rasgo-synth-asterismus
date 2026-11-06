@@ -34,6 +34,38 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/"/>
   </url>
   <url>
+    <loc>https://lucioaraujo.github.io/rasgo-synth-asterismus/learn.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-en.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-fr.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-es.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn.html"/>
+  </url>
+  <url>
+    <loc>https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-en.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-fr.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-es.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn.html"/>
+  </url>
+  <url>
+    <loc>https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-fr.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-en.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-fr.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-es.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn.html"/>
+  </url>
+  <url>
+    <loc>https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-es.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-en.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-fr.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn-es.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/learn.html"/>
+  </url>
+  <url>
     <loc>https://lucioaraujo.github.io/rasgo-synth-asterismus/tutorial.html</loc>
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/tutorial.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://lucioaraujo.github.io/rasgo-synth-asterismus/tutorial-en.html"/>

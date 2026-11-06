@@ -3,7 +3,7 @@
 ![The Asterismus playing: the Axis of Forces on the left, the Constellation in the centre with the stars moved by physics and the pairs in focus, the mixer of the eight stars on the right, the form and the breathing tempo in the header](website/assets/interface.jpg)
 
 **Website:** [lucioaraujo.github.io/rasgo-synth-asterismus](https://lucioaraujo.github.io/rasgo-synth-asterismus/) ·
-**Download:** [v0.2.0](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest) ·
+**Download:** [v0.3.0](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest) ·
 **Contact:** **rasgo.instruments@gmail.com**
 
 Languages:
@@ -23,16 +23,21 @@ seed proposes the sky; the musician plays it, swaps stars, draws relations
 and records the piece.
 
 **Authorship:** Lúcio de Araújo · **Family:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Version:** 0.2.0 (first public version) · **License:** GNU GPL-3.0-or-later (see
+**Version:** 0.3.0 · **License:** GNU GPL-3.0-or-later (see
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) and
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
 ### What it is
 
-- **A sky of 28 stars**: tone, texture, voice and pulse stars, and four
+- **A sky of 36 stars**: tone, texture, voice and pulse stars, four of them
   *control* stars that do not sound but filter how the others play. The
-  **seed** chooses eight of them, a key and a mode, a form and the cycles:
-  every seed is another piece, and the app always opens something new.
+  **seed** chooses eight among the 28 of its draw, a key and a mode, a form
+  and the cycles: every seed is another piece, and the app always opens
+  something new; the other eight come in through the LIBRARY. **LEARN**
+  has a fiche for every star.
+- **Cuts, tape, filters and sends**: in some parts the sky cuts and wears
+  (parenthesis, montage cut, tape stop, spin back, a tape or vinyl layer);
+  every star has a filter and echo and hall sends.
 - **The web (TRAMA)**: each bar the sky chooses pairs in focus and what each
   pair does — answer, contagion, shadow, hocket, pedal, friction, cadence.
   The piece goes through a form (opening, development, contrast, return) and
@@ -73,9 +78,9 @@ macOS (.dmg) are on the [releases page](https://github.com/lucioaraujo/rasgo-syn
 
 | Platform | Built and tested | Opened | Played by the author |
 |---|---|---|---|
-| Linux x86-64 | yes (38 tests) | yes | yes, on real hardware |
-| Windows x86-64 | by the release workflow (38 tests) | not yet | not yet |
-| macOS (Universal 2) | by the release workflow (38 tests) | not yet | not yet |
+| Linux x86-64 | yes (39 tests) | yes | yes, on real hardware |
+| Windows x86-64 | by the release workflow (39 tests) | not yet | not yet |
+| macOS (Universal 2) | by the release workflow (39 tests) | not yet | not yet |
 
 Measured on an Intel Core i5-6500 (2015, 4 cores), eight stars, 48 kHz,
 512-sample blocks, VARIATION and WEB on: about 1.7 ms of audio work per block
@@ -101,16 +106,21 @@ e tocam. Uma seed propõe o céu; o músico o toca, troca estrelas, desenha
 relações e grava a peça.
 
 **Autoria:** Lúcio de Araújo · **Família:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Versão:** 0.2.0 (primeira versão pública) · **Licença:** GNU GPL-3.0-or-later (ver
+**Versão:** 0.3.0 · **Licença:** GNU GPL-3.0-or-later (ver
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) e
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
 ### O que é
 
-- **Um céu de 28 estrelas**: estrelas de tom, textura, voz e pulso, e quatro
-  estrelas de *controle*, que não soam mas filtram como as outras tocam. A
-  **seed** escolhe oito delas, um centro tonal e um modo, uma forma e os
-  ciclos: cada seed é outra peça, e o app sempre abre algo novo.
+- **Um céu de 36 estrelas**: estrelas de tom, textura, voz e pulso, quatro
+  delas de *controle*, que não soam mas filtram como as outras tocam. A
+  **seed** escolhe oito entre as 28 do seu sorteio, um centro tonal e um
+  modo, uma forma e os ciclos: cada seed é outra peça, e o app sempre abre
+  algo novo; as outras oito entram pela BIBLIOTECA. O **LEARN** tem uma
+  ficha para cada estrela.
+- **Cortes, fita, filtros e envios**: em algumas partes o céu corta e se
+  gasta (parêntese, corte de montagem, tape stop, spin back, uma camada de
+  fita ou de disco); cada estrela tem um filtro e envios de eco e sala.
 - **A trama**: a cada compasso o céu escolhe pares em foco e o que cada par
   faz — resposta, contágio, sombra, hoquetus, pedal, atrito, cadência. A
   peça percorre uma forma (abertura, desenvolvimento, contraste, retorno) e
@@ -153,9 +163,9 @@ instalação, em [`INSTALL.md`](INSTALL.md).
 
 | Plataforma | Compilado e testado | Aberto | Tocado pelo autor |
 |---|---|---|---|
-| Linux x86-64 | sim (38 testes) | sim | sim, em hardware real |
-| Windows x86-64 | pela integração contínua da publicação (38 testes) | ainda não | ainda não |
-| macOS (Universal 2) | pela integração contínua da publicação (38 testes) | ainda não | ainda não |
+| Linux x86-64 | sim (39 testes) | sim | sim, em hardware real |
+| Windows x86-64 | pela integração contínua da publicação (39 testes) | ainda não | ainda não |
+| macOS (Universal 2) | pela integração contínua da publicação (39 testes) | ainda não | ainda não |
 
 Medido num Intel Core i5-6500 (2015, 4 núcleos), oito estrelas, 48 kHz,
 blocos de 512 amostras, VARIAÇÃO e TRAMA ligadas: cerca de 1,7 ms de trabalho
@@ -181,17 +191,22 @@ propres cycles et jouent. Une seed propose le ciel ; le musicien le joue,
 échange des étoiles, dessine des relations et enregistre la pièce.
 
 **Auteur :** Lúcio de Araújo · **Famille :** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Version :** 0.2.0 (première version publique) · **Licence :** GNU GPL-3.0-or-later (voir
+**Version :** 0.3.0 · **Licence :** GNU GPL-3.0-or-later (voir
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) et
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
 ### Ce que c'est
 
-- **Un ciel de 28 étoiles** : des étoiles de ton, de texture, de voix et de
-  pulsation, et quatre étoiles de *contrôle*, qui ne sonnent pas mais
-  filtrent la façon dont les autres jouent. La **seed** en choisit huit, une
-  tonalité et un mode, une forme et les cycles : chaque seed est une autre
-  pièce, et l'app ouvre toujours du neuf.
+- **Un ciel de 36 étoiles** : des étoiles de ton, de texture, de voix et de
+  pulsation, dont quatre de *contrôle*, qui ne sonnent pas mais filtrent la
+  façon dont les autres jouent. La **seed** en choisit huit parmi les 28 de
+  son tirage, une tonalité et un mode, une forme et les cycles : chaque seed
+  est une autre pièce, et l'app ouvre toujours du neuf ; les huit autres
+  entrent par la BIBLIOTHÈQUE. Le **LEARN** a une fiche pour chaque étoile.
+- **Coupes, bande, filtres et envois** : dans certaines parties le ciel coupe
+  et s'use (parenthèse, coupe de montage, tape stop, spin back, une couche de
+  bande ou de disque) ; chaque étoile a un filtre et des envois d'écho et de
+  salle.
 - **La trame** : à chaque mesure le ciel choisit des paires en focus et ce
   que fait chaque paire — réponse, contagion, ombre, hoquet, pédale,
   friction, cadence. La pièce parcourt une forme (ouverture, développement,
@@ -235,9 +250,9 @@ d'installation, dans [`INSTALL.md`](INSTALL.md).
 
 | Plateforme | Compilé et testé | Ouvert | Joué par l'auteur |
 |---|---|---|---|
-| Linux x86-64 | oui (38 tests) | oui | oui, sur du vrai matériel |
-| Windows x86-64 | par l'intégration continue de la publication (38 tests) | pas encore | pas encore |
-| macOS (Universal 2) | par l'intégration continue de la publication (38 tests) | pas encore | pas encore |
+| Linux x86-64 | oui (39 tests) | oui | oui, sur du vrai matériel |
+| Windows x86-64 | par l'intégration continue de la publication (39 tests) | pas encore | pas encore |
+| macOS (Universal 2) | par l'intégration continue de la publication (39 tests) | pas encore | pas encore |
 
 Mesuré sur un Intel Core i5-6500 (2015, 4 cœurs), huit étoiles, 48 kHz,
 blocs de 512 échantillons, VARIATION et TRAME actives : environ 1,7 ms de
@@ -264,16 +279,21 @@ propios ciclos y tocan. Una seed propone el cielo; el músico lo toca,
 cambia estrellas, dibuja relaciones y graba la pieza.
 
 **Autoría:** Lúcio de Araújo · **Familia:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Versión:** 0.2.0 (primera versión pública) · **Licencia:** GNU GPL-3.0-or-later (ver
+**Versión:** 0.3.0 · **Licencia:** GNU GPL-3.0-or-later (ver
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) y
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
 ### Qué es
 
-- **Un cielo de 28 estrellas**: estrellas de tono, textura, voz y pulso, y
-  cuatro estrellas de *control*, que no suenan pero filtran cómo tocan las
-  otras. La **seed** elige ocho de ellas, una tonalidad y un modo, una forma
-  y los ciclos: cada seed es otra pieza, y la app siempre abre algo nuevo.
+- **Un cielo de 36 estrellas**: estrellas de tono, textura, voz y pulso,
+  cuatro de ellas de *control*, que no suenan pero filtran cómo tocan las
+  otras. La **seed** elige ocho entre las 28 de su sorteo, una tonalidad y un
+  modo, una forma y los ciclos: cada seed es otra pieza, y la app siempre
+  abre algo nuevo; las otras ocho entran por la BIBLIOTECA. El **LEARN**
+  tiene una ficha para cada estrella.
+- **Cortes, cinta, filtros y envíos**: en algunas partes el cielo corta y se
+  desgasta (paréntesis, corte de montaje, tape stop, spin back, una capa de
+  cinta o de disco); cada estrella tiene un filtro y envíos de eco y sala.
 - **La trama**: en cada compás el cielo elige pares en foco y lo que hace
   cada par — respuesta, contagio, sombra, hoquetus, pedal, fricción,
   cadencia. La pieza recorre una forma (apertura, desarrollo, contraste,
@@ -317,9 +337,9 @@ de instalación, en [`INSTALL.md`](INSTALL.md).
 
 | Plataforma | Compilado y probado | Abierto | Tocado por el autor |
 |---|---|---|---|
-| Linux x86-64 | sí (38 pruebas) | sí | sí, en hardware real |
-| Windows x86-64 | por la integración continua de la publicación (38 pruebas) | todavía no | todavía no |
-| macOS (Universal 2) | por la integración continua de la publicación (38 pruebas) | todavía no | todavía no |
+| Linux x86-64 | sí (39 pruebas) | sí | sí, en hardware real |
+| Windows x86-64 | por la integración continua de la publicación (39 pruebas) | todavía no | todavía no |
+| macOS (Universal 2) | por la integración continua de la publicación (39 pruebas) | todavía no | todavía no |
 
 Medido en un Intel Core i5-6500 (2015, 4 núcleos), ocho estrellas, 48 kHz,
 bloques de 512 muestras, VARIACIÓN y TRAMA activas: cerca de 1,7 ms de trabajo

@@ -12,11 +12,11 @@ on:
     inputs:
       tag:
         description: 'Release tag (must exist)'
-        default: 'v0.2.0'
+        default: 'v0.3.0'
         required: true
       run_id:
-        description: 'Earlier package.yml run with the Linux and macOS packages'
-        default: '42133093481'
+        description: 'Earlier package.yml run with the Linux and macOS packages (v0.2.0: 42133093481)'
+        default: ''
         required: true
 
 permissions:

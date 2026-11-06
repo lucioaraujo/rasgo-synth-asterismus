@@ -16,7 +16,7 @@ if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 # A versão do Asterismus vive só aqui: o app, o SOBRE, o rodapé e os pacotes a
 # leem daqui (4/11/2026; antes estava repetida à mão no código).
-project(RasgoSynthPerformanceContracts VERSION 0.2.0 LANGUAGES C CXX)
+project(RasgoSynthPerformanceContracts VERSION 0.3.0 LANGUAGES C CXX)
 # O MSVC só define M_PI com _USE_MATH_DEFINES (depois do project(), onde MSVC já existe; 6/11: a CI do Windows da
 # v0.2.0 parou em Oscillator.hpp, FmFluteVoice.hpp e VosimOscillator.hpp — as
 # cópias do Studio em vendor/ não mudam, a definição vem daqui).

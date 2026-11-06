@@ -44,8 +44,8 @@
   "applicationCategory": "MultimediaApplication",
   "applicationSubCategory": "Live electronic music instrument",
   "operatingSystem": "Windows, macOS, Linux",
-  "downloadUrl": "https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/tag/v0.2.0",
-  "softwareVersion": "0.2.0",
+  "downloadUrl": "https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/tag/v0.3.0",
+  "softwareVersion": "0.3.0",
   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
   "isAccessibleForFree": true,
   "author": {
@@ -77,6 +77,7 @@
     <nav class="page-nav" aria-label="Pages">
       <a href="en.html" aria-current="page">About</a>
       <a href="tutorial-en.html">Tutorial</a>
+      <a href="learn-en.html">LEARN</a>
       <a href="instalacao-en.html">Installation</a>
       <a href="en.html#baixar">Download</a>
       <a href="en.html#studio">Studio</a>
@@ -94,7 +95,7 @@
 <main id="conteudo">
 <section class="hero" id="top">
   <div class="hero-text">
-    <span class="status-pill">Version 0.2.0 — first public version, for Windows, macOS and Linux</span>
+    <span class="status-pill">Version 0.3.0 — for Windows, macOS and Linux</span>
     <h1>Rasgo <b>Synth</b> Asterismus</h1>
     <p class="lead">Asterismus is a live instrument in which every synthesis module is a star. The stars relate to each other, move by physics, count their own cycles and play. A seed proposes the sky; the musician plays it, swaps stars, draws relations and records the piece.</p>
   </div>
@@ -112,10 +113,11 @@
 <section class="section sky-section">
   <h2>The sky</h2>
   <ol class="steps">
-    <li><h3>Stars and seed</h3><p>28 tone, texture, voice and pulse stars, and four control stars that do not sound but filter how the others play. The seed chooses eight of them, a key and a mode, a form and the cycles: every seed is another piece.</p></li>
+    <li><h3>Stars and seed</h3><p>36 tone, texture, voice and pulse stars, four of them control stars that do not sound but filter how the others play. The seed chooses eight among the 28 of its draw, a key and a mode, a form and the cycles: every seed is another piece; the other eight come in through the LIBRARY.</p></li>
     <li><h3>The web</h3><p>Each bar the sky chooses pairs in focus and what each pair does: answer, contagion, shadow, hocket, pedal, friction, cadence. The piece goes through opening, development, contrast and return, and ends with a coda.</p></li>
     <li><h3>Time that breathes</h3><p>An elastic tempo, a swing that comes from an orbit, bars grouped as 3+3+2, a star that drifts against the pulse, eclipses brought by computed moons.</p></li>
     <li><h3>Physical motion</h3><p>Gravity, springs, pendulums, billiards, magnetism, spin and foam. Strong collisions sound, and each star sounds in the stereo field where it is in the Constellation.</p></li>
+    <li><h3>Cuts and tape</h3><p>In some parts the sky cuts — parenthesis, montage cut, apocryphal, decimation — and wears: tape or vinyl, tape stop, spin back, varispeed, as the seed chooses.</p></li>
   </ol>
 </section>
 
@@ -124,7 +126,7 @@
   <ol class="steps">
     <li><h3>The Constellation</h3><p>Click a star to put it in focus and drag it to move its place; click a cable to choose its phenomenon and drag it to set its strength.</p></li>
     <li><h3>Gestures and scenes</h3><p>OPEN, TEAR, REPAIR, STUTTER, DISPLACE, HOLD and PANIC SAFE act on the star in focus. Four scenes and the PATH follow the form.</p></li>
-    <li><h3>The mixer and the library</h3><p>One stem per star, with presence, level, mute and solo; VARIATION lets the sky light and dim stars. The LIBRARY swaps or pins the star of a body.</p></li>
+    <li><h3>The mixer and the library</h3><p>One stem per star, with presence, level, mute and solo, a filter and echo and hall sends; VARIATION lets the sky light and dim stars and POLYPHONY sets how many sound together. The LIBRARY swaps or pins a body's star and opens LEARN, the fiche of each star.</p></li>
     <li><h3>The Axis of Forces</h3><p>Two points move eight macros — autonomy, intervention, density, tension, memory, risk, space, depth. With the web on, a ring shows the energy and the tension of the sky.</p></li>
   </ol>
 </section>
@@ -138,21 +140,21 @@
     <li>MEMORY keeps eight named places; SAVE SESSION and OPEN SESSION write and read .asterismus files — parameters only, never audio.</li>
   </ul>
   <p class="example">Output in the common RASGO standard: fixed gain, limiter with 4× true-peak detection, −1.41 dBTP ceiling, BS.1770 metering and dither on recording. If the sound system stalls or the device disappears, the app reopens it and the piece goes on from where it was.</p>
-  <p>The app's TUTORIAL button explains everything step by step, in English, Portuguese, French or Spanish.</p>
+  <p>The app's GUIDE explains everything step by step, and LEARN presents each star — in English, Portuguese, French or Spanish.</p>
 </section>
 
 <section class="section download" id="baixar">
   <h2>Download</h2>
-  <p>Version 0.2.0 is the first public version. The instrument remains open, in development. Choose the package for your system; the steps are in INSTALL.</p>
+  <p>Version 0.3.0 brings new stars, the sky's cuts and tape, a filter and sends on every star, the DRUMS groove and LEARN (what changed is in the CHANGELOG). The instrument remains open, in development. Choose the package for your system; the steps are in INSTALL.</p>
   <ul class="steps downloads">
-    <li><h3>Windows</h3><p>Windows 10 or 11, 64-bit — installer (.exe)</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-win64.exe">exe</a></p></li>
-    <li><h3>macOS</h3><p>macOS 10.15 or later, Intel and Apple Silicon</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-Darwin.dmg">dmg</a></p></li>
-    <li><h3>Linux</h3><p>.deb for Ubuntu and Debian; .tar.gz for other distributions</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-Linux.deb">deb</a> <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-Linux.tar.gz">tar.gz</a></p></li>
+    <li><h3>Windows</h3><p>Windows 10 or 11, 64-bit — installer (.exe)</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.3.0/rasgo-synth-asterismus-0.3.0-win64.exe">exe</a></p></li>
+    <li><h3>macOS</h3><p>macOS 10.15 or later, Intel and Apple Silicon</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.3.0/rasgo-synth-asterismus-0.3.0-Darwin.dmg">dmg</a></p></li>
+    <li><h3>Linux</h3><p>.deb for Ubuntu and Debian; .tar.gz for other distributions</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.3.0/rasgo-synth-asterismus-0.3.0-Linux.deb">deb</a> <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.3.0/rasgo-synth-asterismus-0.3.0-Linux.tar.gz">tar.gz</a></p></li>
   </ul>
   <p class="example">On first launch, Windows and macOS show a security warning: it is expected, because the app does not carry the two companies' paid signature. The installation guide says where to click.</p>
   <div class="contact-row">
     <a class="button button-primary" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/blob/main/INSTALL.md">Installation guide</a>
-    <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/tag/v0.2.0">All packages and release notes</a>
+    <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/tag/v0.3.0">All packages and release notes</a>
   </div>
 </section>
 
@@ -176,7 +178,7 @@
 
 <section class="section section-dark">
   <h2>Status</h2>
-  <p>In development, open. Built and tested on Linux (37 tests) and played by the author on real hardware; the Windows and macOS packages have not been built yet.</p>
+  <p>In development, open. Built and tested on Linux (39 tests) and played by the author on real hardware; the Windows, macOS and Linux packages are built by continuous integration.</p>
   <div class="contact-row">
     <button type="button" class="button button-primary" data-contact-trigger>Contact</button>
     <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus">GitHub</a>

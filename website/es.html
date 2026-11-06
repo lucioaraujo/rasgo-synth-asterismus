@@ -44,8 +44,8 @@
   "applicationCategory": "MultimediaApplication",
   "applicationSubCategory": "Live electronic music instrument",
   "operatingSystem": "Windows, macOS, Linux",
-  "downloadUrl": "https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/tag/v0.2.0",
-  "softwareVersion": "0.2.0",
+  "downloadUrl": "https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/tag/v0.3.0",
+  "softwareVersion": "0.3.0",
   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
   "isAccessibleForFree": true,
   "author": {
@@ -77,6 +77,7 @@
     <nav class="page-nav" aria-label="Páginas">
       <a href="es.html" aria-current="page">Acerca</a>
       <a href="tutorial-es.html">Tutorial</a>
+      <a href="learn-es.html">LEARN</a>
       <a href="instalacao-es.html">Instalación</a>
       <a href="es.html#baixar">Descargar</a>
       <a href="es.html#studio">Studio</a>
@@ -94,7 +95,7 @@
 <main id="conteudo">
 <section class="hero" id="top">
   <div class="hero-text">
-    <span class="status-pill">Versión 0.2.0 — primera versión pública, para Windows, macOS y Linux</span>
+    <span class="status-pill">Versión 0.3.0 — para Windows, macOS y Linux</span>
     <h1>Rasgo <b>Synth</b> Asterismus</h1>
     <p class="lead">Asterismus es un instrumento en vivo en el que cada módulo de síntesis es una estrella. Las estrellas se relacionan, se mueven por física, cuentan sus propios ciclos y tocan. Una seed propone el cielo; el músico lo toca, cambia estrellas, dibuja relaciones y graba la pieza.</p>
   </div>
@@ -112,10 +113,11 @@
 <section class="section sky-section">
   <h2>El cielo</h2>
   <ol class="steps">
-    <li><h3>Estrellas y seed</h3><p>28 estrellas de tono, textura, voz y pulso, y cuatro estrellas de control, que no suenan pero filtran cómo tocan las otras. La seed elige ocho de ellas, una tonalidad y un modo, una forma y los ciclos: cada seed es otra pieza.</p></li>
+    <li><h3>Estrellas y seed</h3><p>36 estrellas de tono, textura, voz y pulso, cuatro de ellas de control, que no suenan pero filtran cómo tocan las otras. La seed elige ocho entre las 28 de su sorteo, un centro tonal y un modo, una forma y los ciclos: cada seed es otra pieza; las otras ocho entran por la BIBLIOTECA.</p></li>
     <li><h3>La trama</h3><p>En cada compás el cielo elige pares en foco y lo que hace cada par: respuesta, contagio, sombra, hoquetus, pedal, fricción, cadencia. La pieza recorre apertura, desarrollo, contraste y retorno, y termina en una coda.</p></li>
     <li><h3>El tiempo que respira</h3><p>Un tempo elástico, un swing que viene de una órbita, compases agrupados en 3+3+2, una estrella que deriva contra el pulso, eclipses traídos por lunas calculadas.</p></li>
     <li><h3>Movimiento físico</h3><p>Gravedad, resortes, péndulos, billar, magnetismo, efecto y espuma. Los choques fuertes suenan, y cada estrella suena en el estéreo donde está en la Constelación.</p></li>
+    <li><h3>Cortes y cinta</h3><p>En algunas partes el cielo corta — paréntesis, corte de montaje, apócrifo, decimación — y se desgasta: cinta o disco, tape stop, spin back, varispeed, según la seed.</p></li>
   </ol>
 </section>
 
@@ -124,7 +126,7 @@
   <ol class="steps">
     <li><h3>La Constelación</h3><p>Haga clic en una estrella para ponerla en foco y arrástrela para cambiar su lugar; haga clic en un cable para elegir su fenómeno y arrástrelo para su intensidad.</p></li>
     <li><h3>Gestos y escenas</h3><p>ABRIR, RASGAR, REPARAR, STUTTER, DESPLAZAR, HOLD y PANIC SAFE actúan sobre la estrella en foco. Cuatro escenas y el RECORRIDO siguen la forma.</p></li>
-    <li><h3>El mezclador y la biblioteca</h3><p>Un stem por estrella, con presencia, nivel, mute y solo; la VARIACIÓN deja que el cielo encienda y apague estrellas. La BIBLIOTECA cambia o fija la estrella de un cuerpo.</p></li>
+    <li><h3>El mezclador y la biblioteca</h3><p>Un stem por estrella, con presencia, nivel, mute y solo, un filtro y envíos de eco y sala; la VARIACIÓN deja que el cielo encienda y apague estrellas y la POLIFONÍA define cuántas suenan juntas. La BIBLIOTECA cambia o fija la estrella de un cuerpo y abre el LEARN, la ficha de cada estrella.</p></li>
     <li><h3>El Eje de fuerzas</h3><p>Dos puntos mueven ocho macros — autonomía, intervención, densidad, tensión, memoria, riesgo, espacio, profundidad. Con la trama, un anillo muestra la energía y la tensión del cielo.</p></li>
   </ol>
 </section>
@@ -138,21 +140,21 @@
     <li>la MEMORIA guarda ocho lugares con nombre; GUARDAR SESIÓN y ABRIR SESIÓN escriben y leen archivos .asterismus — solo parámetros, nunca audio.</li>
   </ul>
   <p class="example">Salida en el estándar común RASGO: ganancia fija, limitador con true peak 4×, techo de −1,41 dBTP, medición BS.1770 y dither en la grabación. Si el sistema de sonido se bloquea o el dispositivo desaparece, la app lo reabre y la pieza sigue desde donde estaba.</p>
-  <p>El botón TUTORIAL de la app lo explica todo paso a paso, en español, inglés, portugués o francés.</p>
+  <p>El TUTORIAL de la app lo explica todo paso a paso, y el LEARN presenta cada estrella — en español, inglés, portugués o francés.</p>
 </section>
 
 <section class="section download" id="baixar">
   <h2>Descargar</h2>
-  <p>La versión 0.2.0 es la primera versión pública. El instrumento sigue abierto, en desarrollo. Elige el paquete de tu sistema; los pasos están en INSTALL.</p>
+  <p>La versión 0.3.0 trae estrellas nuevas, los cortes y la cinta del cielo, un filtro y envíos en cada estrella, el groove de la DRUMS y el LEARN (lo que cambió está en el CHANGELOG). El instrumento sigue abierto, en desarrollo. Elige el paquete de tu sistema; los pasos están en INSTALL.</p>
   <ul class="steps downloads">
-    <li><h3>Windows</h3><p>Windows 10 u 11, 64 bits — instalador (.exe)</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-win64.exe">exe</a></p></li>
-    <li><h3>macOS</h3><p>macOS 10.15 o más reciente, Intel y Apple Silicon</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-Darwin.dmg">dmg</a></p></li>
-    <li><h3>Linux</h3><p>.deb para Ubuntu y Debian; .tar.gz para las demás distribuciones</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-Linux.deb">deb</a> <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.2.0/rasgo-synth-asterismus-0.2.0-Linux.tar.gz">tar.gz</a></p></li>
+    <li><h3>Windows</h3><p>Windows 10 u 11, 64 bits — instalador (.exe)</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.3.0/rasgo-synth-asterismus-0.3.0-win64.exe">exe</a></p></li>
+    <li><h3>macOS</h3><p>macOS 10.15 o más reciente, Intel y Apple Silicon</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.3.0/rasgo-synth-asterismus-0.3.0-Darwin.dmg">dmg</a></p></li>
+    <li><h3>Linux</h3><p>.deb para Ubuntu y Debian; .tar.gz para las demás distribuciones</p><p class="dl-links"><a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.3.0/rasgo-synth-asterismus-0.3.0-Linux.deb">deb</a> <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/download/v0.3.0/rasgo-synth-asterismus-0.3.0-Linux.tar.gz">tar.gz</a></p></li>
   </ul>
   <p class="example">En la primera apertura, Windows y macOS muestran un aviso de seguridad: es lo esperado, porque la app no lleva la firma de pago de las dos empresas. La guía de instalación dice dónde hacer clic.</p>
   <div class="contact-row">
     <a class="button button-primary" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/blob/main/INSTALL.md">Guía de instalación</a>
-    <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/tag/v0.2.0">Todos los paquetes y las notas de la versión</a>
+    <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/tag/v0.3.0">Todos los paquetes y las notas de la versión</a>
   </div>
 </section>
 
@@ -176,7 +178,7 @@
 
 <section class="section section-dark">
   <h2>Estado</h2>
-  <p>En desarrollo, abierto. Compilado y probado en Linux (37 pruebas) y tocado por el autor en hardware real; los paquetes de Windows y macOS todavía no se construyeron.</p>
+  <p>En desarrollo, abierto. Compilado y probado en Linux (39 pruebas) y tocado por el autor en hardware real; los paquetes de Windows, macOS y Linux se montan por integración continua.</p>
   <div class="contact-row">
     <button type="button" class="button button-primary" data-contact-trigger>Contacto</button>
     <a class="button" href="https://github.com/lucioaraujo/rasgo-synth-asterismus">GitHub</a>

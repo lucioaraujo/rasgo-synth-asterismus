@@ -4,7 +4,7 @@ What changed between the published versions of Rasgo Synth Asterismus. The
 development notes, in Portuguese, are in [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md)
 and [`docs/`](docs/).
 
-## 0.3.0 — in development (not released)
+## 0.3.0 — release candidate (branch release-0.3.0; not released)
 
 - **More stars:** AY-8910, MORPH, RÖSSLER, ENVELOPE PULSE (Studio voices),
   GRANULAR, TURING, SPECTRAL GHOST and VECTOR (rewritten from Studio

@@ -20,7 +20,7 @@ SITE = {
     "raiz_do_dominio": False,
 }
 
-VERSAO = "0.2.0"
+VERSAO = "0.3.0"
 
 GRUPOS = [
     [
@@ -28,6 +28,13 @@ GRUPOS = [
         {"arquivo": "en.html", "url": "en.html", "lang": "en"},
         {"arquivo": "fr.html", "url": "fr.html", "lang": "fr"},
         {"arquivo": "es.html", "url": "es.html", "lang": "es"},
+    ],
+    # a página LEARN (7/11; publicada com a 0.3.0)
+    [
+        {"arquivo": "learn.html", "url": "learn.html", "lang": "pt-BR"},
+        {"arquivo": "learn-en.html", "url": "learn-en.html", "lang": "en"},
+        {"arquivo": "learn-fr.html", "url": "learn-fr.html", "lang": "fr"},
+        {"arquivo": "learn-es.html", "url": "learn-es.html", "lang": "es"},
     ],
     # as páginas Tutorial e Instalação (6/11)
     [
