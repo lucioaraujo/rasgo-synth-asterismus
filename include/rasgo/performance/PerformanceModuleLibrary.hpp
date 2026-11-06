@@ -38,7 +38,7 @@ struct PerformanceLibraryEntry {
     std::string_view source{};
 };
 
-inline constexpr std::array<PerformanceLibraryEntry, 35> kPerformanceModuleLibrary{{
+inline constexpr std::array<PerformanceLibraryEntry, 37> kPerformanceModuleLibrary{{
     {"acid", "Acid", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort, 1U},
     {"gendyn", "Gendyn", PerformanceModuleFamily::Texture, PerformanceLibraryState::ActiveCohort, 1U},
     {"drums", "Drums", PerformanceModuleFamily::Pulse, PerformanceLibraryState::ActiveCohort, 1U},
@@ -86,6 +86,10 @@ inline constexpr std::array<PerformanceLibraryEntry, 35> kPerformanceModuleLibra
      0U, "Studio dsp/GranularCloud.hpp (conceito)"},
     {"turing", "Turing", PerformanceModuleFamily::Tone, PerformanceLibraryState::ActiveCohort,
      0U, "Studio dsp/KSRandomizerCore.hpp (conceito)"},
+    {"spectral-ghost", "Spectral Ghost", PerformanceModuleFamily::Texture, PerformanceLibraryState::ActiveCohort,
+     0U, "Studio dsp/SpectralGhost.hpp (conceito)"},
+    {"vector", "Vector", PerformanceModuleFamily::Texture, PerformanceLibraryState::ActiveCohort,
+     0U, "Studio PieceRenderer, fase 76 (conceito)"},
     // Harmonaig e Bloom: reescritas a partir do conceito desde 2/11
     // (PerformanceHarmonyStars.hpp).
     {"harmonaig", "Harmonaig", PerformanceModuleFamily::Voice, PerformanceLibraryState::ActiveCohort,

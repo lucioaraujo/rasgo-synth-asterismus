@@ -17,7 +17,15 @@ Instrumento da família RASGO. Ex-Rasgo Synth Performance; nome atual desde
   proveniência em `vendor/studio-dsp/` (commit `8fc69f5`, GPLv3; créditos
   herdados em `vendor/studio-dsp/CREDITS.md`); acréscimos de 30/10 (o
   `FootnotePluck` e a lógica do `BluffSignal`, commit `cfe1698`) registrados
-  no fim do `vendor/studio-dsp/PROVENANCE.md`.
+  no fim do `vendor/studio-dsp/PROVENANCE.md`. Quatro estrelas da 0.3
+  (6/11) são reescritas a partir do conceito do Studio, sem código copiado
+  (`include/rasgo/performance/PerformanceStudioVoices.hpp`): GRANULAR
+  (Clouds, Émilie Gillet / Mutable Instruments), TURING (Turing Machine,
+  Tom Whitwell / Music Thing Modular), SPECTRAL GHOST (randomização de fase
+  — a ideia do modo espectral de Clouds/Beads, citada no `SpectralGhost`
+  do Studio) e VECTOR (síntese vetorial do Prophet VS, Chris Meyer /
+  Sequential Circuits; o canto estocástico segue o GENDYN de Iannis
+  Xenakis; o ruído rosa, o filtro de Paul Kellet).
 - **Antitotem** — o master de saída (`PerformanceMasterStage.hpp`) adapta a
   técnica do `OutputStage` (commit `645e5ad`, AGPL-3.0-or-later); o
   `SignalLeveler`, usado na primeira versão, saiu no mesmo dia (a

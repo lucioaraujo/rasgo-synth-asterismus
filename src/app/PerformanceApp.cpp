@@ -4097,6 +4097,8 @@ private:
         case PerformanceModuleBody::EnvelopePulse: return "ENV PULSE";
         case PerformanceModuleBody::Granular: return "GRANULAR";
         case PerformanceModuleBody::Turing: return "TURING";
+        case PerformanceModuleBody::SpectralGhost: return "GHOST";
+        case PerformanceModuleBody::Vector: return "VECTOR";
         default: return utf8("MÓDULO");
         }
     }

@@ -27,6 +27,8 @@ enum class PerformanceModuleBody : std::uint8_t {
     AyChip, Morph, Rossler, EnvelopePulse,
     // Reescritas do Studio a partir do conceito (6/11, PerformanceStudioVoices.hpp).
     Granular, Turing,
+    // Os últimos da auditoria (6/11): SPECTRAL GHOST e VECTOR, reescritas.
+    SpectralGhost, Vector,
     Count
 };
 

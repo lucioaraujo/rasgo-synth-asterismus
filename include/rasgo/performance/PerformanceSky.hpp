@@ -113,12 +113,13 @@ inline constexpr std::array<PerformanceModuleBody, 28> kPerformanceSkyStars{{
 // de propósito — o sorteio das 8 estrelas de cada seed (a ordem acima) não
 // muda, e as seeds da 0.2.0 continuam com o mesmo céu. Tocam pela BIBLIOTECA
 // e como convidadas do contraste.
-inline constexpr std::array<PerformanceModuleBody, 6> kPerformanceExtraStars{{
+inline constexpr std::array<PerformanceModuleBody, 8> kPerformanceExtraStars{{
     PerformanceModuleBody::AyChip, PerformanceModuleBody::Morph,
     PerformanceModuleBody::Rossler, PerformanceModuleBody::EnvelopePulse,
-    PerformanceModuleBody::Granular, PerformanceModuleBody::Turing}};
+    PerformanceModuleBody::Granular, PerformanceModuleBody::Turing,
+    PerformanceModuleBody::SpectralGhost, PerformanceModuleBody::Vector}};
 // Todas as estrelas que o céu sabe tocar: as 28 do sorteio e as de fora.
-inline constexpr std::array<PerformanceModuleBody, 34> kPerformanceAllStars{{
+inline constexpr std::array<PerformanceModuleBody, 36> kPerformanceAllStars{{
     PerformanceModuleBody::Acid, PerformanceModuleBody::Gendyn,
     PerformanceModuleBody::Percussion, PerformanceModuleBody::FmFlute,
     PerformanceModuleBody::Theremin, PerformanceModuleBody::Scat,
@@ -133,7 +134,8 @@ inline constexpr std::array<PerformanceModuleBody, 34> kPerformanceAllStars{{
     PerformanceModuleBody::Texture, PerformanceModuleBody::BassFallback,
     PerformanceModuleBody::AyChip, PerformanceModuleBody::Morph,
     PerformanceModuleBody::Rossler, PerformanceModuleBody::EnvelopePulse,
-    PerformanceModuleBody::Granular, PerformanceModuleBody::Turing}};
+    PerformanceModuleBody::Granular, PerformanceModuleBody::Turing,
+    PerformanceModuleBody::SpectralGhost, PerformanceModuleBody::Vector}};
 
 // A função musical de cada estrela, a mesma do catálogo
 // (PerformanceModuleLibrary): é ela que dá a cada corpo do primeiro
@@ -150,6 +152,8 @@ inline constexpr PerformanceStarFunction performanceStarFunction(
     case PerformanceModuleBody::ThermalStatic:
     case PerformanceModuleBody::Rossler:
     case PerformanceModuleBody::Granular:
+    case PerformanceModuleBody::SpectralGhost:
+    case PerformanceModuleBody::Vector:
     case PerformanceModuleBody::Texture: return PerformanceStarFunction::Texture;
     case PerformanceModuleBody::Sieve:
     case PerformanceModuleBody::Polymeter:
@@ -260,6 +264,8 @@ inline constexpr std::string_view performanceStarLibraryId(PerformanceModuleBody
     case PerformanceModuleBody::EnvelopePulse: return "envelope-pulse";
     case PerformanceModuleBody::Granular: return "granular";
     case PerformanceModuleBody::Turing: return "turing";
+    case PerformanceModuleBody::SpectralGhost: return "spectral-ghost";
+    case PerformanceModuleBody::Vector: return "vector";
     default: return {};
     }
 }
@@ -303,6 +309,8 @@ inline constexpr std::string_view performanceStarRole(PerformanceModuleBody body
     case PerformanceModuleBody::EnvelopePulse: return "pulso de envelope em laço";
     case PerformanceModuleBody::Granular: return "nuvem de grãos do passado recente";
     case PerformanceModuleBody::Turing: return "melodia em laço que muda aos poucos";
+    case PerformanceModuleBody::SpectralGhost: return "fantasma espectral do que o céu toca";
+    case PerformanceModuleBody::Vector: return "quatro timbres num ponto que gira";
     default: return {};
     }
 }
@@ -346,6 +354,8 @@ inline constexpr std::array<const char*, 3> performanceStarControlNames(
     case PerformanceModuleBody::EnvelopePulse: return {"VELOCIDADE", "DECAIM.", "ALTURA"};
     case PerformanceModuleBody::Granular: return {"DENSIDADE", "ESPALHAR", "ALTURA"};
     case PerformanceModuleBody::Turing: return {"MUDANÇA", "FORMA", "DURAÇÃO"};
+    case PerformanceModuleBody::SpectralGhost: return {"DERIVA", "MEMÓRIA", "BRILHO"};
+    case PerformanceModuleBody::Vector: return {"X", "Y", "ÓRBITA"};
     default: return {"I", "II", "III"};
     }
 }
@@ -621,6 +631,17 @@ public:
 
     // Avança o tempo comum do céu: uma vez por amostra, antes de renderStar.
     void advance(const PerformanceSkyContext& sky) noexcept {
+        // O que o SPECTRAL GHOST ouve: as estrelas que soaram na amostra
+        // que termina (menos ele mesmo).
+        {
+            constexpr auto ghostBit = std::uint64_t{1} << starIndex(PerformanceModuleBody::SpectralGhost);
+            const auto heardMask = renderedMask_ & ~ghostBit;
+            double heard = 0.0;
+            if (heardMask != 0U)
+                for (std::size_t star = 0U; star < kStarCount; ++star)
+                    if ((heardMask & (std::uint64_t{1} << star)) != 0U) heard += lastOutput_[star];
+            skyHeard_ = heard;
+        }
         renderedMask_ = 0U;
         attackedMask_ = 0U;
 #if defined(RASGO_PERFORMANCE_SKY_AVAILABLE)
@@ -1039,6 +1060,8 @@ private:
             case PerformanceModuleBody::EnvelopePulse: range = {{{8, 12, 16, 16}}, 0.30, 0.60}; break;
             case PerformanceModuleBody::Granular: range = {{{11, 13, 16, 13}}, 0.12, 0.25}; break;
             case PerformanceModuleBody::Turing: range = {{{8, 16, 8, 16}}, 0.35, 0.60}; break;
+            case PerformanceModuleBody::SpectralGhost: range = {{{11, 13, 16, 13}}, 0.10, 0.20}; break;
+            case PerformanceModuleBody::Vector: range = {{{7, 9, 11, 9}}, 0.15, 0.30}; break;
             case PerformanceModuleBody::Acid: range = {{{8, 12, 16, 12}}, 0.40, 0.70}; break;
             case PerformanceModuleBody::Percussion: range = {{{12, 16, 16, 12}}, 0.50, 0.75}; break;
             case PerformanceModuleBody::Gendyn: range = {{{5, 7, 9, 7}}, 0.25, 0.45}; break;
@@ -1179,6 +1202,17 @@ private:
     PerformanceTuringRegister turing_{};
     rasgo::MorphOscillator turingVoice_{};
     double turingEnv_ = 0.0, turingDecay_ = 0.999;
+    // SPECTRAL GHOST e VECTOR (6/11). O fantasma ouve o céu: a soma das
+    // estrelas acesas na amostra anterior (skyHeard_, feita no advance).
+    PerformanceSpectralGhost ghost_{};
+    double ghostHz_ = 220.0, ghostPhase_ = 0.0, ghostEnv_ = 0.0, skyHeard_ = 0.0, ghostSkyLevel_ = 0.0;
+    PerformanceStochasticWave vectorWave_{};
+    rasgo::WalshOscillator vectorWalsh_{};
+    rasgo::AtariPunkConsole vectorAtari_{};
+    PerformanceStudioRandom vectorNoise_{};
+    std::array<double, 3> vectorPink_{};
+    double vectorHz_ = 110.0, vectorOrbitX_ = 0.0, vectorOrbitY_ = 0.0;
+    double vectorRateX_ = 0.07, vectorRateY_ = 0.11, vectorDcIn_ = 0.0, vectorDcOut_ = 0.0;
     rasgo::ThereminVoice theremin_{};
     // A Tuba (30/10): banco modal grave excitado por sopro
     // (TubaBreathVoice.hpp, proveniência em PROVENIENCIA_TUBA_BREATH.md).
@@ -1257,6 +1291,12 @@ private:
         pulseLoop_.setSampleRate(sampleRate_);
         granular_.prepare(sampleRate_);
         turingVoice_.setSampleRate(sampleRate_);
+        ghost_.prepare();
+        vectorWave_.setSampleRate(sampleRate_);
+        vectorWalsh_.setSampleRate(sampleRate_);
+        vectorWalsh_.configure({1.0, 0.6, 0.35});
+        vectorAtari_.setSampleRate(sampleRate_);
+        vectorAtari_.setPulseWidth(0.003);
         clap_.setSampleRate(sampleRate_);
         cymbal_.setSampleRate(sampleRate_);
         maracas_.setSampleRate(sampleRate_);
@@ -1307,6 +1347,12 @@ private:
         pulseLoopRate_ = -1.0;
         granular_.seed(v(165U));
         turing_.seed(v(166U));
+        ghost_.seed(v(167U));
+        vectorWave_.seed(v(168U));
+        vectorNoise_.seed(v(169U));
+        // A figura de Lissajous do VECTOR: duas voltas lentas, razão da seed.
+        vectorRateX_ = 0.04 + static_cast<double>(v(170U) % 100U) / 1000.0;
+        vectorRateY_ = vectorRateX_ * (1.31 + static_cast<double>(v(171U) % 60U) / 100.0);
         // O kit da seed: cada peça com a sua chance, afinação e cauda.
         drumKit_ = static_cast<std::uint8_t>((v(140U) % 100U < 35U ? 1U : 0U) | (v(141U) % 100U < 45U ? 2U : 0U)
             | (v(142U) % 100U < 30U ? 4U : 0U) | (v(143U) % 100U < 45U ? 8U : 0U));
@@ -1602,6 +1648,70 @@ private:
             granular_.setPitchJitter(control[2] * 7.0);
             granular_.setGrainSeconds(0.03, 0.06 + (1.0 - control[0]) * 0.22);
             return std::tanh(static_cast<double>(granular_.process(static_cast<float>(source * 0.6))) * 1.4) * 0.8 * holdGain;
+        }
+        case PerformanceModuleBody::SpectralGhost: {
+            // O fantasma espectral (o SPECTRAL GHOST do Studio): a magnitude
+            // de cada faixa do que o céu toca, com a fase trocada por uma
+            // que deriva — harmonia sem ataque nem altura nítida. Uma frase
+            // própria, baixa, para que soe também sozinho. DERIVA de um
+            // fantasma coerente a um borrão; MEMÓRIA o quanto ele demora a
+            // esquecer; BRILHO o corte.
+            if (starTick(phraseTick_)) {
+                ghostHz_ = phrasePitch(std::clamp(frequency, 50.0, 900.0));
+                ghostEnv_ = 1.0;
+                markAttack(ghostHz_);
+            }
+            ghostPhase_ += ghostHz_ / sampleRate_;
+            if (ghostPhase_ >= 1.0) ghostPhase_ -= std::floor(ghostPhase_);
+            ghostEnv_ *= 0.99997;
+            // A frase própria recua quando há céu para ouvir (seguidor de
+            // nível do que chega, ~0,3 s).
+            ghostSkyLevel_ += (std::fabs(skyHeard_) - ghostSkyLevel_) * (1.0 / (0.3 * sampleRate_));
+            const double own = 0.3 * std::max(0.0, 1.0 - ghostSkyLevel_ * 8.0);
+            const double saw = 2.0 * ghostPhase_ - 1.0;
+            const double source = saw * ghostEnv_ * own + std::tanh(skyHeard_ * 1.2) * 0.8;
+            ghost_.setDrift(control[0]);
+            ghost_.setMemory(control[1]);
+            ghost_.setBrightness(control[2]);
+            return std::tanh(static_cast<double>(ghost_.process(static_cast<float>(source))) * 2.2) * 0.75 * holdGain;
+        }
+        case PerformanceModuleBody::Vector: {
+            // A síntese vetorial (o VECTOR do Studio, à maneira do Prophet
+            // VS): quatro timbres nos cantos de um quadrado — onda
+            // estocástica, Walsh, Atari Punk, ruído rosa — misturados pela
+            // posição de um ponto. X e Y põem o ponto; ÓRBITA o faz girar
+            // numa figura de Lissajous lenta (no Studio, dois sinais caóticos).
+            if (starTick(phraseTick_)) {
+                vectorHz_ = phrasePitch(std::clamp(frequency, 40.0, 700.0));
+                markAttack(vectorHz_);
+            }
+            constexpr double tau = 6.283185307179586;
+            vectorOrbitX_ += vectorRateX_ / sampleRate_;
+            vectorOrbitY_ += vectorRateY_ / sampleRate_;
+            if (vectorOrbitX_ >= 1.0) vectorOrbitX_ -= 1.0;
+            if (vectorOrbitY_ >= 1.0) vectorOrbitY_ -= 1.0;
+            const double orbit = control[2] * 0.5;
+            const double x = std::clamp(control[0] + orbit * std::sin(tau * vectorOrbitX_), 0.0, 1.0);
+            const double y = std::clamp(control[1] + orbit * std::sin(tau * vectorOrbitY_), 0.0, 1.0);
+            vectorWave_.setFrequency(vectorHz_);
+            vectorWave_.setStep(0.05 + context_.risk * 0.2);
+            vectorWalsh_.setFrequency(vectorHz_);
+            vectorAtari_.setClockFrequency(vectorHz_ * 0.5);
+            // Ruído rosa (filtro econômico de Paul Kellet) do acaso próprio.
+            const double white = vectorNoise_.unit() * 2.0 - 1.0;
+            vectorPink_[0] = 0.99765 * vectorPink_[0] + white * 0.0990460;
+            vectorPink_[1] = 0.96300 * vectorPink_[1] + white * 0.2965164;
+            vectorPink_[2] = 0.57000 * vectorPink_[2] + white * 1.0526913;
+            const double pink = (vectorPink_[0] + vectorPink_[1] + vectorPink_[2] + white * 0.1848) * 0.25;
+            const double mixed = static_cast<double>(vectorWave_.tick()) * (1.0 - x) * (1.0 - y)
+                + static_cast<double>(vectorWalsh_.tick()) * x * (1.0 - y)
+                + static_cast<double>(vectorAtari_.tick()) * (1.0 - x) * y * 0.4
+                + pink * x * y * 0.8;
+            // O Atari Punk é unipolar: bloqueador de DC (~8 Hz) antes da saída.
+            const double blocked = mixed - vectorDcIn_ + 0.999 * vectorDcOut_;
+            vectorDcIn_ = mixed;
+            vectorDcOut_ = blocked;
+            return std::tanh(blocked * 1.2) * 0.6 * holdGain;
         }
         case PerformanceModuleBody::Turing: {
             // A melodia do registrador "Turing Machine" (o KS Randomizer do

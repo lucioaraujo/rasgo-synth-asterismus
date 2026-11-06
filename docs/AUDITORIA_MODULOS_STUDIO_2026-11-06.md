@@ -126,3 +126,37 @@ Karplus-Strong — é o registrador de bits aleatórios do "Turing Machine"
 (virou a estrela TURING); `GrainyNoise`/`NoiseGateGenerator` repetem a
 estrela TEXTURE (cama de ruído) e ficaram de fora. Faltam: os glitches como
 gestos do céu (passo 4), SPECTRAL GHOST, BINAURAL e VECTOR.
+
+## 10. Os últimos (6/11, noite): SPECTRAL GHOST e VECTOR; BINAURAL em aberto
+
+O passo 4 (os cortes) já entrou em `4252cdc`. Agora, reescritas a partir do
+conceito em `PerformanceStudioVoices.hpp` (acaso xorshift, nada alocado no
+callback), fora do sorteio das 8 da seed, na BIBLIOTECA e entre as
+convidadas — o céu passa a 36 estrelas:
+
+- **SPECTRAL GHOST** — o `SpectralGhost.hpp` do Studio (FFT 1024, Hann
+  periódica, 50 % de sobreposição) refeito sem `std::vector`/`deque` no
+  callback. **O fantasma ouve o céu:** a fonte é a soma das estrelas acesas
+  na amostra anterior (`skyHeard_`, no `advance`), mais uma frase própria
+  que recua quando há céu (para soar sozinho). Diferenças em relação ao
+  Studio: as fases avançam com a faixa (DERIVA 0 = fantasma coerente, 1 =
+  borrão), a magnitude pode demorar (MEMÓRIA, até ~0,4 s) e escurecer
+  (BRILHO), e o DC sai. Teste novo: com ACID e DRUMS acesos ele soa outra
+  coisa do que sozinho, deterministicamente.
+- **VECTOR** — a fase 76 do `PieceRenderer` (Prophet VS): quatro cantos
+  (onda estocástica de 8 pontos — o GENDYN de Xenakis em versão
+  determinística —, Walsh, Atari Punk, ruído rosa de Kellet) misturados
+  bilinearmente por um ponto X/Y. **Desvio obrigatório:** no Studio o ponto
+  vinha de dois sinais caóticos da voz principal; aqui X e Y são controles
+  e ÓRBITA o faz girar numa figura de Lissajous lenta (razão das voltas
+  pela seed). Bloqueador de DC (o Atari Punk é unipolar).
+
+Níveis (sonda `novas`, corpo 2, 12 seeds × 60 s, levados a −49,1 dB):
+GHOST −5,2 dB, VECTOR +3,9 dB. Custo (céu sozinho com o ACID, bloco de
+512): GRANULAR 225 µs, GHOST 269 µs, VECTOR 176 µs.
+
+**BINAURAL fica para o autor decidir:** o batimento binaural é uma
+diferença de frequência *entre L e R*; as estrelas do Asterismus são mono
+e soam onde estão no campo (o pan vem da posição). Fazê-lo pede uma estrela
+com saída estéreo própria — uma mudança de arquitetura do caminho das
+estrelas, não só uma voz nova.

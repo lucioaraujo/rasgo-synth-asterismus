@@ -7,7 +7,10 @@ and [`docs/`](docs/).
 ## 0.3.0 — in development (not released)
 
 - **More stars:** AY-8910, MORPH, RÖSSLER, ENVELOPE PULSE (Studio voices),
-  GRANULAR and TURING (rewritten from Studio concepts); they play from the
+  GRANULAR, TURING, SPECTRAL GHOST and VECTOR (rewritten from Studio
+  concepts — the ghost keeps the spectrum of what the sky is playing and
+  lets its phase drift; the vector blends four timbres by a point that
+  orbits a square); they play from the
   LIBRARY and as guests in the contrast — the eight stars a seed draws are
   the same as in 0.2.0. The DRUMS kit (cowbell, clap, cymbal, maracas) comes
   from the seed.

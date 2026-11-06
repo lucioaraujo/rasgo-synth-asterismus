@@ -63,6 +63,8 @@ inline constexpr double performanceStarLevelTrimDb(PerformanceModuleBody star) n
     case PerformanceModuleBody::EnvelopePulse: return -1.7; // -47.4 dB
     case PerformanceModuleBody::Granular: return +2.8; // -51.9 dB
     case PerformanceModuleBody::Turing: return +2.4; // -51.5 dB
+    case PerformanceModuleBody::SpectralGhost: return -5.2; // -44.3 dB (soma o céu que ele ouve)
+    case PerformanceModuleBody::Vector: return +3.9; // -53.0 dB (sem DC)
     default: return 0.0;
     }
 }

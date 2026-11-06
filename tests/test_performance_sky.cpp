@@ -111,9 +111,9 @@ int main() {
     // a library star the performer places by swapping a body's star.
     // 6/11: 28 do sorteio da seed + 4 do Studio fora do sorteio (AY-8910,
     // MORPH, RÖSSLER, ENVELOPE PULSE).
-    // + GRANULAR e TURING (6/11, reescritas do Studio).
-    ok = expect(PerformanceSky::kStarCount == 34U && kPerformanceSkyStars.size() == 28U,
-                "thirty-four stars play today, twenty-eight of them in the seed's draw") && ok;
+    // + GRANULAR e TURING (6/11, reescritas do Studio); + SPECTRAL GHOST e VECTOR.
+    ok = expect(PerformanceSky::kStarCount == 36U && kPerformanceSkyStars.size() == 28U,
+                "thirty-six stars play today, twenty-eight of them in the seed's draw") && ok;
     for (const auto star : kPerformanceExtraStars) {
         const auto signal = renderStar(181U, star, {}, static_cast<std::size_t>(kRate * 6.0));
         double peak = 0.0, energy = 0.0;
@@ -125,6 +125,25 @@ int main() {
         }
         std::cout << std::string(performanceStarLibraryId(star)) << " peak " << peak << '\n';
         ok = expect(finite && energy > 1.0 && peak <= 1.0, "every Studio voice of 6/11 sounds, bounded") && ok;
+    }
+    {
+        // O SPECTRAL GHOST ouve o céu: com o ACID e a DRUMS acesos ele soa
+        // outra coisa (e mais) do que sozinho; a mesma seed, o mesmo fantasma.
+        const auto samples = static_cast<std::size_t>(kRate * 6.0);
+        const std::vector<PerformanceModuleBody> heard{PerformanceModuleBody::Acid, PerformanceModuleBody::Percussion};
+        const auto alone = renderStar(181U, PerformanceModuleBody::SpectralGhost, {}, samples);
+        const auto withSky = renderStar(181U, PerformanceModuleBody::SpectralGhost, heard, samples);
+        const auto again = renderStar(181U, PerformanceModuleBody::SpectralGhost, heard, samples);
+        double eAlone = 0.0, eSky = 0.0, difference = 0.0;
+        for (std::size_t i = 0U; i < samples; ++i) {
+            eAlone += alone[i] * alone[i];
+            eSky += withSky[i] * withSky[i];
+            difference += (withSky[i] - alone[i]) * (withSky[i] - alone[i]);
+        }
+        std::cout << "spectral ghost energy alone " << eAlone << " with the sky " << eSky
+                  << " difference " << difference << '\n';
+        ok = expect(eSky > eAlone && difference > 0.25 * eAlone && withSky == again,
+                    "the spectral ghost hears the sky, deterministically") && ok;
     }
     {
         const auto free = runWithControl(PerformanceModuleBody::Count, {});
