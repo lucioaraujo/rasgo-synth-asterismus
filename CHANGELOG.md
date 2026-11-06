@@ -30,11 +30,14 @@ and [`docs/`](docs/).
   timing (swing, a late snare, a late hat), ghost snares and accents, and
   every four bars ends with an answer (a ghost snare and a 2–4 hat ratchet).
 
-- **LEARN:** a fiche for every star (and the MODAL), in the four
-  languages — what it is, how it works, the three controls, what to listen
-  for and where it comes from — opened from the LIBRARY menu (LEARN ·
-  <star>), with a picker to browse all 37; the star tooltips now use its
-  one-line summary in the interface language.
+- **LEARN:** as in the other RASGO instruments, a LEARN button in the header:
+  switched on, a panel under the Constellation explains whatever is under
+  the mouse — a star, one of its three controls, any button. Behind it, a
+  fiche for every star (and the MODAL) in the four languages — what it is,
+  how it works, the three controls, what to listen for and where it comes
+  from — also opened whole from the LIBRARY menu (LEARN · <star>), with a
+  picker to browse all 37. TEMPO and MASTER are a little narrower to make
+  room for it.
 - **Fix:** moving any knob of any star no longer reconfigures the FM FLUTE
   (its envelope mid-note) and the THEREMIN (its vibrato restarted); each
   voice is reconfigured only when its own control changes.

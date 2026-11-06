@@ -23,6 +23,9 @@ struct PerformanceHeaderLayout {
     PerformanceLayoutRect alea;
     PerformanceLayoutRect tempo;
     PerformanceLayoutRect master;
+    // LEARN (7/11): o botão do LEARN da família, ao lado de TUTORIAL e SOBRE;
+    // TEMPO e MASTER cederam 35 px cada (210 → 175) para ele caber.
+    PerformanceLayoutRect learn;
     PerformanceLayoutRect tutorial;
     PerformanceLayoutRect about;
     PerformanceLayoutRect language;
@@ -34,8 +37,9 @@ struct PerformanceHeaderLayout {
 constexpr PerformanceHeaderLayout performanceHeaderLayout(int width) noexcept {
     return {
         {width - 1012, 24, 98, 28}, {width - 910, 24, 104, 28},
-        {width - 800, 24, 86, 28}, {width - 694, 24, 210, 28},
-        {width - 484, 24, 210, 28},
+        {width - 800, 24, 86, 28}, {width - 694, 24, 175, 28},
+        {width - 519, 24, 175, 28},
+        {width - 338, 24, 72, 28},
         {width - 258, 24, 86, 28}, {width - 164, 24, 86, 28},
         {width - 70, 24, 38, 28},
         {width - 228, 56, 196, 50},
@@ -45,8 +49,8 @@ constexpr PerformanceHeaderLayout performanceHeaderLayout(int width) noexcept {
 
 constexpr bool performanceHeaderTargetsAreDisjoint(int width) noexcept {
     const auto targets = performanceHeaderLayout(width);
-    const std::array<PerformanceLayoutRect, 10> rectangles{
-        targets.seedEditor, targets.alea, targets.tempo, targets.master,
+    const std::array<PerformanceLayoutRect, 11> rectangles{
+        targets.seedEditor, targets.alea, targets.tempo, targets.master, targets.learn,
         targets.tutorial, targets.about, targets.record,
         targets.transport, targets.seedLabel, targets.language};
     for (std::size_t left = 0; left < rectangles.size(); ++left)
