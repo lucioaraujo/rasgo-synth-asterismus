@@ -184,6 +184,27 @@ int main() {
     ok = expect(!PerformanceSky::isStar(PerformanceModuleBody::ModalResonator),
                 "Modal is not a star until its adapter moves here") && ok;
 
+    // O kit da DRUMS (6/11): a seed escolhe COWBELL, PALMAS, PRATO e MARACAS;
+    // seeds diferentes têm kits diferentes, e a DRUMS de cada uma soa limitada.
+    {
+        std::array<bool, 16> kits{};
+        for (std::uint32_t seed = 1U; seed <= 40U; ++seed) {
+            PerformanceSky sky;
+            sky.prepare(kRate);
+            sky.setSeed(seed);
+            kits[sky.drumKit() & 15U] = true;
+        }
+        const auto distinct = std::count(kits.begin(), kits.end(), true);
+        std::cout << "drum kits: " << distinct << " different kits in 40 seeds\n";
+        ok = expect(distinct >= 8, "the seed varies the DRUMS kit") && ok;
+        for (std::uint32_t seed = 1U; seed <= 6U; ++seed) {
+            const auto signal = renderStar(seed, PerformanceModuleBody::Percussion, {}, static_cast<std::size_t>(kRate * 6.0));
+            double peak = 0.0;
+            for (const auto sample : signal) peak = std::max(peak, std::fabs(sample));
+            ok = expect(peak > 0.01 && peak <= 1.0, "every DRUMS kit sounds, bounded") && ok;
+        }
+    }
+
     // Every star sounds alone, finite and bounded (control stars are silent:
     // they filter the others' attacks, tested above).
     const auto seconds = static_cast<std::size_t>(kRate * 8.0);

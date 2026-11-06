@@ -363,6 +363,8 @@ public:
 #endif
     }
 
+    // O kit da DRUMS desta seed (bits: 1 cowbell, 2 palmas, 4 prato, 8 maracas).
+    std::uint8_t drumKit() const noexcept { return drumKit_; }
     void setSeed(std::uint32_t seed) noexcept {
         seed_ = seed;
         seedMix_ = performanceSeedStream(seed, 0x5EEDU);
@@ -1062,6 +1064,15 @@ private:
     rasgo::KickVoice kick_{};
     rasgo::SnareVoice snare_{};
     rasgo::HiHatVoice hat_{};
+    // O kit da DRUMS (6/11, auditoria dos módulos do Studio, passo 1): as
+    // quatro vozes que já estavam em vendor/studio-dsp/src/dsp/DrumVoices.hpp
+    // (cópia fixada do Studio, PROVENANCE.md) e não tocavam. A seed escolhe
+    // quais entram no kit e como soam.
+    rasgo::CowbellVoice cowbell_{};
+    rasgo::ClapVoice clap_{};
+    rasgo::CymbalVoice cymbal_{};
+    rasgo::MaracasVoice maracas_{};
+    std::uint8_t drumKit_ = 0U;  // bits: 1 cowbell, 2 clap, 4 cymbal, 8 maracas
     rasgo::FmFluteVoice flute_{};
     rasgo::ThereminVoice theremin_{};
     // A Tuba (30/10): banco modal grave excitado por sopro
@@ -1134,6 +1145,10 @@ private:
         kick_.setSampleRate(sampleRate_);
         snare_.setSampleRate(sampleRate_);
         hat_.setSampleRate(sampleRate_);
+        cowbell_.setSampleRate(sampleRate_);
+        clap_.setSampleRate(sampleRate_);
+        cymbal_.setSampleRate(sampleRate_);
+        maracas_.setSampleRate(sampleRate_);
         rungler_.setSampleRate(sampleRate_);
         flute_.setSampleRate(sampleRate_);
         theremin_.setSampleRate(sampleRate_);
@@ -1171,6 +1186,20 @@ private:
         kick_.setTuning(42.0 + static_cast<double>(v(120U) % 17U),
                         72.0 + static_cast<double>(v(108U) % 67U));
         snare_.setTone(145.0 + static_cast<double>(v(109U) % 83U));
+        // O kit da seed: cada peça com a sua chance, afinação e cauda.
+        drumKit_ = static_cast<std::uint8_t>((v(140U) % 100U < 35U ? 1U : 0U) | (v(141U) % 100U < 45U ? 2U : 0U)
+            | (v(142U) % 100U < 30U ? 4U : 0U) | (v(143U) % 100U < 45U ? 8U : 0U));
+        cowbell_.setFundamental(480.0 + static_cast<double>(v(144U) % 360U));
+        cowbell_.setDecay(0.08 + static_cast<double>(v(145U) % 100U) * 0.0016);
+        clap_.seedNoise(seed ^ 0xC1A9U);
+        clap_.setDecay(0.10 + static_cast<double>(v(146U) % 100U) * 0.002);
+        clap_.setFilter(900.0 + static_cast<double>(v(147U) % 1400U), 0.25);
+        cymbal_.setFundamental(280.0 + static_cast<double>(v(148U) % 220U));
+        cymbal_.setDecay(0.35 + static_cast<double>(v(149U) % 100U) * 0.009);
+        cymbal_.setFilter(6000.0 + static_cast<double>(v(150U) % 4000U), 0.2);
+        maracas_.seedNoise(seed ^ 0x3A2AU);
+        maracas_.setDecay(0.025 + static_cast<double>(v(151U) % 100U) * 0.0005);
+        maracas_.setFilter(5000.0 + static_cast<double>(v(152U) % 4000U), 0.3);
         hat_.setFundamental(325.0 + static_cast<double>(v(110U) % 190U));
         flute_.setGain(0.72F);
         theremin_.setGain(0.48F);
@@ -1754,10 +1783,37 @@ private:
             if (at(hatCells[pattern]) || hatHit || divider_.risingEdge(0, 2)
                 || c.density + c.risk + control[1] * 0.45 > 1.18)
                 hat_.trigger((c.risk + control[2] * 0.55) > 0.72 && divider_.q(3));
+            // O kit da seed (6/11): o palmas reforça os tempos fracos, o
+            // cowbell pontua, o prato abre a frase, as maracas nos
+            // contratempos — cada um com a sua palavra da seed.
+            if ((drumKit_ & 2U) != 0U) {
+                const auto word = scoreWord(seed_, cell + seedVariation_ * 31U, 5U);
+                if (((cell & 7U) == 4U && (word & 0xffU) < 180U) || (word & 0xffU) < 12U + static_cast<std::uint32_t>(c.risk * 30.0))
+                    clap_.trigger();
+            }
+            if ((drumKit_ & 1U) != 0U) {
+                const auto word = scoreWord(seed_, cell + seedVariation_ * 31U, 6U);
+                if ((cell & 1U) == 1U && (word & 0xffU) < 30U + static_cast<std::uint32_t>(c.density * 40.0))
+                    cowbell_.trigger();
+            }
+            if ((drumKit_ & 4U) != 0U) {
+                const auto word = scoreWord(seed_, cell + seedVariation_ * 31U, 7U);
+                if (cell == 0U && (word & 0xffU) < 110U) cymbal_.trigger();
+            }
+            if ((drumKit_ & 8U) != 0U) {
+                const auto word = scoreWord(seed_, cell + seedVariation_ * 31U, 8U);
+                if ((cell & 1U) == 1U && (word & 0xffU) < 90U + static_cast<std::uint32_t>(c.density * 90.0))
+                    maracas_.trigger();
+            }
         }
+        if (tearEdge_ && (drumKit_ & 4U) != 0U) cymbal_.trigger();
         const double drums = (static_cast<double>(kick_.process()) * (0.38 + control[0] * 0.88)
             + static_cast<double>(snare_.process()) * (0.20 + control[1] * 0.82)
-            + static_cast<double>(hat_.process()) * (0.06 + control[2] * 0.88))
+            + static_cast<double>(hat_.process()) * (0.06 + control[2] * 0.88)
+            + ((drumKit_ & 2U) != 0U ? static_cast<double>(clap_.process()) * (0.18 + control[1] * 0.40) : 0.0)
+            + ((drumKit_ & 1U) != 0U ? static_cast<double>(cowbell_.process()) * (0.10 + control[2] * 0.28) : 0.0)
+            + ((drumKit_ & 4U) != 0U ? static_cast<double>(cymbal_.process()) * (0.06 + control[2] * 0.22) : 0.0)
+            + ((drumKit_ & 8U) != 0U ? static_cast<double>(maracas_.process()) * (0.05 + control[2] * 0.30) : 0.0))
             * (0.72 + counterArc_ * 0.42);
         return std::tanh(drums * (0.54 + control[1] * 0.72 + control[2] * 0.46 + c.tension * 0.30)
                          + runglerValue_ * (mutateResponse_ * 0.10 + control[1] * 0.28)
