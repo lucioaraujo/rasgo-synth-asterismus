@@ -1,0 +1,4 @@
+# Cópias fixadas do Studio com SHA-256 conferido no configure (vendor/studio-dsp/cmake/*):
+# sem conversão de fim de linha em nenhum sistema (6/11: no Windows o git trocava LF por
+# CRLF e o checksum do ModalResonator.hpp falhava na CI da release).
+vendor/** -text
