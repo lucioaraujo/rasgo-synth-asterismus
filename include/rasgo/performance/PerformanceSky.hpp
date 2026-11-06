@@ -1385,6 +1385,7 @@ private:
         spectral_.setPartialSet(static_cast<PerformanceSpectralObject::PartialSet>(v(112U) % 3U));
         bloom_.reseed(seed ^ 0xB100F5U);
         harmonaigRoot_ = static_cast<int>(v(113U) % 7U);
+        configuredFlute_ = configuredTheremin_ = configuredChoir_ = -1.0;  // a seed nova reconfigura tudo
         configureStarControls();
 
         circuitPhase_ = 1.0; // a seed fala já na próxima amostra
@@ -1438,20 +1439,33 @@ private:
         if (counting_) buildEuclid();
     }
 
+    // Só a voz cujo controle mudou é reconfigurada (7/11): antes, mexer em
+    // qualquer botão de qualquer estrela refazia o configure da flauta (o
+    // envelope no meio da nota) e do theremin (o acaso do vibrato recomeçava).
+    double configuredFlute_ = -1.0, configuredTheremin_ = -1.0, configuredChoir_ = -1.0;
     void configureStarControls() noexcept {
         const auto fluteBrightness = controls_[starIndex(PerformanceModuleBody::FmFlute)][1];
+        const auto thereminDrift = controls_[starIndex(PerformanceModuleBody::Theremin)][2];
+        const auto choirOpening = controls_[starIndex(PerformanceModuleBody::Choir)][1];
+        if (fluteBrightness != configuredFlute_) {
+        configuredFlute_ = fluteBrightness;
         flute_.configure(0.94 + static_cast<double>(seed_ & 7U) * 0.015,
                          0.45 + fluteBrightness * 3.6,
                          0.08 + fluteBrightness * 0.34, 0.018, 0.24);
-        const auto thereminDrift = controls_[starIndex(PerformanceModuleBody::Theremin)][2];
+        }
+        if (thereminDrift != configuredTheremin_) {
+        configuredTheremin_ = thereminDrift;
         theremin_.configure(0.08 + static_cast<double>((seedMix_ >> 3U) & 7U) * 0.018,
                             4.1 + thereminDrift * 3.2,
                             static_cast<float>(0.03 + thereminDrift * 0.48),
                             seed_ ^ 0x41c64e6dU);
-        const auto choirSpread = static_cast<int>(std::lround(
-            controls_[starIndex(PerformanceModuleBody::Choir)][1] * 8.0));
+        }
+        if (choirOpening != configuredChoir_) {
+        configuredChoir_ = choirOpening;
+        const auto choirSpread = static_cast<int>(std::lround(choirOpening * 8.0));
         choir_.setRegisterOffsets({12 + choirSpread, 5 + choirSpread / 2,
                                    -5 - choirSpread / 2, -12 - choirSpread});
+        }
     }
 
     double renderPrepared(PerformanceModuleBody body, const StarControls& control,

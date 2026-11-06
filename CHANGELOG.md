@@ -30,6 +30,14 @@ and [`docs/`](docs/).
   timing (swing, a late snare, a late hat), ghost snares and accents, and
   every four bars ends with an answer (a ghost snare and a 2–4 hat ratchet).
 
+- **LEARN:** a fiche for every star (and the MODAL), in the four
+  languages — what it is, how it works, the three controls, what to listen
+  for and where it comes from — opened from the LIBRARY menu (LEARN ·
+  <star>), with a picker to browse all 37; the star tooltips now use its
+  one-line summary in the interface language.
+- **Fix:** moving any knob of any star no longer reconfigures the FM FLUTE
+  (its envelope mid-note) and the THEREMIN (its vibrato restarted); each
+  voice is reconfigured only when its own control changes.
 - **Texts:** the in-app tutorial describes the 36 stars, POLYPHONY, the
   CUT · RES. · ECHO · HALL controls, the sky's cuts and tape, and the
   FORM · PATH / ALBUM box, and uses in each language the same labels as the
