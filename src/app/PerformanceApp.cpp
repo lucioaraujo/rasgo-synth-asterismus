@@ -4835,7 +4835,7 @@ private:
 
     // ---- O ÁLBUM (2/11/2026) -------------------------------------------
     // Conceito do Modo Álbum do Studio (ver PerformanceAlbum.hpp). A pasta:
-    // ~/Music/Rasgo Synth Performance/albuns/<data> <nome>/, com as tomadas
+    // ~/Music/Rasgo Synth Asterismus/albuns/<data> <nome>/, com as tomadas
     // FAIXA_nn_… e o registro album.json.
     void showAlbumMenu() {
         juce::PopupMenu menu;
@@ -4961,7 +4961,7 @@ private:
         // Nome de pasta sem caracteres que os sistemas recusam.
         const auto folder = created.formatted("%Y-%m-%d_%H-%M ") + juce::File::createLegalFileName(name);
         albumDirectory_ = juce::File::getSpecialLocation(juce::File::userMusicDirectory)
-            .getChildFile("Rasgo Synth Performance").getChildFile("albuns").getChildFile(folder);
+            .getChildFile("Rasgo Synth Asterismus").getChildFile("albuns").getChildFile(folder);
         if (!albumDirectory_.createDirectory()) {
             album_.end();
             lastAction_ = uiText(supportLanguage_, "a pasta do álbum não pôde ser criada", "album folder could not be created",
@@ -5920,14 +5920,15 @@ private:
         // Uma pasta por tomada (3/11, pedido do autor: "organize as pastas"):
         // recordings/AAAA-MM-DD/HH-MM-SS seed N/, com a mistura, os stems e o
         // manifesto juntos; num álbum, <álbum>/FAIXA_nn HH-MM-SS/. A pasta de
-        // dados mantém o nome antigo ("Rasgo Synth Performance", 27/10).
+        // dados é "Rasgo Synth Asterismus" desde 7/11 (antes "Rasgo Synth
+        // Performance", o nome do instrumento até 27/10).
         const auto now = juce::Time::getCurrentTime();
         const auto seed = controller_.document() != nullptr ? controller_.document()->territory.seed : 0U;
         const auto trackTag = "FAIXA_" + juce::String(static_cast<int>(album_.current())).paddedLeft('0', 2);
         const auto directory = album_.active()
             ? albumDirectory_.getChildFile(trackTag + " " + now.formatted("%H-%M-%S"))
             : juce::File::getSpecialLocation(juce::File::userMusicDirectory)
-                  .getChildFile("Rasgo Synth Performance").getChildFile("recordings")
+                  .getChildFile("Rasgo Synth Asterismus").getChildFile("recordings")
                   .getChildFile(now.formatted("%Y-%m-%d"))
                   .getChildFile(now.formatted("%H-%M-%S") + " seed " + juce::String(static_cast<juce::int64>(seed)));
         const auto take = directory.getChildFile((album_.active() ? trackTag + "_" : juce::String("RASGO_ASTERISMUS_"))
@@ -7348,7 +7349,7 @@ private:
         if (diagnosticLog_ == nullptr && !diagnosticUnavailable_) {
             diagnosticUnavailable_ = true;
             const auto directory = juce::File::getSpecialLocation(juce::File::userMusicDirectory)
-                .getChildFile("Rasgo Synth Performance").getChildFile("diagnostico");
+                .getChildFile("Rasgo Synth Asterismus").getChildFile("diagnostico");
             const auto file = directory.getChildFile("ASTERISMUS_DIAGNOSTICO_"
                 + juce::Time::getCurrentTime().formatted("%Y-%m-%d_%H-%M-%S") + ".csv");
             if (directory.createDirectory()) diagnosticLog_ = std::make_unique<juce::FileOutputStream>(file);

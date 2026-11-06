@@ -38,6 +38,10 @@ and [`docs/`](docs/).
 - **Fix:** moving any knob of any star no longer reconfigures the FM FLUTE
   (its envelope mid-note) and the THEREMIN (its vibrato restarted); each
   voice is reconfigured only when its own control changes.
+- **Recordings folder:** `~/Music/Rasgo Synth Asterismus/` (recordings,
+  albums, diagnostics); until 0.2.0 it was `~/Music/Rasgo Synth Performance/`,
+  the instrument's former name — move older takes there by hand if you want
+  them together.
 - **Texts:** the in-app tutorial describes the 36 stars, POLYPHONY, the
   CUT · RES. · ECHO · HALL controls, the sky's cuts and tape, and the
   FORM · PATH / ALBUM box, and uses in each language the same labels as the

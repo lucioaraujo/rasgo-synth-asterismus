@@ -56,7 +56,7 @@ and records the piece.
   **VARIATION** lets the sky light and dim stars. The **LIBRARY** swaps or
   pins the star of a body.
 - **REC** records the take (24-bit stereo WAV, one WAV per body and a JSON
-  manifest) into `~/Music/Rasgo Synth Performance/recordings/`, one folder
+  manifest) into `~/Music/Rasgo Synth Asterismus/recordings/`, one folder
   per take; **TRACK · DURATION** records a piece of 1, 2, 3 or 5 minutes;
   **▶ LISTEN** opens the last take.
 - **MEMORY** keeps eight named places; **SAVE SESSION** / **OPEN SESSION**
@@ -136,7 +136,7 @@ relações e grava a peça.
   **VARIAÇÃO** deixa o céu acender e apagar estrelas. A **BIBLIOTECA** troca
   ou fixa a estrela de um corpo.
 - **REC** grava a tomada (WAV estéreo 24 bits, um WAV por corpo e um
-  manifesto JSON) em `~/Music/Rasgo Synth Performance/recordings/`, uma
+  manifesto JSON) em `~/Music/Rasgo Synth Asterismus/recordings/`, uma
   pasta por tomada; **FAIXA · DURAÇÃO** grava uma peça de 1, 2, 3 ou 5
   minutos; **▶ OUVIR** abre a última tomada.
 - A **MEMÓRIA** guarda oito lugares com nome; **SALVAR SESSÃO** / **ABRIR
@@ -217,7 +217,7 @@ propres cycles et jouent. Une seed propose le ciel ; le musicien le joue,
   **VARIATION** laisse le ciel allumer et éteindre des étoiles. La
   **BIBLIOTHÈQUE** échange ou épingle l'étoile d'un corps.
 - **REC** enregistre la prise (WAV stéréo 24 bits, un WAV par corps et un
-  manifeste JSON) dans `~/Music/Rasgo Synth Performance/recordings/`, un
+  manifeste JSON) dans `~/Music/Rasgo Synth Asterismus/recordings/`, un
   dossier par prise ; **PISTE · DURÉE** enregistre une pièce de 1, 2, 3 ou 5
   minutes ; **▶ ÉCOUTER** ouvre la dernière prise.
 - La **MÉMOIRE** garde huit places nommées ; **ENREGISTRER LA SESSION** /
@@ -299,7 +299,7 @@ cambia estrellas, dibuja relaciones y graba la pieza.
   solo); la **VARIACIÓN** deja que el cielo encienda y apague estrellas. La
   **BIBLIOTECA** cambia o fija la estrella de un cuerpo.
 - **REC** graba la toma (WAV estéreo de 24 bits, un WAV por cuerpo y un
-  manifiesto JSON) en `~/Music/Rasgo Synth Performance/recordings/`, una
+  manifiesto JSON) en `~/Music/Rasgo Synth Asterismus/recordings/`, una
   carpeta por toma; **PISTA · DURACIÓN** graba una pieza de 1, 2, 3 o 5
   minutos; **▶ ESCUCHAR** abre la última toma.
 - La **MEMORIA** guarda ocho lugares con nombre; **GUARDAR SESIÓN** /
