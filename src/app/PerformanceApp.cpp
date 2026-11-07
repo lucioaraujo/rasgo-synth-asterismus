@@ -2532,12 +2532,6 @@ public:
                             && safe->ready_.load(std::memory_order_acquire))
                             safe->startTimedTake(kTakeDurations[0]);
                     });
-        // Gancho de teste (4/11): com RASGO_ASTERISMUS_SNAPSHOT=1 as dicas não
-        // aparecem — para os instantâneos do site, sem que o ponteiro do
-        // autor (que não é movido) deixe uma dica na imagem. Sem a variável,
-        // nada muda.
-        if (juce::SystemStats::getEnvironmentVariable("RASGO_ASTERISMUS_SNAPSHOT", {}) == "1")
-            tooltipWindow_.setMillisecondsBeforeTipAppears(24 * 60 * 60 * 1000);
         if (juce::SystemStats::getEnvironmentVariable("RASGO_ASTERISMUS_AUTOPLAY", {}) == "1")
             juce::Timer::callAfterDelay(2000, [safe = juce::Component::SafePointer<PerformanceHostComponent>(this)] {
                 if (safe != nullptr && !safe->playingRequested_) safe->togglePlaying();
@@ -3505,10 +3499,6 @@ private:
             lastLearnKey_.clear();
             showLearnIdle();
             resized();  // o Eixo de Forças cede (ou devolve) a faixa do painel
-            // Com o LEARN ligado, as dicas (a tarja escura do JUCE) se calam: o
-            // painel já mostra o mesmo texto.
-            tooltipWindow_.setMillisecondsBeforeTipAppears(learnMode_ ? 24 * 60 * 60 * 1000 : 650);
-            if (learnMode_) tooltipWindow_.hideTip();
         };
         addAndMakeVisible(learnButton_);
         addChildComponent(learnPanel_);
@@ -7717,7 +7707,8 @@ private:
     }
 
     std::unique_ptr<juce::AudioDeviceManager> deviceManager_;
-    juce::TooltipWindow tooltipWindow_{this, 650};
+    // Sem janela de dicas desde 7/11 (o autor: "não gosto das tarjas pretas"),
+    // como no Antitotem: os textos de setTooltip ficam e são lidos pelo LEARN.
     PerformanceSessionController controller_;
     PerformanceSessionDocument startupDocument_{makeStartupDocument()};
     PerformanceMixRecorder recorder_;

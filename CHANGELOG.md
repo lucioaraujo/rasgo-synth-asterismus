@@ -4,6 +4,12 @@ What changed between the published versions of Rasgo Synth Asterismus. The
 development notes, in Portuguese, are in [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md)
 and [`docs/`](docs/).
 
+## Unreleased
+
+- **No more tooltip pop-ups:** the dark boxes that appeared over every
+  control are gone, as in Antitotem; the same texts are read by LEARN
+  (switch LEARN on and point at a control).
+
 ## 0.3.0 — 2026-11-07
 
 - **More stars:** AY-8910, MORPH, RÖSSLER, ENVELOPE PULSE (Studio voices),
