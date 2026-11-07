@@ -2993,7 +2993,6 @@ public:
             skyWebButton_.setBounds(constellationArea_.getX() + 12, constellationArea_.getY() + 30, 136, 20);
             mixerVariationButton_.setBounds(constellationArea_.getX() + 154, constellationArea_.getY() + 30, 186, 20);
             layoutPolyphony();
-        layoutLearnPanel();
             auto mixer = constellationArea_.reduced(12, 30).withTrimmedTop(46);
             // MESA must expose the spatial instrument itself. Previously the
             // graph was given an empty bounds rectangle here, leaving only
@@ -3001,6 +3000,7 @@ public:
             // module insertion/removal.
             auto graphArea = mixer.removeFromTop(mixer.getHeight() * 58 / 100);
             constellationGraph_.setBounds(graphArea.reduced(2));
+            layoutLearnPanel();
             auto focusedPanel = mixer.removeFromBottom(210).reduced(2, 2);
             const bool hasFocusedStem = selectedModuleIndex_ < modulePanelActive_.size()
                 && modulePanelActive_[selectedModuleIndex_];
@@ -3080,7 +3080,6 @@ public:
         skyWebButton_.setBounds(constellationArea_.getX() + 12, constellationArea_.getY() + 30, 136, 20);
         mixerVariationButton_.setBounds(constellationArea_.getX() + 154, constellationArea_.getY() + 30, 186, 20);
         layoutPolyphony();
-        layoutLearnPanel();
         // The constellation is the visible spatial body of the instrument.
         // Give it the broad central panel; the adjacent matter panel keeps
         // the stem/module controls without shrinking the spatial drawing.
@@ -3140,6 +3139,7 @@ public:
         lastActionArea_ = relationContent.removeFromBottom(18);
         auto relationControls = relationContent.removeFromBottom(34);
         constellationGraph_.setBounds(relationContent.reduced(2));
+        layoutLearnPanel();
         static constexpr std::array<std::uint16_t, 16> relationSources{
             1U, 2U, 1U, 1U, 2U, 3U, 1U, 5U, 6U, 7U, 1U, 2U, 2U, 3U, 4U, 5U};
         static constexpr std::array<std::uint16_t, 16> relationDestinations{
@@ -3491,6 +3491,10 @@ private:
             showLearnIdle();
             learnPanel_.setVisible(learnMode_);
             if (learnMode_) learnPanel_.toFront(false);
+            // Com o LEARN ligado, as dicas (a tarja escura do JUCE) se calam: o
+            // painel já mostra o mesmo texto.
+            tooltipWindow_.setMillisecondsBeforeTipAppears(learnMode_ ? 24 * 60 * 60 * 1000 : 650);
+            if (learnMode_) tooltipWindow_.hideTip();
         };
         addAndMakeVisible(learnButton_);
         addChildComponent(learnPanel_);
@@ -6431,9 +6435,16 @@ private:
                                     "LEARN · apunte a una estrella o un control"),
                              learnTip(), {});
     }
+    // O painel fica dentro da Constelação, logo acima da BIBLIOTECA (como no
+    // Aquorbium, embaixo da vista principal). constellationArea_ é a coluna
+    // do CAMPO DE MATÉRIAS, à direita — a primeira versão o punha ali, sobre
+    // os controles (o autor, 7/11).
     void layoutLearnPanel() {
-        const auto area = constellationArea_;
-        learnPanel_.setBounds(area.getX() + 10, area.getBottom() - 150, std::max(200, area.getWidth() - 20), 140);
+        const auto graph = constellationGraph_.getBounds();
+        if (graph.isEmpty()) return;
+        const auto bottom = graph.getBottom() - performanceGraphLayout().libraryTopInset - 6;
+        const auto height = std::min(140, std::max(90, graph.getHeight() / 4));
+        learnPanel_.setBounds(graph.getX() + 10, bottom - height, std::max(200, graph.getWidth() - 20), height);
         if (learnMode_) learnPanel_.toFront(false);
     }
     juce::String learnTry() const { return uiText(supportLanguage_, "Experimente: ", "Try: ", "Essayez : ", "Pruebe: "); }
