@@ -1,6 +1,5 @@
-# O ícone embutido no executável (Windows, macOS) entra quando o autor
-# aprovar um ícone em packaging/icon/asterismus-1024.png (a proposta fica em
-# packaging/icon/proposta/ até lá).
+# O ícone embutido no executável (Windows, macOS): packaging/icon/asterismus-1024.png,
+# o céu E escolhido pelo autor em 7/11/2026 (tools/gerar_identidade.py).
 set(ASTERISMUS_ICON_ARGS)
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/icon/asterismus-1024.png")
     set(ASTERISMUS_ICON_ARGS ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/icon/asterismus-1024.png")

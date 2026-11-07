@@ -8322,6 +8322,10 @@ public:
         setResizable(true, true);
         setResizeLimits(1280, 720, 10000, 10000);
         setContentOwned(new PerformanceHostComponent(), true);
+        // O ícone da janela (7/11): no Linux é o que aparece na barra de
+        // tarefas; no Windows e no macOS o executável já traz o mesmo.
+        const auto icon = juce::ImageFileFormat::loadFrom(branding::assetsDirectory().getChildFile("asterismus-icon.png"));
+        if (icon.isValid()) setIcon(icon);
 
         // Choose the primary display explicitly. Calling JUCE setFullScreen on
         // X11 delegates monitor selection to the window manager, which can

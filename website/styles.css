@@ -43,7 +43,7 @@ a:hover { color: var(--ink); }
 
 .site-header { position: sticky; top: 1.9rem; z-index: 10; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; flex-wrap: wrap; padding: .9rem clamp(1.2rem, 5vw, 4rem); background: rgba(11, 14, 13, .94); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
 .brand { display: flex; align-items: center; gap: .8rem; text-decoration: none; }
-.brand img { display: block; height: 1.6rem; width: auto; }
+.brand img { display: block; height: 2.2rem; width: auto; }  /* o céu do Asterismus (7/11) */
 .brand span { font: 700 1.5rem/1 "Big Shoulders Display", sans-serif; letter-spacing: .04em; color: var(--ink); }
 .brand span b { color: var(--star); font-weight: 700; }
 .header-nav { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }

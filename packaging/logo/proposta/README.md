@@ -1,5 +1,12 @@
 # Propostas de logo do Asterismus (2026-11-06)
 
+> **Escolha do autor (2026-11-07): E · céu, cores do Asterismus** — "use esse
+> para logo e ícones e favicon". Aplicado por `tools/gerar_identidade.py`:
+> logo em `packaging/logo/asterismus-logo.svg` (cabeçalho do site e README),
+> ícone na moldura verde-escura da proposta de ícone de outubro
+> (`packaging/icon/`, app e pacotes dos três sistemas) e favicon do site. As
+> outras propostas (A, B, C, D, D2, E2) ficam aqui como registro.
+
 Pedido do autor: "crie uma logo baseada na constelação e estrelas do
 instrumento". Três símbolos em SVG (120×120, sem fonte embutida), nas cores
 da interface (âmbar `#d18a45`, creme `#ece7d8`, verde das linhas `#6f9b8d`):

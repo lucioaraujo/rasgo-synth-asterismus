@@ -1,3 +1,5 @@
+<img src="packaging/logo/asterismus-logo.svg" alt="" width="96" height="84" />
+
 # Rasgo Synth Asterismus
 
 ![The Asterismus playing: the Axis of Forces on the left, the Constellation in the centre with the stars moved by physics and the pairs in focus, the mixer of the eight stars on the right, the form and the breathing tempo in the header](website/assets/interface.jpg)

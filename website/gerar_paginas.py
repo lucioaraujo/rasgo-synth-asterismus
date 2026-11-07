@@ -453,7 +453,7 @@ def cabecalho(lang, atual, com_learn=None):
 
 <div class="site-header">
   <a class="brand" href="{INDICE[lang]}" aria-label="Rasgo Synth Asterismus">
-    <img src="assets/identity/rasgo_logo_2026.svg" alt="" height="26" />
+    <img src="assets/identity/asterismus-symbol.svg" alt="" width="40" height="35" />
     <span>RASGO<b>SYNTH</b> · ASTERISMUS</span>
   </a>
   <div class="header-nav">

@@ -6,6 +6,11 @@ and [`docs/`](docs/).
 
 ## Unreleased
 
+- **Identity:** the Asterismus has its own logo and icon — the sky of the
+  family animation in the interface colours (chosen by the author). It is the
+  app icon on Windows, macOS and Linux (until 0.3.0 the packages had the
+  generic one), the site favicon, and the symbol in the site header and README.
+
 - **Binaural shadow (headphones):** in about three parts out of ten (chosen
   by the seed) the sky adds one sine in each channel, on its harmonic root
   (160–640 Hz), 3–10 Hz apart and slowly drifting — the pulse is in neither
