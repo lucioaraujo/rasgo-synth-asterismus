@@ -1,6 +1,18 @@
 # Publicação do Asterismus — estado e checklist
 
-## ▶ Estado em 2026-11-04 (organização para a publicação)
+## ▶ Estado em 2026-11-07: versão 0.3.0
+
+Segunda versão pública (OK do autor, 7/11): tag `v0.3.0` a partir do branch
+`release-0.3.0` (versão em `CMakeLists.txt`, README e site nos 4 idiomas,
+tutorial inteiro e LEARN no site); a CI da tag (execução 42401941298) monta
+Windows, macOS e Linux e cria a release — **sem custo**: o repositório é
+público. O `main` vai ao GitHub só depois de a release existir, para o site
+não apontar para pacotes ainda inexistentes. Continuam abertos: abrir os
+pacotes num Windows e num Mac reais (desde a 0.2.0); AppImage e testes de
+arranque em outras distribuições. Próxima versão: 0.4 (o BINAURAL como
+camada do céu, `docs/AUDITORIA_MODULOS_STUDIO_2026-11-06.md` §10).
+
+## Estado em 2026-11-04 (organização para a publicação)
 
 Pelas camadas de `RASGO_DOCUMENTATION/ESTRATEGIA_DE_PUBLICACAO.md`: o
 Asterismus está entre a **camada 0 (pesquisa local)** e a **1 (candidato

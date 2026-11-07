@@ -6,6 +6,11 @@ citados existem só no repositório de trabalho do RASGO. A apresentação
 pública do instrumento está no [README](README.md); o que mudou entre
 versões, no [CHANGELOG](CHANGELOG.md).
 
+> **Estado atual (2026-11-07):** versão **0.3.0** publicada (36 estrelas,
+> cortes e fita do céu, filtros e envios por estrela, groove da DRUMS, LEARN;
+> ver CHANGELOG e `docs/PUBLICACAO.md`). As seções de estado abaixo são o
+> registro de cada época, não o estado de hoje.
+
 ---
 
 ## Registro de desenvolvimento

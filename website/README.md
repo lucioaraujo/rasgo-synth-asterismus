@@ -1,6 +1,7 @@
 # Site do Rasgo Synth Asterismus
 
-**Estado: publicado** (2026-11-06), com a versão 0.2.0:
+**Estado: publicado** — versão 0.3.0 desde 2026-11-07 (com a página LEARN;
+antes, a 0.2.0, de 2026-11-06):
 <https://lucioaraujo.github.io/rasgo-synth-asterismus/> (GitHub Pages do
 repositório próprio). `PUBLICADO = True` no `gerar_paginas.py`: sem `noindex`,
 o selo da versão e os links de download do release. O workflow
