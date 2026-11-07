@@ -2759,9 +2759,11 @@ public:
                                               "CODA PRÓXIMA  ") + clock
                           : uiText(supportLanguage_, "GRAVANDO  ", "RECORDING  ", "ENREGISTREMENT  ", "GRABANDO  ") + clock,
                           titleRow, juce::Justification::centredLeft);
+        // CENAS e GESTOS com o título mais perto da borda (7/11, o autor: "há
+        // um espaço vazio acima do texto"); as outras zonas não mudam.
         drawZone(graphics, sceneArea_, uiText(supportLanguage_, "CENAS · MORPH AJUSTÁVEL", "SCENES · ADJUSTABLE MORPH",
-                                               "SCÈNES · MORPH RÉGLABLE", "ESCENAS · MORPH AJUSTABLE"));
-        drawZone(graphics, gestureArea_, gestureZoneTitle());
+                                               "SCÈNES · MORPH RÉGLABLE", "ESCENAS · MORPH AJUSTABLE"), 0, kActionTitleTop);
+        drawZone(graphics, gestureArea_, gestureZoneTitle(), 0, kActionTitleTop);
         if (!fieldArea_.isEmpty())
             drawZone(graphics, fieldArea_,
                      uiText(supportLanguage_, "EIXO DE FORÇAS · AUTONOMIA / INTERVENÇÃO · MEMÓRIA / RUPTURA",
@@ -2851,7 +2853,8 @@ public:
         // tabs; the field below receives the recovered height.
         // Cenas e gestos são uma única faixa de ações. Mantê-la alta demais
         // alongava as caixas sem acrescentar área de toque aos botões.
-        auto controlBand = area.removeFromTop(72).reduced(0, 0);
+        // 66 px (era 72): título a 6 px da borda, botões de 36 px logo abaixo.
+        auto controlBand = area.removeFromTop(66).reduced(0, 0);
         sceneArea_ = controlBand.removeFromLeft(controlBand.getWidth() / 2);
         gestureArea_ = controlBand;
         // Uma única linha operacional: memória de cena e duração do morph
@@ -2859,7 +2862,7 @@ public:
         auto sceneRow = sceneArea_.reduced(8, 4);
         // ÁLBUM e PERCURSO saíram daqui para a caixa FORMA do cabeçalho
         // (5/11): as CENAS têm uma linha só de botões.
-        sceneRow.removeFromTop(28);
+        sceneRow.removeFromTop(kActionTitleTop + 18 + 2 - 4);
         undoCaptureButton_.setBounds(sceneRow.removeFromLeft(92).reduced(2, 0));
         captureButton_.setBounds(sceneRow.removeFromLeft(96).reduced(2, 0));
         memoryButton_.setBounds(sceneRow.removeFromLeft(92).reduced(2, 0));
@@ -2870,7 +2873,7 @@ public:
         for (auto& button : sceneButtons_)
             button.setBounds(sceneRow.removeFromLeft(sceneButtonWidth).reduced(2, 1));
         auto gestureButtons = gestureArea_.reduced(12, 4);
-        gestureButtons.removeFromTop(28);
+        gestureButtons.removeFromTop(kActionTitleTop + 18 + 2 - 4);
         // Larguras por peso (auditoria da interface, 29/10): ABRIR, RASGAR e
         // REPARAR levam o nome do módulo em foco e, com largura igual, o
         // JUCE encolhia a letra deles — os sete gestos ficavam com tamanhos
@@ -3063,7 +3066,9 @@ public:
         // relation graph visible together. No mode or hidden second tab exists.
         actionArea = lower.removeFromLeft(lower.getWidth() * 27 / 100).reduced(0, 4);
         overviewArea = lower.removeFromRight(lower.getWidth() * 32 / 100).reduced(0, 4);
-        relationArea_ = lower.reduced(0, 4);
+        // 8 px como as colunas dos lados (que encolhem 4 + 4): antes a caixa
+        // CAMPO · CONSTELAÇÃO ficava 4 px mais alta em cima e embaixo (o autor, 7/11).
+        relationArea_ = lower.reduced(0, 8);
         // The force field remains a living surface. Its circles must receive
         // dynamic and audible behaviour, never remain static decoration.
         {
@@ -3258,14 +3263,14 @@ private:
     // rightReserve deixa livre a ponta direita do título (o botão VARIAÇÃO
     // ocupa a do Campo de Matérias); o texto que não couber termina em "…".
     static void drawZone(juce::Graphics& graphics, const juce::Rectangle<int>& area,
-                         const juce::String& title, int rightReserve = 0) {
+                         const juce::String& title, int rightReserve = 0, int titleTop = 12) {
         graphics.setColour(juce::Colour(0xff183b33));
         graphics.fillRoundedRectangle(area.toFloat(), 6.0f);
         graphics.setColour(juce::Colour(0xff93683e));
         graphics.drawRoundedRectangle(area.toFloat(), 6.0f, 1.0f);
         graphics.setColour(juce::Colour(0xffd18a45));
         graphics.setFont(interfaceFont(12.0f, juce::Font::bold));
-        auto titleArea = area.reduced(12).removeFromTop(20);
+        auto titleArea = area.reduced(12, titleTop).removeFromTop(titleTop < 12 ? 18 : 20);
         titleArea.removeFromRight(rightReserve);
         graphics.drawText(title, titleArea, juce::Justification::centredLeft, true);
     }
@@ -7991,6 +7996,7 @@ private:
     std::size_t selectedModuleIndex_ = kNoStemIndex;
     PerformanceField performanceField_;
     juce::Rectangle<int> sceneArea_;
+    static constexpr int kActionTitleTop = 6;  // o título das caixas CENAS e GESTOS
     juce::Rectangle<int> gestureArea_;
     juce::Rectangle<int> fieldArea_;
     juce::Rectangle<int> macroArea_;
