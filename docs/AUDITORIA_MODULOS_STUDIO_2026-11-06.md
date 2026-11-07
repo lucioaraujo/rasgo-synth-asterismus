@@ -172,3 +172,15 @@ comum — documentar assim, sem promessas de "ondas cerebrais". Fica fora da
 0.3 para não somar mais uma camada a uma versão ainda não ouvida.
 Alternativas recusadas: A (estrela estéreo — mudaria o caminho de todas as
 estrelas, e o stem mono do corpo não guardaria o efeito) e C (ficar de fora).
+
+**Feito (7/11, para a 0.4):** `PerformanceSkyBinaural.hpp` — dois senos, um
+por canal; portadora = a raiz harmônica do céu (centro tonal + região),
+dobrada para 160–320 Hz ou uma oitava acima (seed), deslizando ~0,6 s;
+diferença de 3–10 Hz (seed) que anda ±50 % em alvos novos a cada 2–5 s,
+com acaso xorshift próprio. No diretor, 30 % de chance por tipo de parte
+(intensidade 0,5–1; medido: 30,5 % em 300 seeds), fluxos novos da seed (os
+sorteios antigos não mudam). No motor, aditivo antes dos cortes e do master,
+entrando e saindo em 2 s, multiplicado pelo ganho que cala SILÊNCIO e STOP;
+só em saída estéreo e pela largura do ESPAÇO (fechado, os dois canais recebem o mesmo — um batimento comum no centro; aberto, a pulsação binaural), como os envios. Nível 0,0034 (~20 dB abaixo da peça; a 0,0012 ficava
+~29 dB abaixo). Teste `test_performance_sky_binaural.cpp` (L em 220 Hz, R
+5,95 Hz acima). **Não está nos stems** (é do céu, como a fita e os cortes).

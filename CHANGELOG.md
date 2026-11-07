@@ -6,6 +6,14 @@ and [`docs/`](docs/).
 
 ## Unreleased
 
+- **Binaural shadow (headphones):** in about three parts out of ten (chosen
+  by the seed) the sky adds one sine in each channel, on its harmonic root
+  (160–640 Hz), 3–10 Hz apart and slowly drifting — the pulse is in neither
+  channel, the ear makes it; on speakers it becomes an ordinary beating.
+  Low, about 20 dB under the piece; it opens with SPACE (closed, both channels
+  get the same beating, centred) and falls silent with SILENCE and STOP.
+  A sky layer, not a star (the stars stay mono, each where it is).
+
 - **No more tooltip pop-ups:** the dark boxes that appeared over every
   control are gone, as in Antitotem; the same texts are read by LEARN
   (switch LEARN on and point at a control).

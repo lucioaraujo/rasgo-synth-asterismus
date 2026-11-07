@@ -9,6 +9,7 @@
 
 #include "PerformanceActorEcology.hpp"
 #include "PerformanceSkyCuts.hpp"
+#include "PerformanceSkyBinaural.hpp"
 #include <dsp/TapeSaturator.hpp>
 #include "PerformanceContracts.hpp"
 #include "PerformanceLoudnessMeter.hpp"
@@ -39,6 +40,8 @@ public:
         meter_.prepare(sampleRate);
         skyPan_.prepare(sampleRate);
         skyCuts_.prepare(sampleRate);
+        binaural_.prepare(sampleRate);
+        binauralWet_ = 0.0;
         for (auto& tape : tape_) tape.setSampleRate(sampleRate);
         surface_.prepare(sampleRate);
         echo_.prepare(sampleRate);
@@ -94,6 +97,8 @@ public:
         morphActive_ = false;
         ecology_.reset();
         skyCuts_.reset();
+        binaural_.reset();
+        binauralWet_ = 0.0;
         xrunCount_ = 0U;
         lastStemCount_ = 0U;
         lastStemActorIds_.fill(kInvalidActorId);
@@ -465,6 +470,7 @@ public:
         // and cable intensities until an explicit action changes them.
         if (!preserveLiveOverrides) ecology_.clearOverrides();
         ecology_.setTerritoryIdentity(territoryIdentity_, territory.seed, gamePlan_);
+        binaural_.seed(performanceSeedStream(territory.seed, 0xB1B0U));
         ecology_.setMorph(PerformanceSceneMorpher::morph(scene, scene, 1.0));
         preparedReservedStemActorId_ = kInvalidActorId;
         for (std::size_t index = 0U; index < scene.constellation.actorCount; ++index) {
@@ -791,6 +797,28 @@ public:
                         rightSample += (tapedRight - rightSample) * tapeWet_;
                     }
                 }
+                // A sombra binaural (7/11): dois senos, um por canal, com alguns
+                // Hz de diferença, na raiz do céu, nas partes que a seed
+                // escolhe; entra e sai em 2 s e se cala com o SILÊNCIO e o fim
+                // do STOP (amplitude). Antes dos cortes, que também a recortam.
+                {
+                    const auto& director = ecology_.skyDirector();
+                    binauralWet_ += std::clamp(director.binauralTarget() - binauralWet_, -tapeStep_, tapeStep_);
+                    if (binauralWet_ > 1.0e-4 && channels_ == 2U) {
+                        double shadowLeft = 0.0, shadowRight = 0.0;
+                        binaural_.process(director.binauralCarrierHz(), director.binauralBeatHz(),
+                                          kBinauralLevel * binauralWet_ * amplitude, shadowLeft, shadowRight);
+                        // Pela largura do ESPAÇO, como os envios: fechado, os
+                        // dois canais recebem o mesmo (um batimento comum, no
+                        // centro); aberto, cada seno no seu canal — a pulsação
+                        // binaural.
+                        const double width = clampUnit(session_.space + ecology_.spacePressure() * 0.62);
+                        const double mid = 0.5 * (shadowLeft + shadowRight);
+                        const double side = 0.5 * (shadowLeft - shadowRight) * width;
+                        leftSample += mid + side;
+                        rightSample += mid - side;
+                    }
+                }
                 skyCuts_.process(leftSample, rightSample);
                 master_.process(leftSample, rightSample);
                 limiterMaxReduction_ = std::max(limiterMaxReduction_, 1.0 - master_.limiterGain());
@@ -895,6 +923,18 @@ private:
     double lastPeak_ = 0.0;
     PerformanceMasterStage master_{};
     PerformanceSkyCuts skyCuts_{};
+    PerformanceSkyBinaural binaural_{};
+    double binauralWet_ = 0.0;
+    // O nível da sombra binaural na soma antes do master (o ganho fixo do
+    // master vem depois). Medido em 7/11 (8 seeds × 90 s, saída com e sem a
+    // camada): a 0,0012 ela ficava ~29 dB abaixo da peça (−50 dB); a 0,0034,
+    // ~20 dB abaixo — baixa, audível de fone nas partes calmas. A escuta do
+    // autor decide.
+#if defined(RASGO_PERFORMANCE_BINAURAL_LEVEL)
+    static constexpr double kBinauralLevel = RASGO_PERFORMANCE_BINAURAL_LEVEL;  // só para sondas de nível
+#else
+    static constexpr double kBinauralLevel = 0.0034;
+#endif
     std::array<rasgo::TapeSaturator, 2> tape_{};
     PerformanceSurfaceNoise surface_{};
     PerformanceEchoBus echo_{};

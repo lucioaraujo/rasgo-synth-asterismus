@@ -288,6 +288,17 @@ if(BUILD_TESTING)
     add_test(NAME rasgo_synth_performance_sky_tests
              COMMAND rasgo_synth_performance_sky_tests)
 
+    add_executable(rasgo_synth_performance_sky_binaural_tests
+        tests/test_performance_sky_binaural.cpp)
+    target_link_libraries(rasgo_synth_performance_sky_binaural_tests
+        PRIVATE rasgo_synth_performance_contracts)
+    if(NOT MSVC)
+        target_compile_options(rasgo_synth_performance_sky_binaural_tests
+            PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME rasgo_synth_performance_sky_binaural_tests
+             COMMAND rasgo_synth_performance_sky_binaural_tests)
+
     add_executable(rasgo_synth_performance_star_learn_tests
         tests/test_performance_star_learn.cpp)
     target_link_libraries(rasgo_synth_performance_star_learn_tests

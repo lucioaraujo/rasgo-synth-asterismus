@@ -188,6 +188,16 @@ public:
         tapeWowHz_ = 0.3 + 0.9 * static_cast<double>((tapeWord >> 8U) & 0xffU) / 255.0;
         tapeWowSeconds_ = 0.0005 + 0.002 * static_cast<double>((tapeWord >> 16U) & 0xffU) / 255.0;
         tapeVinyl_ = ((tapeWord >> 24U) & 1U) != 0U;
+        // A sombra binaural (7/11): por tipo de parte, 30 % de chance,
+        // intensidade 0,5–1; a base da diferença entre os canais, 3–10 Hz, e
+        // a oitava da portadora (160–320 ou 320–640 Hz), pela seed.
+        for (std::size_t part = 0U; part < binauralBySection_.size(); ++part) {
+            const auto word = performanceSeedStream(seed, 0xB1A0U + static_cast<std::uint32_t>(part));
+            binauralBySection_[part] = (word % 100U) < 30U ? 0.5 + 0.5 * static_cast<double>((word >> 8U) & 0xffU) / 255.0 : 0.0;
+        }
+        const auto binauralWord = performanceSeedStream(seed, 0xB1AFU);
+        binauralBeatHz_ = 3.0 + 7.0 * static_cast<double>(binauralWord & 0xffU) / 255.0;
+        binauralOctave_ = ((binauralWord >> 8U) & 1U) != 0U ? 2.0 : 1.0;
         developmentRegion_ = kDevelopmentRegions[performanceSeedStream(seed, 0xF301U) % kDevelopmentRegions.size()];
         chooseSeedMotion();
         chooseDensityGenes();
@@ -235,6 +245,27 @@ public:
         return tapeBySection_[std::min<std::size_t>(static_cast<std::size_t>(section_), 3U)];
     }
     bool tapeIsVinyl() const noexcept { return tapeVinyl_; }
+
+    // A sombra binaural do céu (7/11, PerformanceSkyBinaural.hpp): em que
+    // partes ela entra (0 = fora), a portadora — a raiz harmônica do céu
+    // agora, dobrada para 160–320 Hz (ou uma oitava acima, pela seed) — e a
+    // base da diferença entre os canais.
+    double binauralTarget() const noexcept {
+        if (influence_ <= 0.0) return 0.0;
+        return binauralBySection_[std::min<std::size_t>(static_cast<std::size_t>(section_), 3U)];
+    }
+    double binauralCarrierHz() const noexcept {
+        double hz = tonalCenterHz_ * std::pow(2.0, regionSemitones() / 12.0);
+        if (!std::isfinite(hz) || hz <= 0.0) hz = 220.0;
+        while (hz < 160.0) hz *= 2.0;
+        while (hz >= 320.0) hz *= 0.5;
+        return hz * binauralOctave_;
+    }
+    double binauralBeatHz() const noexcept { return binauralBeatHz_; }
+    // Para os testes: a intensidade escolhida para um tipo de parte (0–3).
+    double binauralForPart(std::size_t part) const noexcept {
+        return binauralBySection_[std::min<std::size_t>(part, 3U)];
+    }
     double tapeDrive() const noexcept { return tapeDrive_; }
     double tapeWowHz() const noexcept { return tapeWowHz_; }
     double tapeWowSeconds() const noexcept { return tapeWowSeconds_; }
@@ -1075,6 +1106,8 @@ private:
     std::array<double, 4> tapeBySection_{};
     double tapeDrive_ = 0.4, tapeWowHz_ = 0.6, tapeWowSeconds_ = 0.0015;
     bool tapeVinyl_ = false;
+    std::array<double, 4> binauralBySection_{};
+    double binauralBeatHz_ = 6.0, binauralOctave_ = 1.0;
     // A progressão neo-riemanniana (6/11): a tríade em curso (raiz relativa
     // à raiz da seed e qualidade), o ritmo harmônico e a preferência P/L/R.
     int triadRoot_ = 0;
