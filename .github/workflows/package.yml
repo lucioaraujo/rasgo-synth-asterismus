@@ -54,12 +54,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Asterismus
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # JUCE is not versioned in this repository. Pinned to the tag the
       # instrument is developed with.
       - name: Checkout JUCE
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: juce-framework/JUCE
           ref: '9.0.0'
@@ -156,7 +156,7 @@ jobs:
         run: cpack -G ZIP -C Release
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: asterismus-${{ matrix.os }}
           path: ${{ matrix.artifact-glob }}
@@ -170,10 +170,10 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download all packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: pkgs
 
