@@ -25,7 +25,7 @@ release nem página no ar. **Atualização 6/11/2026:** publicação da 0.2.0 pe
 | Camada | O que falta |
 |---|---|
 | 1. Candidato publicável | **autor:** a escuta; o ícone (proposta em `packaging/icon/proposta/`); a decisão do Batruc. Decisão menor: as gravações vão para `~/Music/Rasgo Synth Performance/` (nome antigo, mantido em 27/10 por causa do link para `AUDIOS_RASGO`); trocar para "Rasgo Synth Asterismus" pede migração |
-| 2. Release | **autor:** a primeira CI (tag `v0.2.0` ou o botão; ~160 min cobrados) — ela monta Windows (.exe), macOS (.dmg) e Linux (.deb/.tar.gz); depois conferir os nomes dos pacotes no site. AppImage e testes de arranque em outras distribuições: **falta** (o Trioio e o Aquorbium têm) |
+| 2. Release | **autor:** a primeira CI (tag `v0.2.0` ou o botão; ~2–3 h de relógio, sem custo: o repositório é público — 0 ms cobráveis na execução 42133093481) — ela monta Windows (.exe), macOS (.dmg) e Linux (.deb/.tar.gz); depois conferir os nomes dos pacotes no site. AppImage e testes de arranque em outras distribuições: **falta** (o Trioio e o Aquorbium têm) |
 | 3. Página editorial | **feito** em preparação: `website/` (4 idiomas, noindex); **autor:** ativar o GitHub Pages; o card no portal RASGO (`RASGO_WEBSITE/`) |
 | 4. Publicação | release + site + card juntos; anúncio |
 
@@ -72,7 +72,7 @@ Legenda: **feito** · **falta** (trabalho técnico) · **decisão** (do autor).
 | macOS: Universal 2 (x86_64;arm64), 10.15, antes do `project()`; `.dmg` (DragNDrop) | **feito no CMake** (30/10; o código não usa `std::filesystem` nem `from_chars/to_chars`) — selar ad hoc e conferir na CI/Mac: **falta** |
 | Sem assinatura paga: guia de instalação (Gatekeeper, SmartScreen) | **feito** — `INSTALL.md` |
 | Ícone do aplicativo | **decisão** — proposta em `packaging/icon/proposta/` (gerada por `tools/gerar_icone_proposta.py`); aprovada, copiar para `packaging/icon/` e o build a embute |
-| CI multiplataforma (portão de lançamento) | **feito o arquivo** (2/11): `.github/workflows/package.yml`, só em tags `v*` e pelo botão manual — **nunca rodou**; a primeira execução é decisão do autor (~160 min cobrados). AppImage e testes de arranque em outras distribuições: **falta** |
+| CI multiplataforma (portão de lançamento) | **feito o arquivo** (2/11): `.github/workflows/package.yml`, só em tags `v*` e pelo botão manual — **nunca rodou**; a primeira execução é decisão do autor (sem custo de cota: repositório público). AppImage e testes de arranque em outras distribuições: **falta** |
 | Repositório público próprio | **feito** (2/11, "pode criar" do autor): `lucioaraujo/rasgo-synth-asterismus`, aninhado e ignorado pelo monorepo; os diários (`CONTINUIDADE.md`, `TAREFAS.md`) ficam só no monorepo privado |
 
 ## 4. Licenças, créditos, proveniência
