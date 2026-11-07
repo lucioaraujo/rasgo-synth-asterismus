@@ -164,36 +164,38 @@ const char* supportLanguageCode(SupportLanguage language) noexcept {
     }
 }
 
+// O SOBRE no formato do TUTORIAL (7/11): seções separadas por linha em
+// branco, título na 1ª linha, "• " para tópicos.
 juce::String aboutCopy(SupportLanguage language) {
     switch (language) {
     case SupportLanguage::English:
-        return utf8("Generative instrument for composition and performance.\n\n"
-                    "Version " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
-                    "Concept, artistic direction, music and RASGO identity\nLúcio de Araújo\n\n"
-                    "Original code: GNU GPL-3.0-or-later\nHost: JUCE 9 under AGPLv3\n"
-                    "Typefaces: Big Shoulders Display and IBM Plex Mono · SIL OFL 1.1\n\n"
-                    "Full credits and provenance: THIRD_PARTY_NOTICES.md");
+        return utf8("RASGO SYNTH · ASTERISMUS\nGenerative instrument for composition and performance.\n"
+                    "• Version " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
+                    "AUTHORSHIP\nConcept, artistic direction, music and RASGO identity: Lúcio de Araújo.\n\n"
+                    "LICENCES\nFree software.\n• Original code: GNU GPL-3.0-or-later\n• Host: JUCE 9 under AGPLv3\n"
+                    "• Typefaces: Big Shoulders Display and IBM Plex Mono · SIL OFL 1.1\n\n"
+                    "CREDITS AND PROVENANCE\nFull credits and provenance: THIRD_PARTY_NOTICES.md");
     case SupportLanguage::French:
-        return utf8("Instrument génératif pour la composition et la performance.\n\n"
-                    "Version " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
-                    "Conception, direction artistique, musique et identité RASGO\nLúcio de Araújo\n\n"
-                    "Code original : GNU GPL-3.0 ou ultérieure\nHôte : JUCE 9 sous AGPLv3\n"
-                    "Typographies : Big Shoulders Display et IBM Plex Mono · SIL OFL 1.1\n\n"
-                    "Crédits et provenance : THIRD_PARTY_NOTICES.md");
+        return utf8("RASGO SYNTH · ASTERISMUS\nInstrument génératif pour la composition et la performance.\n"
+                    "• Version " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
+                    "AUTEUR\nConception, direction artistique, musique et identité RASGO : Lúcio de Araújo.\n\n"
+                    "LICENCES\nLogiciel libre.\n• Code original : GNU GPL-3.0 ou ultérieure\n• Hôte : JUCE 9 sous AGPLv3\n"
+                    "• Typographies : Big Shoulders Display et IBM Plex Mono · SIL OFL 1.1\n\n"
+                    "CRÉDITS ET PROVENANCE\nCrédits et provenance : THIRD_PARTY_NOTICES.md");
     case SupportLanguage::Spanish:
-        return utf8("Instrumento generativo para composición y performance.\n\n"
-                    "Versión " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
-                    "Concepción, dirección artística, música e identidad RASGO\nLúcio de Araújo\n\n"
-                    "Código original: GNU GPL-3.0 o posterior\nHost: JUCE 9 bajo AGPLv3\n"
-                    "Tipografías: Big Shoulders Display e IBM Plex Mono · SIL OFL 1.1\n\n"
-                    "Créditos y procedencia: THIRD_PARTY_NOTICES.md");
+        return utf8("RASGO SYNTH · ASTERISMUS\nInstrumento generativo para composición y performance.\n"
+                    "• Versión " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
+                    "AUTORÍA\nConcepción, dirección artística, música e identidad RASGO: Lúcio de Araújo.\n\n"
+                    "LICENCIAS\nSoftware libre.\n• Código original: GNU GPL-3.0 o posterior\n• Host: JUCE 9 bajo AGPLv3\n"
+                    "• Tipografías: Big Shoulders Display e IBM Plex Mono · SIL OFL 1.1\n\n"
+                    "CRÉDITOS Y PROCEDENCIA\nCréditos y procedencia: THIRD_PARTY_NOTICES.md");
     default:
-        return utf8("Instrumento generativo para composição e performance.\n\n"
-                    "Versão " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
-                    "Concepção, direção artística, música e identidade RASGO\nLúcio de Araújo\n\n"
-                    "Código autoral: GNU GPL-3.0 ou posterior\nHost: JUCE 9 pela via AGPLv3\n"
-                    "Tipografia: Big Shoulders Display e IBM Plex Mono · SIL OFL 1.1\n\n"
-                    "Créditos e proveniência completos: THIRD_PARTY_NOTICES.md");
+        return utf8("RASGO SYNTH · ASTERISMUS\nInstrumento generativo para composição e performance.\n"
+                    "• Versão " RASGO_ASTERISMUS_VERSION " · 2026\n\n"
+                    "AUTORIA\nConcepção, direção artística, música e identidade RASGO: Lúcio de Araújo.\n\n"
+                    "LICENÇAS\nSoftware livre.\n• Código autoral: GNU GPL-3.0 ou posterior\n• Host: JUCE 9 pela via AGPLv3\n"
+                    "• Tipografia: Big Shoulders Display e IBM Plex Mono · SIL OFL 1.1\n\n"
+                    "CRÉDITOS E PROVENIÊNCIA\nCréditos e proveniência completos: THIRD_PARTY_NOTICES.md");
     }
 }
 
@@ -547,7 +549,7 @@ public:
         for (auto& section : sections_) {
             section.title_ = juce::TextLayout{};
             juce::AttributedString title;
-            title.append(section.title, interfaceFont(15.5f, juce::Font::bold), juce::Colour(0xffd18a45));
+            title.append(section.title, interfaceFont(17.0f, juce::Font::bold), juce::Colour(0xffd18a45));
             title.setWordWrap(juce::AttributedString::byWord);
             section.title_.createLayout(title, textWidth);
             section.body_.clear();
@@ -558,7 +560,7 @@ public:
                 text.setLineSpacing(4.0f);
                 text.setWordWrap(juce::AttributedString::byWord);
                 text.append(bullet ? line.fromFirstOccurrenceOf(utf8("• "), false, false) : line,
-                            interfaceFont(bullet ? 13.5f : 14.5f, bullet ? juce::Font::plain : juce::Font::bold),
+                            interfaceFont(bullet ? 15.0f : 16.0f, bullet ? juce::Font::plain : juce::Font::bold),
                             bullet ? juce::Colour(0xffe7e3d5) : juce::Colour(0xfff2e7d5));
                 juce::TextLayout layout;
                 layout.createLayout(text, textWidth - (bullet ? kIndent : 0.0f));
@@ -586,7 +588,7 @@ public:
                 const float ix = x + (item.bullet ? kIndent : 0.0f);
                 if (item.bullet) {
                     graphics.setColour(juce::Colour(0xffd18a45));
-                    graphics.fillEllipse(x + 5.0f, card.getY() + item.y + 7.0f, 5.0f, 5.0f);
+                    graphics.fillEllipse(x + 5.0f, card.getY() + item.y + 8.0f, 5.5f, 5.5f);
                 }
                 item.layout.draw(graphics, {ix, card.getY() + item.y, item.layout.getWidth(), item.layout.getHeight()});
             }
@@ -614,7 +616,12 @@ private:
 class PerformanceTutorialContent final : public juce::Component {
 public:
     explicit PerformanceTutorialContent(SupportLanguage language)
-        : language_(language), page_(utf8(tutorialSource(language))) {
+        : PerformanceTutorialContent(language, tutorialTitle(language), tutorialSubtitle(language),
+                                     utf8(tutorialSource(language))) {}
+    // A mesma janela para outros textos no mesmo formato (o SOBRE).
+    PerformanceTutorialContent(SupportLanguage language, juce::String title, juce::String subtitle,
+                               const juce::String& source)
+        : language_(language), title_(std::move(title)), subtitle_(std::move(subtitle)), page_(source) {
         setSize(940, 720);
         viewport_.setViewedComponent(&page_, false);
         viewport_.setScrollBarsShown(true, false);
@@ -634,11 +641,11 @@ public:
         graphics.fillAll(juce::Colour(0xff102d27));
         graphics.setColour(juce::Colour(0xffd18a45));
         graphics.setFont(interfaceFont(18.0f, juce::Font::bold));
-        graphics.drawText(tutorialTitle(language_), getLocalBounds().reduced(24, 16).removeFromTop(30),
+        graphics.drawText(title_, getLocalBounds().reduced(24, 16).removeFromTop(30),
                           juce::Justification::centredLeft);
         graphics.setColour(juce::Colour(0xff8aa99b));
-        graphics.setFont(interfaceFont(12.5f));
-        graphics.drawText(tutorialSubtitle(language_),
+        graphics.setFont(interfaceFont(13.5f));
+        graphics.drawText(subtitle_,
                           getLocalBounds().reduced(24, 48).removeFromTop(20),
                           juce::Justification::centredLeft);
     }
@@ -655,6 +662,7 @@ public:
 
 private:
     SupportLanguage language_;
+    juce::String title_, subtitle_;
     PerformanceTutorialPage page_;
     juce::Viewport viewport_;
     juce::TextButton close_;
@@ -6707,12 +6715,24 @@ private:
         tempoSlider_.setValue(juce::jlimit(20.0, 300.0, current + delta));
     }
 
+    // O SOBRE com o layout do TUTORIAL (7/11, pedido do autor).
     void showAbout() {
-        juce::AlertWindow::showMessageBoxAsync(
-            juce::MessageBoxIconType::NoIcon,
-            utf8("RASGO SYNTH · ASTERISMUS · ")
-                + uiText(supportLanguage_, "SOBRE", "ABOUT", "À PROPOS", "ACERCA DE"),
+        juce::DialogWindow::LaunchOptions options;
+        options.dialogTitle = uiText(supportLanguage_, "SOBRE", "ABOUT", "À PROPOS", "ACERCA DE");
+        options.dialogBackgroundColour = juce::Colour(0xff102d27);
+        auto* content = new PerformanceTutorialContent(supportLanguage_,
+            uiText(supportLanguage_, "SOBRE", "ABOUT", "À PROPOS", "ACERCA DE"),
+            uiText(supportLanguage_, "autoria, licenças e proveniência", "authorship, licences and provenance",
+                   "auteur, licences et provenance", "autoría, licencias y procedencia"),
             aboutCopy(supportLanguage_) + libraryAboutLine());
+        content->setSize(760, 620);
+        options.content.setOwned(content);
+        options.componentToCentreAround = this;
+        options.escapeKeyTriggersCloseButton = true;
+        options.useNativeTitleBar = false;
+        options.resizable = true;
+        options.useBottomRightCornerResizer = true;
+        options.launchAsync();
     }
 
     // As contagens da biblioteca que saíram da área de tocar (3/11).
@@ -6724,7 +6744,7 @@ private:
             audit += entry.state == PerformanceLibraryState::NeedsAudit;
         }
         const auto n = [](std::size_t value) { return juce::String(static_cast<int>(value)); };
-        return utf8("\n\n") + uiText(supportLanguage_, "Biblioteca: ", "Library: ", "Bibliothèque : ", "Biblioteca: ")
+        return utf8("\n\n") + uiText(supportLanguage_, "BIBLIOTECA", "LIBRARY", "BIBLIOTHÈQUE", "BIBLIOTECA") + "\n"
             + n(kPerformanceModuleLibrary.size())
             + uiText(supportLanguage_, " módulos — ", " modules — ", " modules — ", " módulos — ") + n(adapted)
             + uiText(supportLanguage_, " estrelas tocáveis (a seed sorteia entre ", " playable stars (the seed draws among ",
