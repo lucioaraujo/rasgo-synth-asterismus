@@ -2863,15 +2863,16 @@ public:
         // ÁLBUM e PERCURSO saíram daqui para a caixa FORMA do cabeçalho
         // (5/11): as CENAS têm uma linha só de botões.
         sceneRow.removeFromTop(kActionTitleTop + 18 + 2 - 4);
-        undoCaptureButton_.setBounds(sceneRow.removeFromLeft(92).reduced(2, 0));
-        captureButton_.setBounds(sceneRow.removeFromLeft(96).reduced(2, 0));
-        memoryButton_.setBounds(sceneRow.removeFromLeft(92).reduced(2, 0));
+        // A mesma altura dos botões de GESTOS (reduced 4; o autor, 7/11).
+        undoCaptureButton_.setBounds(sceneRow.removeFromLeft(92).reduced(2, 4));
+        captureButton_.setBounds(sceneRow.removeFromLeft(96).reduced(2, 4));
+        memoryButton_.setBounds(sceneRow.removeFromLeft(92).reduced(2, 4));
         morphLabel_.setBounds(sceneRow.removeFromLeft(74).reduced(1, 4));
-        morphSlider_.setBounds(sceneRow.removeFromLeft(96).reduced(2, 0));
+        morphSlider_.setBounds(sceneRow.removeFromLeft(96).reduced(2, 4));
         const auto sceneButtonWidth = juce::jlimit(52, 86,
             sceneRow.getWidth() / static_cast<int>(sceneButtons_.size()));
         for (auto& button : sceneButtons_)
-            button.setBounds(sceneRow.removeFromLeft(sceneButtonWidth).reduced(2, 1));
+            button.setBounds(sceneRow.removeFromLeft(sceneButtonWidth).reduced(2, 4));
         auto gestureButtons = gestureArea_.reduced(12, 4);
         gestureButtons.removeFromTop(kActionTitleTop + 18 + 2 - 4);
         // Larguras por peso (auditoria da interface, 29/10): ABRIR, RASGAR e
