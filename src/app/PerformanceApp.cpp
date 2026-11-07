@@ -2993,7 +2993,7 @@ public:
             skyWebButton_.setBounds(constellationArea_.getX() + 12, constellationArea_.getY() + 30, 136, 20);
             mixerVariationButton_.setBounds(constellationArea_.getX() + 154, constellationArea_.getY() + 30, 186, 20);
             layoutPolyphony();
-            auto mixer = constellationArea_.reduced(12, 30).withTrimmedTop(46);
+            auto mixer = constellationArea_.reduced(12, 30).withTrimmedTop(46 + kBinauralRowHeight);
             // MESA must expose the spatial instrument itself. Previously the
             // graph was given an empty bounds rectangle here, leaving only
             // stem sliders visible and hiding the reserve cards needed for
@@ -3093,7 +3093,7 @@ public:
         // The constellation is the visible spatial body of the instrument.
         // Give it the broad central panel; the adjacent matter panel keeps
         // the stem/module controls without shrinking the spatial drawing.
-        auto actorControls = constellationArea_.reduced(10, 30).withTrimmedTop(46);
+        auto actorControls = constellationArea_.reduced(10, 30).withTrimmedTop(46 + kBinauralRowHeight);
         auto focusedPanel = actorControls.removeFromBottom(210).reduced(2, 2);
         const auto actorRowHeight = actorControls.getHeight() / 2;
         for (std::size_t index = 0; index < actorSliders_.size(); ++index) {
@@ -7769,6 +7769,7 @@ private:
     juce::TextButton skyWebButton_;
     juce::Slider polyphonySlider_;
     juce::Slider binauralSlider_;
+    static constexpr int kBinauralRowHeight = 22;
     juce::Label binauralLabel_;
     // CORTE · RES. · ECO · SALA da estrela em foco (6/11): −1 a +1 sobre a
     // escolha da seed (0); duplo clique volta à seed.
@@ -7829,13 +7830,11 @@ private:
         const auto x = constellationArea_.getX() + 12, y = constellationArea_.getY() + 53;
         polyphonyLabel_.setBounds(x, y, 150, 18);
         polyphonySlider_.setBounds(x + 152, y, 176, 18);
-        // O BINAURAL na mesma linha, à direita, no espaço que sobrar.
-        const auto bx = x + 152 + 176 + 10, right = constellationArea_.getRight() - 12;
-        const auto room = right - bx - 66;
-        binauralLabel_.setVisible(room >= 70);
-        binauralSlider_.setVisible(room >= 70);
-        binauralLabel_.setBounds(bx, y, 64, 18);
-        binauralSlider_.setBounds(bx + 66, y, std::max(0, std::min(176, room)), 18);
+        // O BINAURAL numa linha própria, logo abaixo (7/11: na mesma linha
+        // ele não cabia — a coluna tem ~450 px a 1920 e ficava escondido);
+        // os faders das estrelas descem kBinauralRowHeight.
+        binauralLabel_.setBounds(x, y + kBinauralRowHeight, 150, 18);
+        binauralSlider_.setBounds(x + 152, y + kBinauralRowHeight, 176, 18);
     }
     void refreshPolyphonyLabel() {
         const auto seed = startupDocument_.territory.seed;
