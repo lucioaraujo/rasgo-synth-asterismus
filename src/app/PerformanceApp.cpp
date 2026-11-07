@@ -2983,8 +2983,14 @@ public:
                 stemSoloButtons_[index].setVisible(focusedStem);
             }
 
-            fieldArea_ = lower.removeFromLeft(lower.getWidth() * 58 / 100).reduced(0, 4);
+            {
+                auto fieldBlock = lower.removeFromLeft(lower.getWidth() * 58 / 100);
+                learnArea_ = learnMode_ ? fieldBlock.removeFromBottom(std::min(150, fieldBlock.getHeight() * 30 / 100)).reduced(0, 4)
+                                        : juce::Rectangle<int>{};
+                fieldArea_ = fieldBlock.reduced(0, 4);
+            }
             layoutField(fieldArea_);
+            layoutLearnPanel();
             macroArea_ = {};
             relationArea_ = {};
             constellationArea_ = lower.reduced(0, 4);
@@ -3000,7 +3006,6 @@ public:
             // module insertion/removal.
             auto graphArea = mixer.removeFromTop(mixer.getHeight() * 58 / 100);
             constellationGraph_.setBounds(graphArea.reduced(2));
-            layoutLearnPanel();
             auto focusedPanel = mixer.removeFromBottom(210).reduced(2, 2);
             const bool hasFocusedStem = selectedModuleIndex_ < modulePanelActive_.size()
                 && modulePanelActive_[selectedModuleIndex_];
@@ -3067,8 +3072,19 @@ public:
         relationArea_ = lower.reduced(0, 4);
         // The force field remains a living surface. Its circles must receive
         // dynamic and audible behaviour, never remain static decoration.
-        fieldArea_ = actionArea.removeFromTop(actionArea.getHeight() * 58 / 100).reduced(0, 4);
+        {
+            // Com o LEARN ligado (pedido do autor, 7/11: "achatar um pouco o
+            // gráfico eixo de forças" / "ganharemos pixels abaixo de macros"):
+            // o Eixo de Forças fica mais baixo, os macros sobem com a mesma
+            // altura e o painel do LEARN ocupa o pé da coluna.
+            const auto columnHeight = actionArea.getHeight();
+            learnArea_ = learnMode_ ? actionArea.removeFromBottom(std::min(150, columnHeight * 20 / 100)).reduced(0, 4)
+                                    : juce::Rectangle<int>{};
+            const auto macroHeight = columnHeight - columnHeight * 58 / 100;
+            fieldArea_ = actionArea.removeFromTop(std::max(120, actionArea.getHeight() - macroHeight)).reduced(0, 4);
+        }
         layoutField(fieldArea_);
+        layoutLearnPanel();
         // Seven equal columns made the principal musical controls too small.
         // FOCO privileges two broad rows of knobs; Mesa keeps the stems and
         // graph balanced while using the same readable two-row grammar.
@@ -3139,7 +3155,6 @@ public:
         lastActionArea_ = relationContent.removeFromBottom(18);
         auto relationControls = relationContent.removeFromBottom(34);
         constellationGraph_.setBounds(relationContent.reduced(2));
-        layoutLearnPanel();
         static constexpr std::array<std::uint16_t, 16> relationSources{
             1U, 2U, 1U, 1U, 2U, 3U, 1U, 5U, 6U, 7U, 1U, 2U, 2U, 3U, 4U, 5U};
         static constexpr std::array<std::uint16_t, 16> relationDestinations{
@@ -3489,8 +3504,7 @@ private:
             learnMode_ = learnButton_.getToggleState();
             lastLearnKey_.clear();
             showLearnIdle();
-            learnPanel_.setVisible(learnMode_);
-            if (learnMode_) learnPanel_.toFront(false);
+            resized();  // o Eixo de Forças cede (ou devolve) a faixa do painel
             // Com o LEARN ligado, as dicas (a tarja escura do JUCE) se calam: o
             // painel já mostra o mesmo texto.
             tooltipWindow_.setMillisecondsBeforeTipAppears(learnMode_ ? 24 * 60 * 60 * 1000 : 650);
@@ -6435,16 +6449,13 @@ private:
                                     "LEARN · apunte a una estrella o un control"),
                              learnTip(), {});
     }
-    // O painel fica dentro da Constelação, logo acima da BIBLIOTECA (como no
-    // Aquorbium, embaixo da vista principal). constellationArea_ é a coluna
-    // do CAMPO DE MATÉRIAS, à direita — a primeira versão o punha ali, sobre
-    // os controles (o autor, 7/11).
+    // O painel fica na coluna da esquerda, embaixo do Eixo de Forças, que
+    // cede essa faixa só com o LEARN ligado (7/11). Antes: sobre a coluna do
+    // CAMPO DE MATÉRIAS e depois sobre a Constelação — as duas cobriam
+    // controles ou o gráfico (o autor).
     void layoutLearnPanel() {
-        const auto graph = constellationGraph_.getBounds();
-        if (graph.isEmpty()) return;
-        const auto bottom = graph.getBottom() - performanceGraphLayout().libraryTopInset - 6;
-        const auto height = std::min(140, std::max(90, graph.getHeight() / 4));
-        learnPanel_.setBounds(graph.getX() + 10, bottom - height, std::max(200, graph.getWidth() - 20), height);
+        learnPanel_.setBounds(learnArea_);
+        learnPanel_.setVisible(learnMode_ && !learnArea_.isEmpty());
         if (learnMode_) learnPanel_.toFront(false);
     }
     juce::String learnTry() const { return uiText(supportLanguage_, "Experimente: ", "Try: ", "Essayez : ", "Pruebe: "); }
@@ -7816,6 +7827,7 @@ private:
     PerformanceLearnHover learnHover_;
     bool learnMode_ = false;
     juce::String lastLearnKey_;
+    juce::Rectangle<int> learnArea_;
     juce::TextButton aboutButton_;
     juce::TextButton languageButton_;
     SupportLanguage supportLanguage_ = SupportLanguage::Portuguese;
