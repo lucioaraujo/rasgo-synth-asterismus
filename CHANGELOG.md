@@ -11,7 +11,8 @@ and [`docs/`](docs/).
   (160–640 Hz), 3–10 Hz apart and slowly drifting — the pulse is in neither
   channel, the ear makes it; on speakers it becomes an ordinary beating.
   Low, about 20 dB under the piece; it opens with SPACE (closed, both channels
-  get the same beating, centred) and falls silent with SILENCE and STOP.
+  get the same beating, centred) and falls silent with SILENCE and STOP. A BINAURAL slider, next to POLYPHONY,
+  sets its level around the seed's (left down to off, right up to +6 dB).
   A sky layer, not a star (the stars stay mono, each where it is).
 
 - **No more tooltip pop-ups:** the dark boxes that appeared over every

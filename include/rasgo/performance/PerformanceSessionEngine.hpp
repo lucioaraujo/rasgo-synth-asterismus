@@ -226,6 +226,11 @@ public:
     }
     // O POLIFONIA do músico (6/11): −1 a +1 sobre a densidade da seed.
     void setPolyphonyBias(double bias) noexcept { ecology_.setPolyphonyBias(bias); }
+    // O BINAURAL do músico (7/11), −1 a +1: 0 = o nível da seed; −1 cala
+    // (descendo aos poucos); +1 = 6 dB mais forte.
+    void setBinauralBias(double bias) noexcept {
+        if (std::isfinite(bias)) binauralBias_ = std::clamp(bias, -1.0, 1.0);
+    }
     // A coda na proporção da faixa (5/11): o envelope do morceau e o gesto da
     // ecologia com a mesma duração.
     bool setCodaSeconds(double seconds) noexcept {
@@ -807,7 +812,8 @@ public:
                     if (binauralWet_ > 1.0e-4 && channels_ == 2U) {
                         double shadowLeft = 0.0, shadowRight = 0.0;
                         binaural_.process(director.binauralCarrierHz(), director.binauralBeatHz(),
-                                          kBinauralLevel * binauralWet_ * amplitude, shadowLeft, shadowRight);
+                                          kBinauralLevel * binauralWet_ * amplitude * binauralBiasGain(),
+                                          shadowLeft, shadowRight);
                         // Pela largura do ESPAÇO, como os envios: fechado, os
                         // dois canais recebem o mesmo (um batimento comum, no
                         // centro); aberto, cada seno no seu canal — a pulsação
@@ -924,7 +930,10 @@ private:
     PerformanceMasterStage master_{};
     PerformanceSkyCuts skyCuts_{};
     PerformanceSkyBinaural binaural_{};
-    double binauralWet_ = 0.0;
+    double binauralWet_ = 0.0, binauralBias_ = 0.0;
+    double binauralBiasGain() const noexcept {
+        return binauralBias_ < 0.0 ? 1.0 + binauralBias_ : std::pow(10.0, 6.0 * binauralBias_ / 20.0);
+    }
     // O nível da sombra binaural na soma antes do master (o ganho fixo do
     // master vem depois). Medido em 7/11 (8 seeds × 90 s, saída com e sem a
     // camada): a 0,0012 ela ficava ~29 dB abaixo da peça (−50 dB); a 0,0034,
