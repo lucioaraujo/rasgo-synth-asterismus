@@ -8,6 +8,9 @@
 
 #include <rasgo/performance/PerformanceSkyBinaural.hpp>
 #include <rasgo/performance/PerformanceSkyDirector.hpp>
+#include <rasgo/performance/PerformanceSessionEngine.hpp>
+#include <rasgo/performance/PerformanceTerritoryFactory.hpp>
+#include <vector>
 
 namespace {
 using namespace rasgo::performance;
@@ -69,6 +72,41 @@ int main() {
         std::cout << "binaural in " << fraction * 100.0 << " % of the parts\n";
         expect(fraction > 0.2 && fraction < 0.4, "the seed puts the binaural shadow in about 30 % of the parts");
         expect(carriers, "carrier 160–640 Hz, beat 3–10 Hz, intensity 0.5–1");
+    }
+    {
+        // O slider BINAURAL no motor (7/11): −1 cala, +1 = 6 dB acima do nível
+        // da seed — a mesma seed com o binaural na abertura, ESPAÇO aberto.
+        std::uint32_t seed = 0U;
+        for (std::uint32_t s = 9100U; s < 9400U && seed == 0U; ++s) {
+            PerformanceSkyDirector director;
+            director.setSeed(s);
+            if (director.binauralForPart(0U) > 0.8) seed = s;
+        }
+        const auto render = [seed](double bias) {
+            auto doc = PerformanceTerritoryFactory::makeForReleasedStems(seed, kPerformanceSafeBodyLimit, true);
+            PerformanceSessionEngine engine;
+            engine.prepare(48000.0, 512U, 2U);
+            engine.setScene(doc.scenes[0], doc.territory);
+            engine.setSkyInfluence(1.0);
+            engine.setMacro(PerformanceMacro::Space, 1.0);
+            engine.setBinauralBias(bias);
+            std::vector<float> out, left(512), right(512);
+            for (int block = 0; block < 12 * 48000 / 512; ++block) {
+                engine.processBlock(left.data(), right.data(), 512);
+                for (int i = 0; i < 512; ++i) { out.push_back(left[i]); out.push_back(right[i]); }
+            }
+            return out;
+        };
+        const auto off = render(-1.0), atSeed = render(0.0), up = render(1.0);
+        const auto difference = [](const std::vector<float>& a, const std::vector<float>& b) {
+            double energy = 0.0;
+            for (std::size_t i = 0U; i < a.size(); ++i) energy += (a[i] - b[i]) * (a[i] - b[i]);
+            return 10.0 * std::log10(energy / static_cast<double>(a.size()) + 1e-30);
+        };
+        const double seedDb = difference(atSeed, off), upDb = difference(up, off);
+        std::cout << "slider (seed " << seed << "): seed − off " << seedDb << " dB, +1 − off " << upDb << " dB\n";
+        expect(seed != 0U && seedDb > -70.0, "at the seed's level the binaural shadow is in the output");
+        expect(std::fabs((upDb - seedDb) - 6.0) < 0.5, "the BINAURAL slider at +1 is 6 dB above the seed's level");
     }
     if (ok) std::cout << "Performance sky binaural tests passed\n";
     return ok ? EXIT_SUCCESS : EXIT_FAILURE;
