@@ -12,6 +12,13 @@ pacotes num Windows e num Mac reais (desde a 0.2.0); AppImage e testes de
 arranque em outras distribuições. Próxima versão: 0.4 (o BINAURAL como
 camada do céu, `docs/AUDITORIA_MODULOS_STUDIO_2026-11-06.md` §10).
 
+**Para a release 0.4 (pedido do autor, 7/11):** uma captura nova da janela —
+a interface mudou (LEARN, slider BINAURAL, faixa de cenas, logo) — para o
+card do Asterismus no portal RASGO (`RASGO_WEBSITE/assets/screenshots/asterismus-1920.jpg`,
+e então um zip novo do portal) e para o site do Asterismus
+(`website/assets/interface.jpg` e a imagem de compartilhamento
+`og-asterismus.jpg`, ainda da 0.2.0).
+
 ## Estado em 2026-11-04 (organização para a publicação)
 
 Pelas camadas de `RASGO_DOCUMENTATION/ESTRATEGIA_DE_PUBLICACAO.md`: o
