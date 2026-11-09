@@ -1,6 +1,17 @@
 # Publicação do Asterismus — estado e checklist
 
-## ▶ Estado em 2026-11-09: versão 0.4.0 preparada (falta a tag)
+## ▶ Estado em 2026-11-09: versão 0.4.0 publicada
+
+OK do autor (9/11). Tag `v0.4.0` → CI 42653512947 (Linux, macOS, Windows e
+release: sucesso; primeira com as actions em Node 24; sem custo, repositório
+público): 5 pacotes na release. Depois, `main` = `release-0.4.0` (76c420b),
+push e deploy do site (sucesso); o site no ar mostra 0.4.0 e os 4 pacotes,
+a página da release e as imagens novas respondem 200. Continuam abertos:
+zip novo do portal RASGO com o card novo; abrir os pacotes num Windows e
+num Mac reais.
+
+### Preparação (registro de 9/11)
+
 
 Branch `release-0.4.0` (a partir do `main` 13e6479), no padrão da 0.3:
 versão 0.4.0 em `CMakeLists.txt`, README (4 idiomas), `release-windows.yml`,
