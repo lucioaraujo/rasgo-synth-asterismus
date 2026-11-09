@@ -24,7 +24,7 @@ REPO = "https://github.com/lucioaraujo/rasgo-synth-asterismus"
 BLOB = REPO + "/blob/main"
 # a versão e os pacotes do release (a CI: .github/workflows/package.yml);
 # os nomes são os do CPack (CPACK_PACKAGE_NAME) — conferir na primeira release
-VERSAO = "0.3.0"
+VERSAO = "0.4.0"
 PUBLICADO = True
 # LEARN (7/11/2026): as fichas das estrelas descrevem a 0.3 (36 estrelas, o
 # kit e o groove da DRUMS…). Enquanto o site for o da 0.2.0, as páginas não
@@ -80,7 +80,7 @@ T = {
         "tutorial": "O TUTORIAL do app explica tudo passo a passo, e o LEARN apresenta cada estrela — em português, inglês, francês ou espanhol.",
         "s_dl": "Baixar",
         "dl_pending": "A primeira versão (0.2.0, prévia) está em preparação: os pacotes para Windows, macOS e Linux serão montados pela integração contínua. Até lá, o instrumento pode ser compilado a partir do código.",
-        "dl_intro": "A versão " + VERSAO + " traz estrelas novas, os cortes e a fita do céu, filtros e envios por estrela, o groove da DRUMS e o LEARN (o que mudou está no CHANGELOG). O instrumento continua aberto, em desenvolvimento. Escolha o pacote do seu sistema; os passos estão no INSTALL.",
+        "dl_intro": "A versão " + VERSAO + " traz a sombra binaural (uma camada do céu para fones, com slider de nível), o TUTORIAL e o SOBRE em fichas mais fáceis de ler, a logo e o ícone próprios, e o fim das tarjas das dicas (o que mudou está no CHANGELOG). O instrumento continua aberto, em desenvolvimento. Escolha o pacote do seu sistema; os passos estão no INSTALL.",
         "dl_os": {"Windows": "Windows 10 ou 11, 64 bits — instalador (.exe)", "macOS": "macOS 10.15 ou mais novo, Intel e Apple Silicon", "Linux": ".deb para Ubuntu e Debian; .tar.gz para as outras distribuições"},
         "dl_warn": "Na primeira abertura, o Windows e o macOS mostram um aviso de segurança: é esperado, porque o app não tem a assinatura paga das duas empresas. O guia de instalação diz onde clicar.",
         "dl_install": "Guia de instalação",
@@ -139,7 +139,7 @@ T = {
         "tutorial": "The app's GUIDE explains everything step by step, and LEARN presents each star — in English, Portuguese, French or Spanish.",
         "s_dl": "Download",
         "dl_pending": "The first version (0.2.0, preview) is in preparation: the Windows, macOS and Linux packages will be built by continuous integration. Until then, the instrument can be built from source.",
-        "dl_intro": "Version " + VERSAO + " brings new stars, the sky's cuts and tape, a filter and sends on every star, the DRUMS groove and LEARN (what changed is in the CHANGELOG). The instrument remains open, in development. Choose the package for your system; the steps are in INSTALL.",
+        "dl_intro": "Version " + VERSAO + " brings the binaural shadow (a sky layer for headphones, with a level slider), the TUTORIAL and ABOUT as easier-to-read cards, its own logo and icon, and no more tooltip pop-ups (what changed is in the CHANGELOG). The instrument remains open, in development. Choose the package for your system; the steps are in INSTALL.",
         "dl_os": {"Windows": "Windows 10 or 11, 64-bit — installer (.exe)", "macOS": "macOS 10.15 or later, Intel and Apple Silicon", "Linux": ".deb for Ubuntu and Debian; .tar.gz for other distributions"},
         "dl_warn": "On first launch, Windows and macOS show a security warning: it is expected, because the app does not carry the two companies' paid signature. The installation guide says where to click.",
         "dl_install": "Installation guide",
@@ -198,7 +198,7 @@ T = {
         "tutorial": "Le TUTORIEL de l'app explique tout pas à pas, et le LEARN présente chaque étoile — en français, anglais, portugais ou espagnol.",
         "s_dl": "Télécharger",
         "dl_pending": "La première version (0.2.0, aperçu) est en préparation : les paquets Windows, macOS et Linux seront construits par l'intégration continue. D'ici là, l'instrument peut être compilé depuis les sources.",
-        "dl_intro": "La version " + VERSAO + " apporte de nouvelles étoiles, les coupes et la bande du ciel, un filtre et des envois sur chaque étoile, le groove de la DRUMS et le LEARN (ce qui a changé est dans le CHANGELOG). L'instrument reste ouvert, en développement. Choisissez le paquet de votre système ; les étapes sont dans INSTALL.",
+        "dl_intro": "La version " + VERSAO + " apporte l'ombre binaurale (une couche du ciel pour le casque, avec un curseur de niveau), le TUTORIEL et le À PROPOS en fiches plus faciles à lire, un logo et une icône propres, et la fin des bulles d'aide (ce qui a changé est dans le CHANGELOG). L'instrument reste ouvert, en développement. Choisissez le paquet de votre système ; les étapes sont dans INSTALL.",
         "dl_os": {"Windows": "Windows 10 ou 11, 64 bits — installateur (.exe)", "macOS": "macOS 10.15 ou plus récent, Intel et Apple Silicon", "Linux": ".deb pour Ubuntu et Debian ; .tar.gz pour les autres distributions"},
         "dl_warn": "Au premier lancement, Windows et macOS affichent un avertissement de sécurité : c'est attendu, car l'app n'a pas la signature payante des deux entreprises. Le guide d'installation indique où cliquer.",
         "dl_install": "Guide d'installation",
@@ -257,7 +257,7 @@ T = {
         "tutorial": "El TUTORIAL de la app lo explica todo paso a paso, y el LEARN presenta cada estrella — en español, inglés, portugués o francés.",
         "s_dl": "Descargar",
         "dl_pending": "La primera versión (0.2.0, vista previa) está en preparación: los paquetes para Windows, macOS y Linux se construirán en la integración continua. Mientras tanto, el instrumento puede compilarse desde el código.",
-        "dl_intro": "La versión " + VERSAO + " trae estrellas nuevas, los cortes y la cinta del cielo, un filtro y envíos en cada estrella, el groove de la DRUMS y el LEARN (lo que cambió está en el CHANGELOG). El instrumento sigue abierto, en desarrollo. Elige el paquete de tu sistema; los pasos están en INSTALL.",
+        "dl_intro": "La versión " + VERSAO + " trae la sombra binaural (una capa del cielo para auriculares, con un deslizador de nivel), el TUTORIAL y el ACERCA DE en fichas más fáciles de leer, un logo y un icono propios, y el fin de los recuadros de ayuda (lo que cambió está en el CHANGELOG). El instrumento sigue abierto, en desarrollo. Elige el paquete de tu sistema; los pasos están en INSTALL.",
         "dl_os": {"Windows": "Windows 10 u 11, 64 bits — instalador (.exe)", "macOS": "macOS 10.15 o más reciente, Intel y Apple Silicon", "Linux": ".deb para Ubuntu y Debian; .tar.gz para las demás distribuciones"},
         "dl_warn": "En la primera apertura, Windows y macOS muestran un aviso de seguridad: es lo esperado, porque la app no lleva la firma de pago de las dos empresas. La guía de instalación dice dónde hacer clic.",
         "dl_install": "Guía de instalación",

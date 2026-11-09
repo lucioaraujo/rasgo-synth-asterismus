@@ -4,7 +4,7 @@ What changed between the published versions of Rasgo Synth Asterismus. The
 development notes, in Portuguese, are in [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md)
 and [`docs/`](docs/).
 
-## Unreleased
+## 0.4.0 — 2026-11-09
 
 - **Identity:** the Asterismus has its own logo and icon — the sky of the
   family animation in the interface colours (chosen by the author). It is the
@@ -23,6 +23,18 @@ and [`docs/`](docs/).
 - **No more tooltip pop-ups:** the dark boxes that appeared over every
   control are gone, as in Antitotem; the same texts are read by LEARN
   (switch LEARN on and point at a control).
+
+- **TUTORIAL and ABOUT, easier to read:** one card per section (title, a
+  guiding sentence and indented points, wider spacing, larger type) on a
+  scrolling page, in the four languages; ABOUT uses the same layout
+  (the instrument, authorship, licences, credits, library).
+
+- **Layout:** the SCENES/GESTURES strip lost the gap above its title and
+  the SCENES buttons have the height of the GESTURES ones; the
+  FIELD · CONSTELLATION box lines up with the side columns.
+
+- **Packaging (CI):** the build actions moved to Node.js 24 (GitHub is
+  retiring Node 20); first packages built with them.
 
 ## 0.3.0 — 2026-11-07
 

@@ -1,5 +1,23 @@
 # Publicação do Asterismus — estado e checklist
 
+## ▶ Estado em 2026-11-09: versão 0.4.0 preparada (falta a tag)
+
+Branch `release-0.4.0` (a partir do `main` 13e6479), no padrão da 0.3:
+versão 0.4.0 em `CMakeLists.txt`, README (4 idiomas), `release-windows.yml`,
+`gerar_paginas.py`/`seo.py` (texto do download nos 4 idiomas: o BINAURAL, o
+TUTORIAL/SOBRE em fichas, a logo, o fim das tarjas); CHANGELOG `0.4.0 —
+2026-11-09`; tutorial e LEARN do site extraídos do app de novo; páginas
+regeneradas. **Captura nova** (9/11, a janela do app 1920×1006 em STOP,
+`import -window`, sem input sintético): `website/assets/interface.jpg`,
+`og-asterismus.jpg` (recorte 1200×630 da constelação, como o anterior) e o
+card do portal `RASGO_WEBSITE/assets/screenshots/asterismus-1920.jpg` (no
+monorepo, sem commit; o zip do portal ainda não foi refeito). Suíte 40/40;
+binário com v0.4.0 no rodapé. **Falta (autor):** OK para a tag `v0.4.0` —
+a CI da tag monta os pacotes (primeira vez com as actions em Node 24) e cria
+a release; depois, o merge no `main` e o push (o site muda junto); conferir
+os links; zip novo do portal.
+
+
 ## ▶ Estado em 2026-11-07: versão 0.3.0
 
 Segunda versão pública (OK do autor, 7/11): tag `v0.3.0` a partir do branch
