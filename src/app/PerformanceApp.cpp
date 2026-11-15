@@ -1,6 +1,8 @@
 #include <JuceHeader.h>
+#include "MaestrucLink.h"   // regente da família (maestruc.link/1)
 
 #include <atomic>
+#include <cstdio>
 #include <array>
 #include <string>
 #include <string_view>
@@ -2828,8 +2830,21 @@ public:
             juce::Timer::callAfterDelay(2000, [safe = juce::Component::SafePointer<PerformanceHostComponent>(this)] {
                 if (safe != nullptr && !safe->playingRequested_) safe->togglePlaying();
             });
+        // Maestruc (15/11/2026): `--seed N` abre no território dessa seed (o
+        // mesmo caminho do campo SEED); `--maestruc` ou
+        // RASGO_ASTERISMUS_MAESTRUC=1 liga o receptor.
+        const auto args = juce::JUCEApplicationBase::getCommandLineParameterArray();
+        if (const int i = args.indexOf("--seed"); i >= 0 && i + 1 < args.size()) {
+            if (!applySeedFromOutside(args[i + 1].unquoted(), "abertura"))
+                std::fprintf(stderr, "Asterismus: --seed precisa de um inteiro de 0 a 4294967295\n");
+        }
+        if (args.contains("--maestruc")
+            || juce::SystemStats::getEnvironmentVariable("RASGO_ASTERISMUS_MAESTRUC", {}) == "1")
+            enableMaestrucLink();
     }
     ~PerformanceHostComponent() override {
+        maestrucPortao_.fecharEsperar();   // o áudio deixa de usar a ponte antes do Link sumir
+        maestrucLink_.reset();   // antes de tudo: nenhum comando chega a meio desmonte
         removeMouseListener(&learnHover_);
         stopTimer();
         // Uma geração de álbum em curso para entre blocos; o app espera a
@@ -7278,6 +7293,7 @@ private:
             return;
         }
         stemGainValues_[index] = bounded;
+        maestrucMixerDirty_ = true;
         notePerformerActivity();
         stemGainSliders_[index].setValue(bounded, juce::dontSendNotification);
         lastAction_ = moduleDisplayNames_[index] + utf8(" · mix ") + juce::String(bounded, 2);
@@ -7292,6 +7308,7 @@ private:
             return;
         }
         stemMuted_[index] = requested;
+        maestrucMixerDirty_ = true;
         notePerformerActivity();
         refreshStemMixVisual();
         lastAction_ = moduleDisplayNames_[index] + (requested ? utf8(" · MUTE") : uiText(supportLanguage_, " · retorno",
@@ -7308,6 +7325,7 @@ private:
             return;
         }
         soloStemIndex_ = requested ? index : kNoStemIndex;
+        maestrucMixerDirty_ = true;
         notePerformerActivity();
         refreshStemMixVisual();
         lastAction_ = moduleDisplayNames_[index] + (requested ? utf8(" · SOLO") : uiText(supportLanguage_, " · conjunto",
@@ -7477,6 +7495,10 @@ private:
 
     void timerCallback() override {
         refreshAudioFooter();
+        if (maestrucMixerDirty_ && maestrucLink_ != nullptr) {
+            maestrucMixerDirty_ = false;
+            maestrucLink_->mixerChanged();
+        }
         const auto telemetry = controller_.readTelemetry();
         watchAudioFlow();
         refreshEffectiveTempoLabel(telemetry);
@@ -7755,6 +7777,12 @@ private:
         cpuMilliPercent_.store(0U, std::memory_order_release);
         realtimePriority_.store(0, std::memory_order_release);
         realtimeAsked_.store(false, std::memory_order_release);
+        // Ponte do Maestruc: o áudio está parado aqui; a ponte reabre na taxa
+        // nova pelo fio de mensagens (até lá, o app toca nas próprias caixas).
+        maestrucPortao_.fecharEsperar();
+        juce::MessageManager::callAsync([safe = juce::Component::SafePointer<PerformanceHostComponent>(this)] {
+            if (safe != nullptr) safe->openMaestrucBridge();
+        });
     }
 
     void audioDeviceStopped() override {
@@ -7794,6 +7822,12 @@ private:
         stemRecorder_.push(stemPointers_.data(), numSamples);
         recorder_.push(outputChannelData[0],
                        numOutputChannels > 1 ? outputChannelData[1] : nullptr, numSamples);
+        // Maestruc: a mistura vai pela ponte; enquanto ele lê, o app cala a
+        // própria saída (o som não sai em dobro). Sem trava nem alocação.
+        if (maestrucPortao_.escrever(outputChannelData, numOutputChannels, numSamples))
+            for (int channel = 0; channel < numOutputChannels; ++channel)
+                if (outputChannelData[channel] != nullptr)
+                    juce::FloatVectorOperations::clear(outputChannelData[channel], numSamples);
         const auto elapsedTicks = juce::Time::getHighResolutionTicks() - startTicks;
         const auto sampleRate = sampleRate_.load(std::memory_order_relaxed);
         if (sampleRate > 0.0) {
@@ -8311,6 +8345,85 @@ private:
     juce::Rectangle<int> footerArea_;
     juce::String audioFooterText_{utf8("ÁUDIO · aguardando dispositivo")};
     juce::String lastAction_{utf8("COMECE · clique num corpo ativo e experimente ABRIR")};
+
+    // Seed vinda de fora (Maestruc ou --seed): o mesmo caminho do campo SEED
+    // (território enfileirado, transição ao vivo). Inválida: ignorada.
+    bool applySeedFromOutside(const juce::String& text, const char* source) {
+        const auto t = text.trim();
+        if (t.isEmpty() || t.length() > 10 || !t.containsOnly("0123456789")
+            || t.getLargeIntValue() > static_cast<juce::int64>(std::numeric_limits<std::uint32_t>::max()))
+            return false;
+        seedEditor_.setText(t, false);
+        queueSeedTerritory(source);
+        return true;
+    }
+
+    // Maestruc (maestruc.link/1, 15/11/2026): o regente da família pode trocar
+    // a seed, tocar/parar e mudar o andamento pelos mesmos caminhos da
+    // interface, e saber o estado. Desligado por padrão.
+    void enableMaestrucLink() {
+        if (maestrucLink_ != nullptr) return;
+        maestrucLink_ = std::make_unique<rasgo::maestruc::Link>("Asterismus", RASGO_ASTERISMUS_VERSION);
+        auto& h = maestrucLink_->handlers;
+        h.seed = [this](const juce::String& seed) { applySeedFromOutside(seed, "maestruc"); };
+        h.play = [this](juce::int64) { if (!playingRequested_) togglePlaying(); };
+        h.stop = [this] { if (playingRequested_) togglePlaying(); };
+        h.tempo = [this](float bpm) {
+            if (bpm < 20.0f || bpm > 300.0f) return;
+            tempoSlider_.setValue(std::round(static_cast<double>(bpm)), juce::dontSendNotification);
+            tempoEditor_.setText(juce::String(tempoSlider_.getValue(), 0), false);
+            setTempoFromSlider();
+        };
+        h.state = [this](bool& playing, juce::String& seed, float& bpm) {
+            playing = playingRequested_;
+            seed = juce::String(static_cast<juce::int64>(startupDocument_.territory.seed));
+            bpm = static_cast<float>(tempoSlider_.getValue());
+        };
+        // Mixer: os oito stems (ganho, MUTE, SOLO) pelos mesmos caminhos da
+        // mesa do app. Ganho 0–1 do app = −90…0 dB; acima de 0 dB fica em 0.
+        // O Asterismus não tem fader master: o índice −1 é recusado.
+        h.mixerList = [this](std::vector<rasgo::maestruc::MixerChannel>& channels) {
+            for (std::size_t i = 0U; i < stemGainValues_.size(); ++i) {
+                const auto gain = stemGainValues_[i];
+                channels.push_back({static_cast<int>(i), moduleDisplayNames_[i],
+                                    gain > 0.0000317 ? static_cast<float>(20.0 * std::log10(gain)) : -90.0f,
+                                    stemMuted_[i], soloStemIndex_ == i});
+            }
+        };
+        h.mixerSet = [this](int index, const juce::String& what, float value) {
+            if (index < 0 || static_cast<std::size_t>(index) >= stemGainValues_.size()) return false;
+            const auto i = static_cast<std::size_t>(index);
+            if (what == "nivel") {
+                const double gain = value <= -90.0f ? 0.0 : std::min(1.0, std::pow(10.0, value / 20.0));
+                setStemGainControl(i, gain);
+                return std::abs(stemGainValues_[i] - juce::jlimit(0.0, 1.0, gain)) < 1.0e-9;
+            }
+            const bool on = value != 0.0f;
+            if (what == "mudo") {
+                if (stemMuted_[i] != on) toggleStemMute(i);
+                return stemMuted_[i] == on;
+            }
+            if (what == "solo") {
+                if ((soloStemIndex_ == i) != on) toggleStemSolo(i);
+                return (soloStemIndex_ == i) == on;
+            }
+            return false;
+        };
+        if (!maestrucLink_->start()) { maestrucLink_.reset(); return; }
+        openMaestrucBridge();
+    }
+    // Fio de mensagens. A ponte leva só a mistura (um par estéreo), na taxa
+    // da placa; reabre a cada troca de dispositivo.
+    void openMaestrucBridge() {
+        maestrucPortao_.fecharEsperar();
+        const auto rate = sampleRate_.load(std::memory_order_acquire);
+        if (maestrucLink_ == nullptr || rate <= 0.0) return;
+        if (maestrucLink_->openSoundBridge(1, rate, {"mix"}))
+            maestrucPortao_.abrir(maestrucLink_.get());
+    }
+    rasgo::maestruc::PortaoDeSom maestrucPortao_;
+    bool maestrucMixerDirty_ = false;
+    std::unique_ptr<rasgo::maestruc::Link> maestrucLink_;
 };
 
 class PerformanceMainWindow final : public juce::DocumentWindow {

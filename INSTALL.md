@@ -51,7 +51,7 @@ albums in `~/Music/Rasgo Synth Asterismus/albuns/`, and the diagnostics in
 
 ### Building from source
 
-JUCE 9.0.0 is not in the repository (see [DEPENDENCIES.md](DEPENDENCIES.md)).
+JUCE 9.0.3 is not in the repository (see [DEPENDENCIES.md](DEPENDENCIES.md)).
 On Debian/Ubuntu Linux, the system libraries JUCE needs (the same ones the
 release workflow installs):
 
@@ -66,7 +66,7 @@ sudo apt-get install -y build-essential cmake git \
 Then, in the repository folder:
 
 ```sh
-git clone --branch 9.0.0 --depth 1 https://github.com/juce-framework/JUCE.git third_party/JUCE
+git clone --branch 9.0.3 --depth 1 https://github.com/juce-framework/JUCE.git third_party/JUCE
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DRASGO_PERFORMANCE_BUILD_APP=ON
 cmake --build build --parallel 2
 ctest --test-dir build --output-on-failure
@@ -125,7 +125,7 @@ com dither, um WAV por estrela e o manifesto JSON, uma pasta por tomada), os
 
 ### Compilar a partir do código
 
-O JUCE 9.0.0 não vem no repositório (ver [DEPENDENCIES.md](DEPENDENCIES.md)).
+O JUCE 9.0.3 não vem no repositório (ver [DEPENDENCIES.md](DEPENDENCIES.md)).
 Num Linux Debian/Ubuntu, as bibliotecas do sistema que o JUCE pede (as
 mesmas que a integração contínua instala):
 
@@ -140,7 +140,7 @@ sudo apt-get install -y build-essential cmake git \
 Depois, na pasta do repositório:
 
 ```sh
-git clone --branch 9.0.0 --depth 1 https://github.com/juce-framework/JUCE.git third_party/JUCE
+git clone --branch 9.0.3 --depth 1 https://github.com/juce-framework/JUCE.git third_party/JUCE
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DRASGO_PERFORMANCE_BUILD_APP=ON
 cmake --build build --parallel 2
 ctest --test-dir build --output-on-failure

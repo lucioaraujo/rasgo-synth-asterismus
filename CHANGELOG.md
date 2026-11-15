@@ -4,6 +4,33 @@ What changed between the published versions of Rasgo Synth Asterismus. The
 development notes, in Portuguese, are in [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md)
 and [`docs/`](docs/).
 
+## Unreleased
+
+- **Maestruc receiver** (the RASGO family's conductor, protocol
+  `maestruc.link/1`, local OSC only): with `--maestruc` or
+  `RASGO_ASTERISMUS_MAESTRUC=1`, Maestruc can change the seed (the same path
+  as the SEED field: territory queued, live transition), play/stop and set
+  the tempo, and read the state. A new seed brings its own tempo, so a
+  shared tempo is sent after it. Off by default. Copy of
+  `MAESTRUC/receptor/MaestrucLink.h`; `juce_osc` module in the app.
+- **Sound bridge to Maestruc** (Windows, macOS and Linux, no virtual audio
+  driver): with `--maestruc`, the mix goes to Maestruc through a shared-memory
+  file only the user can read; while Maestruc is reading, the Asterismus
+  silences its own output (no double sound) and, if Maestruc closes or stops,
+  plays on its own again within about half a second. Takes and stems
+  recorded by the app are unchanged. Bridges left by an instrument that was
+  killed are removed the next time one opens. Copy of
+  `MAESTRUC/receptor/PonteDeSom.h`.
+- **Mixer from Maestruc:** the eight stars' gain, MUTE and SOLO, through the
+  same paths as the app's own mixer; changes made by hand in the app are sent
+  back to Maestruc.
+- **Session password:** Maestruc's commands are only accepted with the
+  password it writes to a file only the user can read, so another user on
+  the same machine cannot control the instrument.
+- **`--seed N`** (0 to 4294967295) opens in that seed's territory.
+- **JUCE 9.0.3** (was 9.0.0): the version shared by the whole RASGO family;
+  CI, install steps and notices updated.
+
 ## 0.4.0 — 2026-11-09
 
 - **Identity:** the Asterismus has its own logo and icon — the sky of the

@@ -5,7 +5,7 @@
 ![The Asterismus playing: the Axis of Forces on the left, the Constellation in the centre with the stars moved by physics and the pairs in focus, the mixer of the eight stars on the right, the form and the breathing tempo in the header](website/assets/interface.jpg)
 
 **Website:** [lucioaraujo.github.io/rasgo-synth-asterismus](https://lucioaraujo.github.io/rasgo-synth-asterismus/) ·
-**Download:** [v0.4.0](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest) ·
+**Download:** [v0.5.0](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest) ·
 **Contact:** **rasgo.instruments@gmail.com**
 
 Languages:
@@ -25,7 +25,7 @@ seed proposes the sky; the musician plays it, swaps stars, draws relations
 and records the piece.
 
 **Authorship:** Lúcio de Araújo · **Family:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Version:** 0.4.0 · **License:** GNU GPL-3.0-or-later (see
+**Version:** 0.5.0 · **License:** GNU GPL-3.0-or-later (see
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) and
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -91,7 +91,7 @@ took 6.7 ms, none above 75 % of the deadline (2026-11-06).
 
 ### Build from source
 
-Requirements and steps are in [`INSTALL.md`](INSTALL.md). JUCE 9.0.0 is not
+Requirements and steps are in [`INSTALL.md`](INSTALL.md). JUCE 9.0.3 is not
 included in this repository. Development notes, in Portuguese, are in
 [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md) and [`docs/`](docs/); what changed
 between versions is in [`CHANGELOG.md`](CHANGELOG.md). The DSP of the stars
@@ -108,7 +108,7 @@ e tocam. Uma seed propõe o céu; o músico o toca, troca estrelas, desenha
 relações e grava a peça.
 
 **Autoria:** Lúcio de Araújo · **Família:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Versão:** 0.4.0 · **Licença:** GNU GPL-3.0-or-later (ver
+**Versão:** 0.5.0 · **Licença:** GNU GPL-3.0-or-later (ver
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) e
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -176,7 +176,7 @@ de áudio por bloco de 10,67 ms (cerca de 16 % de um núcleo); o pior bloco em
 
 ### Compilar a partir do código
 
-Requisitos e passos em [`INSTALL.md`](INSTALL.md). O JUCE 9.0.0 não vem
+Requisitos e passos em [`INSTALL.md`](INSTALL.md). O JUCE 9.0.3 não vem
 neste repositório. As notas de desenvolvimento estão em
 [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md) e em [`docs/`](docs/); o que mudou
 entre versões, no [`CHANGELOG.md`](CHANGELOG.md). O DSP das estrelas vem do
@@ -193,7 +193,7 @@ propres cycles et jouent. Une seed propose le ciel ; le musicien le joue,
 échange des étoiles, dessine des relations et enregistre la pièce.
 
 **Auteur :** Lúcio de Araújo · **Famille :** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Version :** 0.4.0 · **Licence :** GNU GPL-3.0-or-later (voir
+**Version :** 0.5.0 · **Licence :** GNU GPL-3.0-or-later (voir
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) et
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -264,7 +264,7 @@ travail audio par bloc de 10,67 ms (environ 16 % d'un cœur) ; le pire bloc sur
 
 ### Compiler depuis les sources
 
-Prérequis et étapes dans [`INSTALL.md`](INSTALL.md). JUCE 9.0.0 n'est pas
+Prérequis et étapes dans [`INSTALL.md`](INSTALL.md). JUCE 9.0.3 n'est pas
 inclus dans ce dépôt. Les notes de développement, en portugais, sont dans
 [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md) et [`docs/`](docs/) ; ce qui a
 changé entre les versions, dans [`CHANGELOG.md`](CHANGELOG.md). Le DSP des
@@ -281,7 +281,7 @@ propios ciclos y tocan. Una seed propone el cielo; el músico lo toca,
 cambia estrellas, dibuja relaciones y graba la pieza.
 
 **Autoría:** Lúcio de Araújo · **Familia:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Versión:** 0.4.0 · **Licencia:** GNU GPL-3.0-or-later (ver
+**Versión:** 0.5.0 · **Licencia:** GNU GPL-3.0-or-later (ver
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) y
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -351,7 +351,7 @@ en 21 seeds (13 minutos) tardó 6,7 ms, ninguno por encima del 75 % del plazo
 
 ### Compilar desde el código
 
-Requisitos y pasos en [`INSTALL.md`](INSTALL.md). JUCE 9.0.0 no se incluye en
+Requisitos y pasos en [`INSTALL.md`](INSTALL.md). JUCE 9.0.3 no se incluye en
 este repositorio. Las notas de desarrollo, en portugués, están en
 [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md) y [`docs/`](docs/); lo que cambió
 entre versiones, en [`CHANGELOG.md`](CHANGELOG.md). El DSP de las estrellas

@@ -8,9 +8,11 @@ local com proveniência (`vendor/studio-dsp/`, do Rasgo Synth Studio commit
 
 ## Host (aplicativo)
 
-- **JUCE 9.0.0**, via AGPLv3, checkout próprio em `third_party/JUCE/` (fora
-  do Git, ignorado). `LICENSE.md` do checkout:
-  SHA-256 `a37eaefe4f160da98bc07d2e8d951e46a9b52abd6e23b233ffcadf003d690f93`.
+- **JUCE 9.0.3** (desde 15/11/2026; antes 9.0.0), via AGPLv3, a versão
+  comum da família RASGO. Checkout em `third_party/JUCE/` (fora do Git,
+  ignorado) ou na pasta neutra da família, `RASGO/third_party/JUCE-9.0.3`,
+  apontada por `-DRASGO_PERFORMANCE_JUCE_ROOT`. `LICENSE.md` da 9.0.3:
+  SHA-256 `6318e8f9bfcd5471de3608ea1ed10953279e912b9c76b78d55575b90f6bf1bf2`.
   O CMake não usa o JUCE do Studio (`RASGO_PERFORMANCE_JUCE_ROOT`).
 - **Fontes:** Big Shoulders Display, IBM Plex Mono (OFL 1.1), em
   `assets/fonts/`, com as licenças ao lado.

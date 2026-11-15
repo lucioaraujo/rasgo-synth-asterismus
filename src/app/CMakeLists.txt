@@ -11,12 +11,13 @@ juce_add_gui_app(RasgoSynthAsterismusApp
     VERSION "${PROJECT_VERSION}"
     ${ASTERISMUS_ICON_ARGS})
 
-target_sources(RasgoSynthAsterismusApp PRIVATE PerformanceApp.cpp)
+target_sources(RasgoSynthAsterismusApp PRIVATE PerformanceApp.cpp MaestrucLink.h PonteDeSom.h)
 target_link_libraries(RasgoSynthAsterismusApp PRIVATE
     rasgo_synth_performance_contracts
     juce::juce_audio_devices
     juce::juce_audio_formats
-    juce::juce_gui_basics)
+    juce::juce_gui_basics
+    juce::juce_osc)   # receptor do Maestruc (MaestrucLink.h), 15/11/2026
 target_compile_definitions(RasgoSynthAsterismusApp PRIVATE
     JUCE_STRING_UTF_TYPE=8
     JUCE_WEB_BROWSER=0

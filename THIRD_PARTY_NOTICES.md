@@ -8,9 +8,9 @@ O código do Rasgo Synth Performance é distribuído sob GNU GPLv3, no arquivo
 ## JUCE para o host standalone
 
 O host opcional usa JUCE somente pela via **AGPLv3**. Não há licença comercial
-JUCE registrada para este projeto. O checkout próprio atual está em
-`third_party/JUCE/`, declara JUCE 9.0.0 e tem o SHA-256 de `LICENSE.md`
-`a37eaefe4f160da98bc07d2e8d951e46a9b52abd6e23b233ffcadf003d690f93`.
+JUCE registrada para este projeto. Desde 15/11/2026 a versão é a JUCE
+9.0.3 (a comum da família RASGO; antes 9.0.0), com SHA-256 de `LICENSE.md`
+`6318e8f9bfcd5471de3608ea1ed10953279e912b9c76b78d55575b90f6bf1bf2`.
 O CMake não possui fallback para `RASGO_SYNTH/JUCE-master` nem para arquivos do
 Studio.
 
@@ -56,6 +56,17 @@ ponderação K (ITU-R BS.1770-4) de `NAVALHA2_JUCE/src/core/MasteringAnalysis.cp
 (commit `b1a9614`) e do detector de true peak 4× de
 `NAVALHA2_JUCE/src/core/TruePeakDetector.*` (commit `34f8fd7`), repositório
 próprio do Navalha 2, GPLv3, mesma autoria (Lúcio de Araújo / RASGO).
+
+## Receptor do Maestruc — cópia do Maestruc (15/11/2026)
+
+`src/app/MaestrucLink.h` e `src/app/PonteDeSom.h` são cópias do receptor de
+referência do Maestruc (`RASGO/PROJETOS_AUTORAIS/MAESTRUC/receptor/`, monorepo
+privado `rasgo-instruments`), mesma autoria (Lúcio de Araújo / RASGO); a
+origem e o SHA-256 estão no cabeçalho de cada um. Os arquivos levam a
+**GNU AGPL-3.0-or-later** do Maestruc; a combinação com o código GPLv3 do
+Asterismus é permitida pela seção 13 da GPLv3, como no master de saída
+acima. O receptor só liga com `--maestruc`; sem ele, o app não abre porta
+nem ponte.
 
 ## Conceitos citados (sem código de terceiros)
 

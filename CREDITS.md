@@ -51,5 +51,5 @@ Brody–Cross–Lindsey, Cross, Weaire–Hutzler, Durian) e
 
 ## Recursos de terceiros
 
-JUCE 9.0.0 (via AGPLv3) para o host; fontes Big Shoulders Display e IBM Plex
+JUCE 9.0.3 (via AGPLv3) para o host; fontes Big Shoulders Display e IBM Plex
 Mono (SIL OFL 1.1). Detalhes em `THIRD_PARTY_NOTICES.md` e `DEPENDENCIES.md`.
