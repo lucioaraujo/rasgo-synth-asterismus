@@ -8398,7 +8398,7 @@ private:
                 setStemGainControl(i, gain);
                 return std::abs(stemGainValues_[i] - juce::jlimit(0.0, 1.0, gain)) < 1.0e-9;
             }
-            const bool on = value != 0.0f;
+            const bool on = value > 0.5f;   // o receptor só deixa passar 0 ou 1
             if (what == "mudo") {
                 if (stemMuted_[i] != on) toggleStemMute(i);
                 return stemMuted_[i] == on;

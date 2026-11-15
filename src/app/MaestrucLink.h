@@ -3,7 +3,7 @@
 //
 // Cópia no Rasgo Synth Asterismus: 15/11/2026, do monorepo privado
 // rasgo-instruments (RASGO/PROJETOS_AUTORAIS/MAESTRUC/receptor), SHA-256 da
-// origem 1cb9bc57b0b5…; ponte de som, mixer e senha. Ao atualizar, copiar de lá e anotar.
+// origem c903da8ba03f…; ponte de som, mixer e senha. Ao atualizar, copiar de lá e anotar.
 //
 // Receptor de referência do protocolo maestruc.link/1 (PROTOCOLO_MAESTRUC_LINK.md)
 // para apps JUCE. Fonte: RASGO/PROJETOS_AUTORAIS/MAESTRUC/receptor/MaestrucLink.h
@@ -45,6 +45,7 @@
 
 #include <array>
 #include <atomic>
+#include <cmath>
 #include <cstring>
 #include <fstream>
 #include <functional>
@@ -414,7 +415,8 @@ private:
         {
             const float v = isF (1) ? m[1].getFloat32() : (float) m[1].getInt32();
             const auto what = name.fromFirstOccurrenceOf ("/", false, false);
-            const bool valido = what == "nivel" ? (v >= -90.0f && v <= 12.0f) : (v == 0.0f || v == 1.0f);
+            const bool valido = what == "nivel" ? (v >= -90.0f && v <= 12.0f)
+                                                : (std::fabs (v) < 1.0e-6f || std::fabs (v - 1.0f) < 1.0e-6f);   // 0 ou 1
             ok = valido && handlers.mixerSet (m[0].getInt32(), what, v);
             if (! ok) note = "canal ou valor recusado";
             else sendMixer();
