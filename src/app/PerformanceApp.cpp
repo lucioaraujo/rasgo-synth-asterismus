@@ -8387,7 +8387,7 @@ private:
                 const auto gain = stemGainValues_[i];
                 channels.push_back({static_cast<int>(i), moduleDisplayNames_[i],
                                     gain > 0.0000317 ? static_cast<float>(20.0 * std::log10(gain)) : -90.0f,
-                                    stemMuted_[i], soloStemIndex_ == i});
+                                    stemMuted_[i], soloStemIndex_ == i, "nivel,mudo,solo", -90.0f, 0.0f});
             }
         };
         h.mixerSet = [this](int index, const juce::String& what, float value) {
