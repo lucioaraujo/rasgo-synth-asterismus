@@ -3,7 +3,7 @@
 //
 // Cópia no Rasgo Synth Asterismus: 15/11/2026, do monorepo privado
 // rasgo-instruments (RASGO/PROJETOS_AUTORAIS/MAESTRUC/receptor), SHA-256 da
-// origem 2c86363f94cf…; ponte de som, mixer e senha. Ao atualizar, copiar de lá e anotar.
+// origem f7de1ae1896d…; ponte de som, mixer e senha. Ao atualizar, copiar de lá e anotar.
 //
 // Ponte de som do Maestruc (maestruc.link/1, 15/11/2026): o som de um
 // instrumento chega ao Maestruc por memória compartilhada, nos três sistemas
@@ -44,10 +44,23 @@
 #include <string>
 
 #if defined(_WIN32)
+ // O windows.h define macros com nomes comuns; o receptor não pode vazá-las
+ // para o código do instrumento (15/11/2026: `near` quebrou o Asterismus no
+ // MSVC). Versão enxuta, sem min/max, e near/far desfeitas logo depois.
  #ifndef NOMINMAX
   #define NOMINMAX
  #endif
+ #ifndef WIN32_LEAN_AND_MEAN
+  #define WIN32_LEAN_AND_MEAN
+  #define RASGO_PONTE_LEAN_DEFINIDO
+ #endif
  #include <windows.h>
+ #ifdef RASGO_PONTE_LEAN_DEFINIDO
+  #undef WIN32_LEAN_AND_MEAN
+  #undef RASGO_PONTE_LEAN_DEFINIDO
+ #endif
+ #undef near
+ #undef far
 #else
  #include <dirent.h>
  #include <fcntl.h>
