@@ -20,6 +20,7 @@
 #include <rasgo/performance/PerformanceConstellationGeometry.hpp>
 #include <rasgo/performance/PerformanceAudioMeasurement.hpp>
 #include <rasgo/performance/family/saida/Dither.hpp>
+#include "StreamingVersion.h"
 #include <rasgo/performance/PerformanceModuleTypes.hpp>
 #include <rasgo/performance/PerformanceModuleLibrary.hpp>
 #include <rasgo/performance/PerformanceStarLearn.hpp>
@@ -2585,6 +2586,7 @@ public:
     ~PerformanceMixRecorder() {
         stop();
         writerThread_.stopThread(2000);
+        deliveryPool_.removeAllJobs(false, 120000);  // the streaming master of the last take
     }
 
     bool start(const juce::File& target, double sampleRate, double fadeInSeconds = 0.0) {
@@ -2615,7 +2617,13 @@ public:
         recording_.store(false, std::memory_order_release);
         while (writersInCallback_.load(std::memory_order_acquire) != 0U)
             juce::Thread::sleep(1);
+        const bool hadTake = writer_ != nullptr;
         writer_.reset(); // destructor flushes the FIFO on the non-audio thread.
+        // Versão de entrega (16/11/2026, saida-ref 1.1): <tomada>_streaming.wav a
+        // -14 LUFS / <= -1 dBTP e um .txt, ao lado da mistura crua, num fio próprio.
+        // Os stems seguem crus (são para mixagem). O som ao vivo não muda.
+        if (hadTake && currentTake_.existsAsFile())
+            deliveryPool_.addJob([take = currentTake_] { writeStreamingVersion(take); });
     }
 
     void push(const float* left, const float* right, int samples) noexcept {
@@ -2658,6 +2666,7 @@ private:
     std::array<float, 8192> ditherLeft_{};
     std::array<float, 8192> ditherRight_{};
     TpdfQuantiser dither_{24, 0x2545F491U};
+    juce::ThreadPool deliveryPool_{juce::ThreadPoolOptions{}.withThreadName("Asterismus streaming master").withNumberOfThreads(1)};
     PerformanceTakeFadeIn fade_{};
     juce::TimeSliceThread writerThread_;
     std::unique_ptr<juce::AudioFormatWriter::ThreadedWriter> writer_;

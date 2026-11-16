@@ -21,4 +21,5 @@ Nivelamento pela versão de referência `saida-ref 1.0`
 | Arquivo | Origem | SHA-256 da origem | Uso |
 |---|---|---|---|
 | `saida/Dither.hpp` | `REFERENCIAS/SAIDA_TECNICA/src/Dither.h` (do gravador do Aquorbium ← Navalha 2) + `floatForJuceInt24` (do nivelamento do Antitotem, mesmo dia) | `9e8a2c60d975e99fe620e2200470cab81b2c1e973dfb936faa4a22e57fb1d946` | dither TPDF no domínio inteiro para a mistura e os stems do REC; namespace `rasgo::performance`, sem a linha SPDX |
+| `saida/DeliveryMaster`, `OutputStage`, `LoudnessMeter`, `TruePeakDetector`, `TakeAnalysis`, `Numeric` (.h/.cpp) | `REFERENCIAS/SAIDA_TECNICA/src/` (`saida-ref 1.1`, 16/11/2026; núcleo do Aquorbium `ab1da6b` + `DeliveryMaster` novo) | hashes nos cabeçalhos | versão de entrega a −14 LUFS ao lado da mistura gravada (`src/app/StreamingVersion.h`); namespace `rasgo::performance::saida`, sem a linha SPDX |
 

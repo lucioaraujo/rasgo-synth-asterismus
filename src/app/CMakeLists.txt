@@ -12,6 +12,13 @@ juce_add_gui_app(RasgoSynthAsterismusApp
     ${ASTERISMUS_ICON_ARGS})
 
 target_sources(RasgoSynthAsterismusApp PRIVATE PerformanceApp.cpp MaestrucLink.h PonteDeSom.h)
+# saida-ref 1.1 (16/11/2026): o master de entrega da gravação
+target_sources(RasgoSynthAsterismusApp PRIVATE
+    ../../include/rasgo/performance/family/saida/DeliveryMaster.cpp
+    ../../include/rasgo/performance/family/saida/OutputStage.cpp
+    ../../include/rasgo/performance/family/saida/LoudnessMeter.cpp
+    ../../include/rasgo/performance/family/saida/TruePeakDetector.cpp
+    ../../include/rasgo/performance/family/saida/TakeAnalysis.cpp)
 target_link_libraries(RasgoSynthAsterismusApp PRIVATE
     rasgo_synth_performance_contracts
     juce::juce_audio_devices
