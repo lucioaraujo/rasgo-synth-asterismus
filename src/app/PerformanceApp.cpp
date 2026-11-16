@@ -19,6 +19,7 @@
 
 #include <rasgo/performance/PerformanceConstellationGeometry.hpp>
 #include <rasgo/performance/PerformanceAudioMeasurement.hpp>
+#include <rasgo/performance/family/saida/Dither.hpp>
 #include <rasgo/performance/PerformanceModuleTypes.hpp>
 #include <rasgo/performance/PerformanceModuleLibrary.hpp>
 #include <rasgo/performance/PerformanceStarLearn.hpp>
@@ -2625,15 +2626,19 @@ public:
             return;
         }
         // Dither TPDF na redução para 24 bits (30/10, padrão de saída dos
-        // instrumentos RASGO — Navalha 2): ±1 LSB triangular (diferença de
-        // dois sorteios uniformes), determinístico, sem alocação.
+        // instrumentos RASGO — Navalha 2): ±1 LSB triangular, determinístico,
+        // sem alocação. 16/11/2026 (saida-ref 1.0): o dither é somado no
+        // domínio inteiro (TpdfQuantiser) e o JUCE recebe o inteiro exato
+        // (floatForJuceInt24). Antes era somado ao float: acima de meia
+        // escala o float só tem ½ LSB de resolução, e o JUCE trunca (>> 8)
+        // em vez de arredondar — viés de −½ LSB.
         const int count = std::min(samples, static_cast<int>(ditherLeft_.size()));
         const float* sourceRight = right != nullptr ? right : left;
         const bool fading = fade_.active();
         for (int index = 0; index < count; ++index) {
             const float gain = fading ? fade_.gainAt(static_cast<std::uint64_t>(index)) : 1.0f;
-            ditherLeft_[static_cast<std::size_t>(index)] = left[index] * gain + nextTpdf();
-            ditherRight_[static_cast<std::size_t>(index)] = sourceRight[index] * gain + nextTpdf();
+            ditherLeft_[static_cast<std::size_t>(index)] = floatForJuceInt24(dither_.quantise(left[index] * gain));
+            ditherRight_[static_cast<std::size_t>(index)] = floatForJuceInt24(dither_.quantise(sourceRight[index] * gain));
         }
         fade_.advance(count);
         const std::array<const float*, 2> channels{{ditherLeft_.data(), ditherRight_.data()}};
@@ -2650,17 +2655,9 @@ public:
     const juce::File& currentTake() const noexcept { return currentTake_; }
 
 private:
-    float nextTpdf() noexcept {
-        constexpr float lsb = 1.0f / 8388608.0f;  // 24 bits
-        ditherState_ = ditherState_ * 1664525U + 1013904223U;
-        const float first = static_cast<float>(ditherState_ >> 8U) / 16777216.0f;
-        ditherState_ = ditherState_ * 1664525U + 1013904223U;
-        const float second = static_cast<float>(ditherState_ >> 8U) / 16777216.0f;
-        return (first - second) * lsb;
-    }
     std::array<float, 8192> ditherLeft_{};
     std::array<float, 8192> ditherRight_{};
-    std::uint32_t ditherState_ = 0x2545F491U;
+    TpdfQuantiser dither_{24, 0x2545F491U};
     PerformanceTakeFadeIn fade_{};
     juce::TimeSliceThread writerThread_;
     std::unique_ptr<juce::AudioFormatWriter::ThreadedWriter> writer_;
@@ -2731,21 +2728,26 @@ public:
         writersInCallback_.fetch_add(1U, std::memory_order_acq_rel);
         if (recording_.load(std::memory_order_acquire)) {
             const bool fading = fade_.active();
-            const int count = fading ? std::min(samples, static_cast<int>(fadeScratch_.size())) : samples;
-            for (std::size_t stem = 0U; stem < kStems; ++stem) {
-                if (writers_[stem] == nullptr || stems[stem] == nullptr) continue;
-                const float* channel = stems[stem];
-                if (fading) {
-                    // A mesma rampa da mistura, numa cópia: o stem do motor não muda.
-                    for (int index = 0; index < count; ++index)
-                        fadeScratch_[static_cast<std::size_t>(index)]
-                            = stems[stem][index] * fade_.gainAt(static_cast<std::uint64_t>(index));
-                    channel = fadeScratch_.data();
+            // 16/11/2026 (saida-ref 1.0): os stems ganham o mesmo dither TPDF
+            // da mistura (antes iam sem dither), no domínio inteiro, com um
+            // gerador por stem. Sempre numa cópia: o stem do motor não muda.
+            for (int done = 0; done < samples;) {
+                const int count = std::min(samples - done, static_cast<int>(fadeScratch_.size()));
+                for (std::size_t stem = 0U; stem < kStems; ++stem) {
+                    if (writers_[stem] == nullptr || stems[stem] == nullptr) continue;
+                    for (int index = 0; index < count; ++index) {
+                        const float gain = fading
+                            ? fade_.gainAt(static_cast<std::uint64_t>(done + index)) : 1.0f;
+                        fadeScratch_[static_cast<std::size_t>(index)] = floatForJuceInt24(
+                            dither_[stem].quantise(stems[stem][done + index] * gain));
+                    }
+                    const float* channel = fadeScratch_.data();
+                    if (!writers_[stem]->write(&channel, count))
+                        droppedBlocks_.fetch_add(1U, std::memory_order_relaxed);
                 }
-                if (!writers_[stem]->write(&channel, count))
-                    droppedBlocks_.fetch_add(1U, std::memory_order_relaxed);
+                done += count;
             }
-            if (fading) fade_.advance(count);
+            if (fading) fade_.advance(samples);
         }
         writersInCallback_.fetch_sub(1U, std::memory_order_acq_rel);
     }
@@ -2757,6 +2759,12 @@ public:
 private:
     PerformanceTakeFadeIn fade_{};
     std::array<float, 8192> fadeScratch_{};
+    std::array<TpdfQuantiser, kStems> dither_ = [] {
+        std::array<TpdfQuantiser, kStems> generators;
+        for (std::size_t stem = 0U; stem < kStems; ++stem)
+            generators[stem] = TpdfQuantiser(24, 0x9E3779B9U + static_cast<std::uint32_t>(stem) * 0x632BE5ABU);
+        return generators;
+    }();
     juce::TimeSliceThread writerThread_;
     std::array<std::unique_ptr<juce::AudioFormatWriter::ThreadedWriter>, kStems> writers_;
     std::array<juce::File, kStems> files_;

@@ -145,6 +145,17 @@ if(BUILD_TESTING)
     endif()
     add_test(NAME rasgo_synth_performance_audio_measurement_tests
              COMMAND rasgo_synth_performance_audio_measurement_tests)
+    # 16/11/2026: conformidade da saída técnica (EBU 3341, master, dither)
+    add_executable(rasgo_synth_performance_output_conformance_tests
+        tests/test_performance_output_conformance.cpp)
+    target_link_libraries(rasgo_synth_performance_output_conformance_tests
+        PRIVATE rasgo_synth_performance_contracts)
+    if(NOT MSVC)
+        target_compile_options(rasgo_synth_performance_output_conformance_tests
+            PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    add_test(NAME rasgo_synth_performance_output_conformance_tests
+             COMMAND rasgo_synth_performance_output_conformance_tests)
 
     add_executable(rasgo_synth_performance_contract_tests
         tests/test_performance_contracts.cpp)
