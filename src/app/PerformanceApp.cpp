@@ -2586,7 +2586,11 @@ public:
     ~PerformanceMixRecorder() {
         stop();
         writerThread_.stopThread(2000);
-        deliveryPool_.removeAllJobs(false, 120000);  // the streaming master of the last take
+        // A versão de entrega em curso (ou na fila) termina antes de sair
+        // (17/11/2026): o destrutor do juce::ThreadPool só espera 5 s e depois
+        // mata o fio à força; removeAllJobs descarta o que ainda está na fila.
+        while (deliveryPool_.getNumJobs() > 0)
+            juce::Thread::sleep(20);
     }
 
     bool start(const juce::File& target, double sampleRate, double fadeInSeconds = 0.0) {

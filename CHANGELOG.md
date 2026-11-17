@@ -4,7 +4,13 @@ What changed between the published versions of Rasgo Synth Asterismus. The
 development notes, in Portuguese, are in [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md)
 and [`docs/`](docs/).
 
-## Unreleased
+## 0.5.2 — 2026-11-17
+
+- **Closing the app right after a recording no longer cuts the streaming
+  version short**: `_streaming.wav` finishes before the app quits. Before,
+  the thread pool waited only 5 s and then killed it.
+
+## 0.5.1 — 2026-11-17
 
 - **Streaming version at −14 LUFS** (saida-ref 1.1, the family's common
   technical output): next to each recording, `_streaming.wav` (−14 LUFS, true
