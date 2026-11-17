@@ -24,7 +24,7 @@ REPO = "https://github.com/lucioaraujo/rasgo-synth-asterismus"
 BLOB = REPO + "/blob/main"
 # a versão e os pacotes do release (a CI: .github/workflows/package.yml);
 # os nomes são os do CPack (CPACK_PACKAGE_NAME) — conferir na primeira release
-VERSAO = "0.5.0"
+VERSAO = "0.5.2"
 PUBLICADO = True
 # LEARN (7/11/2026): as fichas das estrelas descrevem a 0.3 (36 estrelas, o
 # kit e o groove da DRUMS…). Enquanto o site for o da 0.2.0, as páginas não
