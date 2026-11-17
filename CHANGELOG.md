@@ -6,6 +6,21 @@ and [`docs/`](docs/).
 
 ## Unreleased
 
+- **Streaming version at −14 LUFS** (saida-ref 1.1, the family's common
+  technical output): next to each recording, `_streaming.wav` (−14 LUFS, true
+  peak ≤ −1 dBTP, 24-bit PCM with TPDF) and a `.txt` with the measurements,
+  made offline on a thread of its own. The live sound and the raw recording
+  do not change. Dynamics guard: the limiter never takes more than 6 dB; a
+  take too dynamic for that stays under −14 and the `.txt` says why.
+- **REC dither in the integer domain**: the mix's TPDF was added to the
+  float (half an LSB of resolution above half scale, and JUCE truncates);
+  now each sample is quantised first. The stems, recorded without dither
+  until now, get it too.
+- Output conformance tests: the loudness meter on EBU Tech 3341 cases 1–5,
+  the true-peak detector on signals 15–23, the master on hot signals.
+
+## 0.5.0 — 2026-11-16
+
 - **Maestruc receiver** (the RASGO family's conductor, protocol
   `maestruc.link/1`, local OSC only): with `--maestruc` or
   `RASGO_ASTERISMUS_MAESTRUC=1`, Maestruc can change the seed (the same path
