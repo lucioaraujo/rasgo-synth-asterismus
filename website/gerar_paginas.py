@@ -45,7 +45,7 @@ PAGINAS = [("index.html", "pt-BR", "PT"), ("en.html", "en", "EN"), ("fr.html", "
 T = {
     "pt-BR": {
         "title": "Rasgo Synth Asterismus — um céu de estrelas que toca",
-        "desc": "Rasgo Synth Asterismus: instrumento ao vivo em que cada módulo de síntese é uma estrela. As estrelas se relacionam, se movem por física, contam os seus ciclos e tocam; uma seed propõe o céu, o músico o toca e grava a peça.",
+        "desc": "Rasgo Synth Asterismus: instrumento ao vivo em que cada módulo de síntese é uma estrela. Uma seed propõe o céu; você o toca, e as estrelas se movem por física.",
         "strip": "RASGO — família de instrumentos e pesquisa sonora",
         "skip": "Pular para o conteúdo",
         "langnav": "Idioma",
@@ -104,7 +104,7 @@ T = {
     },
     "en": {
         "title": "Rasgo Synth Asterismus — a sky of stars that plays",
-        "desc": "Rasgo Synth Asterismus: a live instrument in which every synthesis module is a star. The stars relate, move by physics, count their own cycles and play; a seed proposes the sky, the musician plays it and records the piece.",
+        "desc": "Rasgo Synth Asterismus: a live instrument where every synthesis module is a star. A seed proposes the sky; you play it, and the stars move by physics.",
         "strip": "RASGO — a family of instruments and sound research",
         "skip": "Skip to content",
         "langnav": "Language",
@@ -163,7 +163,7 @@ T = {
     },
     "fr": {
         "title": "Rasgo Synth Asterismus — un ciel d'étoiles qui joue",
-        "desc": "Rasgo Synth Asterismus : un instrument de scène dans lequel chaque module de synthèse est une étoile. Les étoiles se relient, bougent selon la physique, comptent leurs cycles et jouent ; une seed propose le ciel, le musicien le joue et enregistre la pièce.",
+        "desc": "Rasgo Synth Asterismus : instrument de scène où chaque module de synthèse est une étoile. Une seed propose le ciel ; vous le jouez, les étoiles suivent la physique.",
         "strip": "RASGO — famille d'instruments et de recherche sonore",
         "skip": "Aller au contenu",
         "langnav": "Langue",
@@ -222,7 +222,7 @@ T = {
     },
     "es": {
         "title": "Rasgo Synth Asterismus — un cielo de estrellas que toca",
-        "desc": "Rasgo Synth Asterismus: un instrumento en vivo en el que cada módulo de síntesis es una estrella. Las estrellas se relacionan, se mueven por física, cuentan sus ciclos y tocan; una seed propone el cielo, el músico lo toca y graba la pieza.",
+        "desc": "Rasgo Synth Asterismus: instrumento en vivo donde cada módulo de síntesis es una estrella. Una seed propone el cielo; tú lo tocas y las estrellas se mueven por física.",
         "strip": "RASGO — familia de instrumentos e investigación sonora",
         "skip": "Saltar al contenido",
         "langnav": "Idioma",
