@@ -11,19 +11,23 @@ name: Asterismus — build, test & package
 #   - Windows: static VC++ runtime (CMakeLists.txt) + a step that FAILS if the
 #     .exe depends on the VC++ Redistributable; NSIS installer + portable .zip;
 #   - macOS: Universal 2 (10.15+) and the whole .app sealed ad hoc;
-#   - Linux: .deb and .tar.gz built on ubuntu-22.04;
+#   - Linux: .deb, AppImage and an installable .tar.gz built on ubuntu-22.04;
 #   - JUCE pinned to a tag; a GitHub release from `v*` tags (with a hyphen,
 #     e.g. v0.2.0-preview, a pre-release).
-# Still to come (docs/PUBLICACAO.md): AppImage and launch tests in containers
-# of other distributions.
+# AppImage and four-distribution launch checks are release gates.
 #
 # Triggers: version tags and the manual button only — never every push nor
-# pull requests. Routine validation is local (ctest); CI is the release gate
-# (a full run costs ~160 billed minutes: macOS counts ×10, Windows ×2).
+# pull requests. Routine validation is local (ctest); CI is the release gate.
+# The three-platform run takes about 2–3 hours of wall time; this public repo
+# does not consume the author's private Actions-minute quota.
 on:
   push:
     tags: ['v*']
   workflow_dispatch: {}
+
+permissions:
+  contents: read
+  actions: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -39,10 +43,12 @@ jobs:
           # ubuntu-22.04, NOT latest: a .deb inherits the library versions of
           # the machine that built it.
           - os: ubuntu-22.04
-            generator: DEB;TGZ
+            generator: DEB
             artifact-glob: |
-              build/*.deb
-              build/*.tar.gz
+              build/final/*.deb
+              build/final/*.AppImage
+              build/final/*.tar.gz
+              build/final/SHA256SUMS
           - os: windows-latest
             generator: NSIS
             artifact-glob: |
@@ -148,7 +154,37 @@ jobs:
       - name: Package
         working-directory: build
         shell: bash
-        run: cpack -G "${{ matrix.generator }}" -C Release
+        run: cpack -G "${{ matrix.generator }}" -C Release -B packages
+
+      - name: Build AppImage and installable tar.gz (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          version=$(sed -n 's/^project(RasgoSynthPerformanceContracts VERSION \([^ ]*\).*/\1/p' CMakeLists.txt)
+          package="rasgo-synth-asterismus-${version}-linux-x86_64"
+          mkdir -p .local-build/tooling
+          curl --fail --location --connect-timeout 15 --max-time 90 --max-filesize 33554432 \
+            -o .local-build/tooling/linuxdeploy-x86_64.AppImage \
+            https://github.com/linuxdeploy/linuxdeploy/releases/download/1-alpha-20251107-1/linuxdeploy-x86_64.AppImage
+          timeout 420 bash packaging/linux/empacotar.sh build build/packages build/final \
+            .local-build/tooling/linuxdeploy-x86_64.AppImage \
+            packaging/linux/appimage/runtime/runtime-x86_64 \
+            packaging/linux/appimage/runtime/LICENSE
+          (cd build/final && sha256sum -c SHA256SUMS)
+          mkdir -p .local-build/portable-check/home/Music
+          tar -xzf "build/final/${package}.tar.gz" \
+            -C .local-build/portable-check
+          bundle="$PWD/.local-build/portable-check/${package}"
+          prefix="$PWD/.local-build/portable-check/home/.local"
+          "$bundle/install.sh" --prefix "$prefix"
+          test -x "$prefix/bin/rasgo-synth-asterismus"
+          "$bundle/install.sh" --remove --prefix "$prefix"
+
+      - name: Validate Linux package checksums
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          (cd build/final && sha256sum -c SHA256SUMS)
 
       - name: Portable .zip (Windows)
         if: runner.os == 'Windows'
@@ -162,9 +198,58 @@ jobs:
           path: ${{ matrix.artifact-glob }}
           if-no-files-found: error
 
+  launch:
+    needs: package
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        image: ['debian:12', 'ubuntu:24.04', 'fedora:latest', 'archlinux:latest']
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: asterismus-ubuntu-22.04
+          path: packages
+      - name: Install virtual desktop and runtime libraries
+        run: |
+          case '${{ matrix.image }}' in
+            debian:*|ubuntu:*)
+              apt-get update
+              alsa=libasound2
+              test '${{ matrix.image }}' != ubuntu:24.04 || alsa=libasound2t64
+              DEBIAN_FRONTEND=noninteractive apt-get install -y xvfb xauth openbox xdotool wmctrl \
+                "$alsa" libx11-6 libxext6 libxss1 libxrender1 libxcursor1 libxinerama1 \
+                libxrandr2 libfreetype6 libglib2.0-0 libfontconfig1 zlib1g fonts-dejavu-core \
+                python3 dpkg
+              if test '${{ matrix.image }}' = debian:12 || test '${{ matrix.image }}' = ubuntu:24.04; then
+                deb=$(find packages -maxdepth 1 -name '*.deb' -print -quit)
+                apt-get install -y "./$deb"
+              fi
+              ;;
+            fedora:*)
+              dnf install -y xorg-x11-server-Xvfb xorg-x11-xauth openbox xdotool wmctrl python3 \
+                alsa-lib libX11 libXext libXScrnSaver libXrender libXcursor libXinerama \
+                libXrandr freetype glib2 fontconfig zlib dejavu-sans-fonts
+              ;;
+            archlinux:*)
+              pacman -Syu --noconfirm xorg-server-xvfb xorg-xauth openbox xdotool wmctrl python \
+                alsa-lib libx11 libxext libxss libxrender libxcursor libxinerama libxrandr \
+                freetype2 glib2 fontconfig zlib ttf-dejavu
+              ;;
+          esac
+      - name: Open the .deb, AppImage and user-local install
+        uses: actions/checkout@v5
+      - name: Test package startup
+        shell: bash
+        run: |
+          bash packaging/linux/testar-arranque.sh packages
+
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [package]
+    needs: [package, launch]
     runs-on: ubuntu-22.04
     permissions:
       contents: write
@@ -180,10 +265,14 @@ jobs:
       - name: Check what arrived
         run: |
           find pkgs -type f -print
-          for ext in deb tar.gz dmg exe zip; do
+          for ext in deb AppImage tar.gz dmg exe zip; do
             find pkgs -type f -name "*.$ext" | grep -q . \
               || { echo "::error::no .$ext package among the artifacts"; exit 1; }
           done
+          mkdir -p release
+          find pkgs -type f \( -name '*.deb' -o -name '*.AppImage' -o -name '*.tar.gz' \
+            -o -name '*.dmg' -o -name '*.exe' -o -name '*.zip' \) -exec cp {} release/ \;
+          (cd release && sha256sum * > SHA256SUMS && sha256sum -c SHA256SUMS)
 
       - name: Create the release with the packages
         env:
@@ -198,4 +287,4 @@ jobs:
             --notes "Install: see [INSTALL.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/INSTALL.md) — on first launch Windows and macOS show a security warning; it is expected (no paid signing). Instalação: veja o INSTALL.md.
 
           Stated limitation: the Windows and macOS packages were built and checked by CI, not yet opened on real Windows/macOS machines; the macOS package is ad-hoc signed." \
-            $(find pkgs -type f \( -name '*.deb' -o -name '*.tar.gz' -o -name '*.dmg' -o -name '*.exe' -o -name '*.zip' \))
+            release/*

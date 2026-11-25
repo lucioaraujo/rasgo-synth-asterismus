@@ -1,5 +1,20 @@
 # Publicação do Asterismus — estado e checklist
 
+## Atualização 2026-11-26 — pacote Linux preparado, sem release
+
+A fonte oficial `main` está em 0.5.2. Em clone limpo, preparei localmente o
+workflow Linux para gerar `.deb`, AppImage e `.tar.gz` com instalador em
+`~/.local`; o pacote usa o runtime AppImage fixado por SHA-256, e a matriz
+prevista verifica abertura em Debian 12, Ubuntu 24.04, Fedora e Arch. O
+instalador teve teste isolado de instalar/remover e preservou uma gravação de
+usuário simulada. YAML, Bash, Python, checksums e `git diff --check` passaram.
+
+**Ainda não publicado nem compilado:** os arquivos estão somente no clone
+temporário de preparação; a CI Linux e a matriz ainda precisam executar. A
+tag `v0.5.3-rc1` requer aprovação do autor. Os nomes de pacotes para Linux,
+Windows e macOS foram alinhados no CPack para a próxima versão, mas os links e
+as páginas não mudam enquanto a release correspondente não existir.
+
 ## ▶ Estado em 2026-11-09: versão 0.4.0 publicada
 
 OK do autor (9/11). Tag `v0.4.0` → CI 42653512947 (Linux, macOS, Windows e
