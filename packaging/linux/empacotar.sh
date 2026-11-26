@@ -47,7 +47,7 @@ tar --sort=name --owner=0 --group=0 --numeric-owner --mtime='UTC 1970-01-01' \
 test "$(sha256sum "$LINUXDEPLOY" | cut -d ' ' -f 1)" = \
     c20cd71e3a4e3b80c3483cef793cda3f4e990aca14014d23c544ca3ce1270b4d
 chmod +x "$LINUXDEPLOY"
-install -m 644 "$RUNTIME_LICENSE" "$APPDIR/usr/share/doc/rasgo-synth-asterismus/appimage-runtime/LICENSE"
+install -D -m 644 "$RUNTIME_LICENSE" "$APPDIR/usr/share/doc/rasgo-synth-asterismus/appimage-runtime/LICENSE"
 export APPIMAGE_EXTRACT_AND_RUN=1 ARCH=x86_64 LDAI_OUTPUT="$OUTPUT/$NAME.AppImage"
 export LDAI_RUNTIME_FILE="$RUNTIME"
 (cd "$WORK" && "$LINUXDEPLOY" --appdir "$APPDIR" --executable "$BIN" \
