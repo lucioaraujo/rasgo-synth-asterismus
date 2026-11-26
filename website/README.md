@@ -1,8 +1,10 @@
 # Site do Rasgo Synth Asterismus
 
-**Estado: publicado** — versão 0.3.0 desde 2026-11-07 (com a página LEARN;
-antes, a 0.2.0, de 2026-11-06); a 0.4.0 está preparada no branch
-`release-0.4.0` (9/11), à espera da tag:
+**Estado: publicado** — o site público aponta para a versão 0.5.2. A proposta
+0.5.3 está em revisão local no branch `codex/asterismus-0.5.3-review`; os
+links incluem os três formatos Linux e os nomes multiplataforma atuais. Não
+publique esta prévia antes de existir a release 0.5.3 com os respectivos
+pacotes:
 <https://lucioaraujo.github.io/rasgo-synth-asterismus/> (GitHub Pages do
 repositório próprio). `PUBLICADO = True` no `gerar_paginas.py`: sem `noindex`,
 o selo da versão e os links de download do release. O workflow

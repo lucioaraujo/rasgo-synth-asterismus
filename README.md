@@ -5,7 +5,7 @@
 ![The Asterismus playing: the Axis of Forces on the left, the Constellation in the centre with the stars moved by physics and the pairs in focus, the mixer of the eight stars on the right, the form and the breathing tempo in the header](website/assets/interface.jpg)
 
 **Website:** [lucioaraujo.github.io/rasgo-synth-asterismus](https://lucioaraujo.github.io/rasgo-synth-asterismus/) ·
-**Download:** [v0.5.2](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest) ·
+**Download:** [v0.5.3](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest) ·
 **Contact:** **rasgo.instruments@gmail.com**
 
 Languages:
@@ -25,7 +25,7 @@ seed proposes the sky; the musician plays it, swaps stars, draws relations
 and records the piece.
 
 **Authorship:** Lúcio de Araújo · **Family:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Version:** 0.5.2 · **License:** GNU GPL-3.0-or-later (see
+**Version:** 0.5.3 · **License:** GNU GPL-3.0-or-later (see
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) and
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -74,7 +74,7 @@ Portuguese, French or Spanish.
 
 ### Download
 
-Packages for Linux (.deb, .tar.gz), Windows (installer and portable .zip) and
+Packages for Linux (.deb, AppImage, .tar.gz), Windows (installer and portable .zip) and
 macOS (.dmg) are on the [releases page](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest); installation steps in
 [`INSTALL.md`](INSTALL.md).
 
@@ -108,7 +108,7 @@ e tocam. Uma seed propõe o céu; o músico o toca, troca estrelas, desenha
 relações e grava a peça.
 
 **Autoria:** Lúcio de Araújo · **Família:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Versão:** 0.5.2 · **Licença:** GNU GPL-3.0-or-later (ver
+**Versão:** 0.5.3 · **Licença:** GNU GPL-3.0-or-later (ver
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) e
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -159,7 +159,7 @@ francês ou espanhol.
 
 ### Download
 
-Os pacotes para Linux (.deb, .tar.gz), Windows (instalador e .zip portátil) e
+Os pacotes para Linux (.deb, AppImage, .tar.gz), Windows (instalador e .zip portátil) e
 macOS (.dmg) estão na [página de releases](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest); os passos de
 instalação, em [`INSTALL.md`](INSTALL.md).
 
@@ -193,7 +193,7 @@ propres cycles et jouent. Une seed propose le ciel ; le musicien le joue,
 échange des étoiles, dessine des relations et enregistre la pièce.
 
 **Auteur :** Lúcio de Araújo · **Famille :** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Version :** 0.5.2 · **Licence :** GNU GPL-3.0-or-later (voir
+**Version :** 0.5.3 · **Licence :** GNU GPL-3.0-or-later (voir
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) et
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -246,7 +246,7 @@ portugais ou espagnol.
 
 ### Téléchargement
 
-Les paquets pour Linux (.deb, .tar.gz), Windows (installeur et .zip portable)
+Les paquets pour Linux (.deb, AppImage, .tar.gz), Windows (installeur et .zip portable)
 et macOS (.dmg) sont sur la [page des versions](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest) ; les étapes
 d'installation, dans [`INSTALL.md`](INSTALL.md).
 
@@ -281,7 +281,7 @@ propios ciclos y tocan. Una seed propone el cielo; el músico lo toca,
 cambia estrellas, dibuja relaciones y graba la pieza.
 
 **Autoría:** Lúcio de Araújo · **Familia:** [RASGO](https://rasgoinstruments.arquiviagem.net/) ·
-**Versión:** 0.5.2 · **Licencia:** GNU GPL-3.0-or-later (ver
+**Versión:** 0.5.3 · **Licencia:** GNU GPL-3.0-or-later (ver
 [`LICENSE`](LICENSE), [`CREDITS.md`](CREDITS.md) y
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md))
 
@@ -333,7 +333,7 @@ portugués o francés.
 
 ### Descarga
 
-Los paquetes para Linux (.deb, .tar.gz), Windows (instalador y .zip portátil)
+Los paquetes para Linux (.deb, AppImage, .tar.gz), Windows (instalador y .zip portátil)
 y macOS (.dmg) están en la [página de versiones](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases/latest); los pasos
 de instalación, en [`INSTALL.md`](INSTALL.md).
 

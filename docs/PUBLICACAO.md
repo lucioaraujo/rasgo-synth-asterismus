@@ -1,19 +1,21 @@
 # Publicação do Asterismus — estado e checklist
 
-## Atualização 2026-11-26 — pacote Linux preparado, sem release
+## Atualização 2026-11-26 — proposta 0.5.3 em revisão local
 
-A fonte oficial `main` está em 0.5.2. Em clone limpo, preparei localmente o
-workflow Linux para gerar `.deb`, AppImage e `.tar.gz` com instalador em
-`~/.local`; o pacote usa o runtime AppImage fixado por SHA-256, e a matriz
-prevista verifica abertura em Debian 12, Ubuntu 24.04, Fedora e Arch. O
-instalador teve teste isolado de instalar/remover e preservou uma gravação de
-usuário simulada. YAML, Bash, Python, checksums e `git diff --check` passaram.
+A fonte oficial `main` continua em 0.5.2. O workflow de pacotes
+`45734870722` gerou os cinco formatos multiplataforma, e o workflow de abertura
+`45737356541` passou em Debian 12, Ubuntu 24.04, Fedora e Arch, usando os
+artefatos desse pacote. A matriz Linux incluiu a instalação e remoção do
+arquivo `.tar.gz` e a abertura do AppImage. Os nomes reais foram conferidos:
+três pacotes Linux, instalador e ZIP Windows, e `.dmg` macOS.
 
-**Ainda não publicado nem compilado:** os arquivos estão somente no clone
-temporário de preparação; a CI Linux e a matriz ainda precisam executar. A
-tag `v0.5.3-rc1` requer aprovação do autor. Os nomes de pacotes para Linux,
-Windows e macOS foram alinhados no CPack para a próxima versão, mas os links e
-as páginas não mudam enquanto a release correspondente não existir.
+Preparei uma proposta local em `/tmp/asterismus-0.5.3-review`, branch
+`codex/asterismus-0.5.3-review`, ainda não compilada: guia de instalação
+atualizado, nomes de downloads corrigidos, três formatos Linux, páginas de
+instalação em quatro idiomas e versões do README/SEO alinhadas em 0.5.3. A
+proposta não foi enviada, marcada, compilada ou publicada. Não criar a tag
+`v0.5.3-rc1` nem substituir os links públicos até aprovação autoral e geração
+dos artefatos da versão proposta.
 
 ## ▶ Estado em 2026-11-09: versão 0.4.0 publicada
 

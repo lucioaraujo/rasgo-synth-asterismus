@@ -24,7 +24,7 @@ REPO = "https://github.com/lucioaraujo/rasgo-synth-asterismus"
 BLOB = REPO + "/blob/main"
 # a versão e os pacotes do release (a CI: .github/workflows/package.yml);
 # os nomes são os do CPack (CPACK_PACKAGE_NAME) — conferir na primeira release
-VERSAO = "0.5.2"
+VERSAO = "0.5.3"
 PUBLICADO = True
 # LEARN (7/11/2026): as fichas das estrelas descrevem a 0.3 (36 estrelas, o
 # kit e o groove da DRUMS…). Enquanto o site for o da 0.2.0, as páginas não
@@ -33,13 +33,16 @@ PUBLICADO = True
 LEARN_PUBLICO = True
 RELEASE = REPO + "/releases/tag/v" + VERSAO
 DL = REPO + "/releases/download/v" + VERSAO + "/"
-WINDOWS_INSTALLER = f"rasgo-synth-asterismus-{VERSAO}-win64.exe"
-LINUX_DEB = f"rasgo-synth-asterismus-{VERSAO}-Linux.deb"
+WINDOWS_INSTALLER = f"rasgo-synth-asterismus-{VERSAO}-windows-x64.exe"
+WINDOWS_PORTABLE = f"rasgo-synth-asterismus-{VERSAO}-windows-x64.zip"
+MACOS_DMG = f"rasgo-synth-asterismus-{VERSAO}-macos-universal.dmg"
+LINUX_DEB = f"rasgo-synth-asterismus-{VERSAO}-linux-x86_64.deb"
+LINUX_APPIMAGE = f"rasgo-synth-asterismus-{VERSAO}-linux-x86_64.AppImage"
+LINUX_TAR = f"rasgo-synth-asterismus-{VERSAO}-linux-x86_64.tar.gz"
 PACOTES = [
-    ("Windows", [(WINDOWS_INSTALLER, "exe")]),
-    ("macOS", [("rasgo-synth-asterismus-%s-Darwin.dmg" % VERSAO, "dmg")]),
-    ("Linux", [(LINUX_DEB, "deb"),
-               ("rasgo-synth-asterismus-%s-Linux.tar.gz" % VERSAO, "tar.gz")]),
+    ("Windows", [(WINDOWS_INSTALLER, "Instalador .exe"), (WINDOWS_PORTABLE, "ZIP portátil")]),
+    ("macOS", [(MACOS_DMG, ".dmg")]),
+    ("Linux", [(LINUX_DEB, ".deb"), (LINUX_APPIMAGE, "AppImage"), (LINUX_TAR, ".tar.gz"), ("SHA256SUMS", "SHA256SUMS")]),
 ]
 
 PAGINAS = [("index.html", "pt-BR", "PT"), ("en.html", "en", "EN"), ("fr.html", "fr", "FR"), ("es.html", "es", "ES")]
@@ -82,8 +85,8 @@ T = {
         "tutorial": "O TUTORIAL do app explica tudo passo a passo, e o LEARN apresenta cada estrela — em português, inglês, francês ou espanhol.",
         "s_dl": "Baixar",
         "dl_pending": "A primeira versão (0.2.0, prévia) está em preparação: os pacotes para Windows, macOS e Linux serão montados pela integração contínua. Até lá, o instrumento pode ser compilado a partir do código.",
-        "dl_intro": "A versão " + VERSAO + " traz a sombra binaural (uma camada do céu para fones, com slider de nível), o TUTORIAL e o SOBRE em fichas mais fáceis de ler, a logo e o ícone próprios, e o fim das tarjas das dicas (o que mudou está no CHANGELOG). O instrumento continua aberto, em desenvolvimento. Escolha o pacote do seu sistema; os passos estão no INSTALL.",
-        "dl_os": {"Windows": "Windows 10 ou 11, 64 bits — instalador (.exe)", "macOS": "macOS 10.15 ou mais novo, Intel e Apple Silicon", "Linux": ".deb para Ubuntu e Debian; .tar.gz para as outras distribuições"},
+        "dl_intro": "A versão " + VERSAO + " reúne as correções e os formatos de instalação multiplataforma. No Linux, escolha entre pacote .deb, AppImage e arquivo .tar.gz com instalador para o usuário, sem precisar de root. O instrumento continua aberto e em desenvolvimento; os passos estão no guia de instalação.",
+        "dl_os": {"Windows": "Windows 10 ou 11, 64 bits", "macOS": "macOS 10.15 ou mais novo, Intel e Apple Silicon", "Linux": "Linux x86-64 — .deb, AppImage ou .tar.gz"},
         "dl_warn": "Na primeira abertura, o Windows e o macOS mostram um aviso de segurança: é esperado, porque o app não tem a assinatura paga das duas empresas. O guia de instalação diz onde clicar.",
         "dl_install": "Guia de instalação",
         "dl_all": "Todos os pacotes e as notas da versão",
@@ -141,8 +144,8 @@ T = {
         "tutorial": "The app's GUIDE explains everything step by step, and LEARN presents each star — in English, Portuguese, French or Spanish.",
         "s_dl": "Download",
         "dl_pending": "The first version (0.2.0, preview) is in preparation: the Windows, macOS and Linux packages will be built by continuous integration. Until then, the instrument can be built from source.",
-        "dl_intro": "Version " + VERSAO + " brings the binaural shadow (a sky layer for headphones, with a level slider), the TUTORIAL and ABOUT as easier-to-read cards, its own logo and icon, and no more tooltip pop-ups (what changed is in the CHANGELOG). The instrument remains open, in development. Choose the package for your system; the steps are in INSTALL.",
-        "dl_os": {"Windows": "Windows 10 or 11, 64-bit — installer (.exe)", "macOS": "macOS 10.15 or later, Intel and Apple Silicon", "Linux": ".deb for Ubuntu and Debian; .tar.gz for other distributions"},
+        "dl_intro": "Version " + VERSAO + " brings together the fixes and cross-platform installation formats. On Linux, choose a .deb package, AppImage or .tar.gz archive with a per-user installer that needs no root access. The instrument remains open and in development; the installation guide explains the steps.",
+        "dl_os": {"Windows": "Windows 10 or 11, 64-bit", "macOS": "macOS 10.15 or later, Intel and Apple Silicon", "Linux": "Linux x86-64 — .deb, AppImage or .tar.gz"},
         "dl_warn": "On first launch, Windows and macOS show a security warning: it is expected, because the app does not carry the two companies' paid signature. The installation guide says where to click.",
         "dl_install": "Installation guide",
         "dl_all": "All packages and release notes",
@@ -200,8 +203,8 @@ T = {
         "tutorial": "Le TUTORIEL de l'app explique tout pas à pas, et le LEARN présente chaque étoile — en français, anglais, portugais ou espagnol.",
         "s_dl": "Télécharger",
         "dl_pending": "La première version (0.2.0, aperçu) est en préparation : les paquets Windows, macOS et Linux seront construits par l'intégration continue. D'ici là, l'instrument peut être compilé depuis les sources.",
-        "dl_intro": "La version " + VERSAO + " apporte l'ombre binaurale (une couche du ciel pour le casque, avec un curseur de niveau), le TUTORIEL et le À PROPOS en fiches plus faciles à lire, un logo et une icône propres, et la fin des bulles d'aide (ce qui a changé est dans le CHANGELOG). L'instrument reste ouvert, en développement. Choisissez le paquet de votre système ; les étapes sont dans INSTALL.",
-        "dl_os": {"Windows": "Windows 10 ou 11, 64 bits — installateur (.exe)", "macOS": "macOS 10.15 ou plus récent, Intel et Apple Silicon", "Linux": ".deb pour Ubuntu et Debian ; .tar.gz pour les autres distributions"},
+        "dl_intro": "La version " + VERSAO + " réunit les corrections et les formats d'installation multiplateforme. Sous Linux, choisissez un paquet .deb, une AppImage ou une archive .tar.gz avec un installateur pour l'utilisateur, sans accès root. L'instrument reste ouvert et en développement ; le guide d'installation détaille les étapes.",
+        "dl_os": {"Windows": "Windows 10 ou 11, 64 bits", "macOS": "macOS 10.15 ou plus récent, Intel et Apple Silicon", "Linux": "Linux x86-64 — .deb, AppImage ou .tar.gz"},
         "dl_warn": "Au premier lancement, Windows et macOS affichent un avertissement de sécurité : c'est attendu, car l'app n'a pas la signature payante des deux entreprises. Le guide d'installation indique où cliquer.",
         "dl_install": "Guide d'installation",
         "dl_all": "Tous les paquets et les notes de version",
@@ -259,8 +262,8 @@ T = {
         "tutorial": "El TUTORIAL de la app lo explica todo paso a paso, y el LEARN presenta cada estrella — en español, inglés, portugués o francés.",
         "s_dl": "Descargar",
         "dl_pending": "La primera versión (0.2.0, vista previa) está en preparación: los paquetes para Windows, macOS y Linux se construirán en la integración continua. Mientras tanto, el instrumento puede compilarse desde el código.",
-        "dl_intro": "La versión " + VERSAO + " trae la sombra binaural (una capa del cielo para auriculares, con un deslizador de nivel), el TUTORIAL y el ACERCA DE en fichas más fáciles de leer, un logo y un icono propios, y el fin de los recuadros de ayuda (lo que cambió está en el CHANGELOG). El instrumento sigue abierto, en desarrollo. Elige el paquete de tu sistema; los pasos están en INSTALL.",
-        "dl_os": {"Windows": "Windows 10 u 11, 64 bits — instalador (.exe)", "macOS": "macOS 10.15 o más reciente, Intel y Apple Silicon", "Linux": ".deb para Ubuntu y Debian; .tar.gz para las demás distribuciones"},
+        "dl_intro": "La versión " + VERSAO + " reúne las correcciones y los formatos de instalación multiplataforma. En Linux, elija un paquete .deb, AppImage o archivo .tar.gz con instalador para el usuario, sin acceso root. El instrumento sigue abierto y en desarrollo; la guía de instalación explica los pasos.",
+        "dl_os": {"Windows": "Windows 10 u 11, 64 bits", "macOS": "macOS 10.15 o más reciente, Intel y Apple Silicon", "Linux": "Linux x86-64 — .deb, AppImage o .tar.gz"},
         "dl_warn": "En la primera apertura, Windows y macOS muestran un aviso de seguridad: es lo esperado, porque la app no lleva la firma de pago de las dos empresas. La guía de instalación dice dónde hacer clic.",
         "dl_install": "Guía de instalación",
         "dl_all": "Todos los paquetes y las notas de la versión",
@@ -303,7 +306,7 @@ def pagina(arquivo, lang):
   </ul>
   <p class="example">{e(t["dl_warn"])}</p>
   <div class="contact-row">
-    <a class="button button-primary" href="{BLOB}/INSTALL.md">{e(t["dl_install"])}</a>
+    <a class="button button-primary" href="{arquivo_de('instalacao', lang)}">{e(t["dl_install"])}</a>
     <a class="button" href="{RELEASE}">{e(t["dl_all"])}</a>
   </div>"""
     else:
@@ -607,48 +610,52 @@ def corpo_learn(lang):
 
 INSTALACAO = {
     "pt-BR": [
-        ("Windows", [f"Rode o instalador {WINDOWS_INSTALLER} (ou use o .zip portátil).",
+        ("Windows", [f"Rode o instalador {WINDOWS_INSTALLER} (ou extraia o ZIP portátil {WINDOWS_PORTABLE}).",
                      "Se aparecer \"O Windows protegeu o computador\" (SmartScreen): Mais informações → Executar assim mesmo.",
                      "O atalho fica no Menu Iniciar. O runtime do Visual C++ vai dentro do programa."]),
-        ("macOS (Intel e Apple Silicon, 10.15 ou mais novo)", ["Abra o .dmg e arraste Rasgo Synth Asterismus para Aplicativos.",
+        ("macOS (Intel e Apple Silicon, 10.15 ou mais novo)", [f"Abra {MACOS_DMG} e arraste Rasgo Synth Asterismus para Aplicativos.",
                      "Na primeira vez: botão direito no app → Abrir → Abrir (ou Ajustes do Sistema → Privacidade e Segurança → Abrir Mesmo Assim).",
                      "Se ainda recusar, no Terminal: xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
-        ("Linux", [f"Pacote .deb: sudo apt install ./{LINUX_DEB} — o atalho aparece em Som e Vídeo.",
-                   "Arquivo .tar.gz: extraia e rode usr/bin/rasgo-synth-asterismus."]),
-        ("Onde ficam as gravações", ["~/Music/Rasgo Synth Performance/recordings/ (uma pasta por tomada: a mistura em WAV de 24 bits, um WAV por estrela e o manifesto), os álbuns em albuns/ e o diagnóstico em diagnostico/."]),
+        ("Linux", [f"Debian e Ubuntu (.deb): sudo apt install ./{LINUX_DEB} — o atalho aparece em Som e Vídeo.",
+                   f"AppImage: chmod +x {LINUX_APPIMAGE} e rode ./{LINUX_APPIMAGE}. Se o FUSE não estiver disponível: APPIMAGE_EXTRACT_AND_RUN=1 ./{LINUX_APPIMAGE}.",
+                   f"Outras distribuições (.tar.gz): extraia {LINUX_TAR}, entre na pasta e rode ./install.sh. O instalador por usuário requer Python 3; para remover, rode ./install.sh --remove."]),
+        ("Onde ficam as gravações", ["~/Music/Rasgo Synth Asterismus/recordings/ (uma pasta por tomada: a mistura em WAV de 24 bits, um WAV por estrela e o manifesto), os álbuns em albuns/ e o diagnóstico em diagnostico/."]),
     ],
     "en": [
-        ("Windows", [f"Run the installer {WINDOWS_INSTALLER} (or use the portable .zip).",
+        ("Windows", [f"Run the installer {WINDOWS_INSTALLER} (or extract the portable ZIP {WINDOWS_PORTABLE}).",
                      "If \"Windows protected your PC\" (SmartScreen) appears: More info → Run anyway.",
                      "The shortcut is in the Start menu. The Visual C++ runtime is inside the program."]),
-        ("macOS (Intel and Apple Silicon, 10.15 or newer)", ["Open the .dmg and drag Rasgo Synth Asterismus to Applications.",
+        ("macOS (Intel and Apple Silicon, 10.15 or newer)", [f"Open {MACOS_DMG} and drag Rasgo Synth Asterismus to Applications.",
                      "The first time: right-click the app → Open → Open (or System Settings → Privacy & Security → Open Anyway).",
                      "If it still refuses, in Terminal: xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
-        ("Linux", [f".deb package: sudo apt install ./{LINUX_DEB} — the shortcut appears in Sound & Video.",
-                   ".tar.gz archive: extract it and run usr/bin/rasgo-synth-asterismus."]),
-        ("Where the recordings go", ["~/Music/Rasgo Synth Performance/recordings/ (one folder per take: the mix as a 24-bit WAV, one WAV per star and the manifest), albums in albuns/ and the diagnostics in diagnostico/."]),
+        ("Linux", [f"Debian and Ubuntu (.deb): sudo apt install ./{LINUX_DEB} — the shortcut appears in Sound & Video.",
+                   f"AppImage: run chmod +x {LINUX_APPIMAGE}, then ./{LINUX_APPIMAGE}. If FUSE is unavailable: APPIMAGE_EXTRACT_AND_RUN=1 ./{LINUX_APPIMAGE}.",
+                   f"Other distributions (.tar.gz): extract {LINUX_TAR}, enter its folder and run ./install.sh. The per-user installer requires Python 3; remove it with ./install.sh --remove."]),
+        ("Where the recordings go", ["~/Music/Rasgo Synth Asterismus/recordings/ (one folder per take: the mix as a 24-bit WAV, one WAV per star and the manifest), albums in albuns/ and the diagnostics in diagnostico/."]),
     ],
     "fr": [
-        ("Windows", [f"Lancez l'installeur {WINDOWS_INSTALLER} (ou utilisez le .zip portable).",
+        ("Windows", [f"Lancez l'installeur {WINDOWS_INSTALLER} (ou extrayez le ZIP portable {WINDOWS_PORTABLE}).",
                      "Si « Windows a protégé votre ordinateur » (SmartScreen) apparaît : Informations complémentaires → Exécuter quand même.",
                      "Le raccourci est dans le menu Démarrer. Le runtime Visual C++ est dans le programme."]),
-        ("macOS (Intel et Apple Silicon, 10.15 ou plus récent)", ["Ouvrez le .dmg et glissez Rasgo Synth Asterismus dans Applications.",
+        ("macOS (Intel et Apple Silicon, 10.15 ou plus récent)", [f"Ouvrez {MACOS_DMG} et glissez Rasgo Synth Asterismus dans Applications.",
                      "La première fois : clic droit sur l'app → Ouvrir → Ouvrir (ou Réglages Système → Confidentialité et sécurité → Ouvrir quand même).",
                      "S'il refuse encore, dans le Terminal : xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
-        ("Linux", [f"Paquet .deb : sudo apt install ./{LINUX_DEB} — le raccourci apparaît dans Son et vidéo.",
-                   "Archive .tar.gz : extrayez-la et lancez usr/bin/rasgo-synth-asterismus."]),
-        ("Où vont les enregistrements", ["~/Music/Rasgo Synth Performance/recordings/ (un dossier par prise : le mixage en WAV 24 bits, un WAV par étoile et le manifeste), les albums dans albuns/ et le diagnostic dans diagnostico/."]),
+        ("Linux", [f"Debian et Ubuntu (.deb) : sudo apt install ./{LINUX_DEB} — le raccourci apparaît dans Son et vidéo.",
+                   f"AppImage : lancez chmod +x {LINUX_APPIMAGE}, puis ./{LINUX_APPIMAGE}. Si FUSE est indisponible : APPIMAGE_EXTRACT_AND_RUN=1 ./{LINUX_APPIMAGE}.",
+                   f"Autres distributions (.tar.gz) : extrayez {LINUX_TAR}, entrez dans son dossier et lancez ./install.sh. L'installation pour l'utilisateur requiert Python 3 ; pour désinstaller, lancez ./install.sh --remove."]),
+        ("Où vont les enregistrements", ["~/Music/Rasgo Synth Asterismus/recordings/ (un dossier par prise : le mixage en WAV 24 bits, un WAV par étoile et le manifeste), les albums dans albuns/ et le diagnostic dans diagnostico/."]),
     ],
     "es": [
-        ("Windows", [f"Ejecute el instalador {WINDOWS_INSTALLER} (o use el .zip portátil).",
+        ("Windows", [f"Ejecute el instalador {WINDOWS_INSTALLER} (o extraiga el ZIP portátil {WINDOWS_PORTABLE}).",
                      "Si aparece «Windows protegió su PC» (SmartScreen): Más información → Ejecutar de todas formas.",
                      "El acceso directo queda en el menú Inicio. El runtime de Visual C++ va dentro del programa."]),
-        ("macOS (Intel y Apple Silicon, 10.15 o más nuevo)", ["Abra el .dmg y arrastre Rasgo Synth Asterismus a Aplicaciones.",
+        ("macOS (Intel y Apple Silicon, 10.15 o más nuevo)", [f"Abra {MACOS_DMG} y arrastre Rasgo Synth Asterismus a Aplicaciones.",
                      "La primera vez: clic derecho en la app → Abrir → Abrir (o Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente).",
                      "Si aún se niega, en la Terminal: xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
-        ("Linux", [f"Paquete .deb: sudo apt install ./{LINUX_DEB} — el acceso aparece en Sonido y vídeo.",
-                   "Archivo .tar.gz: extráigalo y ejecute usr/bin/rasgo-synth-asterismus."]),
-        ("Dónde quedan las grabaciones", ["~/Music/Rasgo Synth Performance/recordings/ (una carpeta por toma: la mezcla en WAV de 24 bits, un WAV por estrella y el manifiesto), los álbumes en albuns/ y el diagnóstico en diagnostico/."]),
+        ("Linux", [f"Debian y Ubuntu (.deb): sudo apt install ./{LINUX_DEB} — el acceso aparece en Sonido y vídeo.",
+                   f"AppImage: ejecute chmod +x {LINUX_APPIMAGE} y luego ./{LINUX_APPIMAGE}. Si FUSE no está disponible: APPIMAGE_EXTRACT_AND_RUN=1 ./{LINUX_APPIMAGE}.",
+                   f"Otras distribuciones (.tar.gz): extraiga {LINUX_TAR}, entre en la carpeta y ejecute ./install.sh. El instalador para el usuario requiere Python 3; para quitarlo, ejecute ./install.sh --remove."]),
+        ("Dónde quedan las grabaciones", ["~/Music/Rasgo Synth Asterismus/recordings/ (una carpeta por toma: la mezcla en WAV de 24 bits, un WAV por estrella y el manifiesto), los álbumes en albuns/ y el diagnóstico en diagnostico/."]),
     ],
 }
 INTRO_INSTALACAO = {

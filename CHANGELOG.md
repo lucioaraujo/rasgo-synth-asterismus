@@ -4,6 +4,15 @@ What changed between the published versions of Rasgo Synth Asterismus. The
 development notes, in Portuguese, are in [`DESENVOLVIMENTO.md`](DESENVOLVIMENTO.md)
 and [`docs/`](docs/).
 
+## 0.5.3 — proposed; not released
+
+- Linux distribution adds the AppImage alongside the `.deb` and the user-local
+  `.tar.gz` installer. The installation guide now covers all three formats,
+  including the AppImage FUSE fallback and removal of the portable install.
+- Website download links use the package names emitted by the release workflow
+  for Linux, Windows and macOS; installation pages explain the package formats
+  in all four site languages.
+
 ## 0.5.2 — 2026-11-17
 
 - **Closing the app right after a recording no longer cuts the streaming

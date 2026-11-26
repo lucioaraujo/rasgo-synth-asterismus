@@ -12,22 +12,35 @@ with every release (GPLv3; JUCE under its AGPLv3 option).
 
 Packages are on the
 [releases page](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases).
-The Windows and macOS packages are built by the release workflow; on this
-first release they had not yet been opened on a real Windows or Mac machine
-(see the platform matrix in the README).
+The Windows and macOS packages are built by the release workflow; they have
+not yet been opened on a real Windows or Mac machine (see the platform matrix
+in the README).
+
+To verify one downloaded file, download `SHA256SUMS` from the same release and
+run `grep -F '<filename>' SHA256SUMS | sha256sum -c -`, replacing
+`<filename>` with the exact package name.
 
 ### Linux
 
 - **`.deb` package** (Debian, Ubuntu and derivatives):
-  `sudo apt install ./rasgo-synth-asterismus-<version>-Linux.deb`
+  `sudo apt install ./rasgo-synth-asterismus-<version>-linux-x86_64.deb`
   — the shortcut appears in the applications menu (Sound & Video).
-- **`.tar.gz` archive**: extract it and run `usr/bin/rasgo-synth-asterismus`;
-  the resources live in `usr/share/rasgo-synth-asterismus/` (the program finds
-  them by itself).
+- **AppImage**: make it executable, then run it:
+  ```sh
+  chmod +x rasgo-synth-asterismus-<version>-linux-x86_64.AppImage
+  ./rasgo-synth-asterismus-<version>-linux-x86_64.AppImage
+  ```
+  If the system has no FUSE support, run it with
+  `APPIMAGE_EXTRACT_AND_RUN=1 ./rasgo-synth-asterismus-<version>-linux-x86_64.AppImage`.
+- **`.tar.gz` archive** (other distributions): extract it, enter the extracted
+  directory and run `./install.sh`. This installs for the current user and
+  needs Python 3. Remove it with `./install.sh --remove`. The application and
+  its resources are installed together under `~/.local/`.
 
 ### Windows
 
-1. Run the installer `rasgo-synth-asterismus-<version>-win64.exe`.
+1. Run the installer `rasgo-synth-asterismus-<version>-windows-x64.exe` (or
+   extract the portable `rasgo-synth-asterismus-<version>-windows-x64.zip`).
 2. If **"Windows protected your PC"** (SmartScreen) appears: click
    **More info** → **Run anyway**.
 3. The shortcut is in the Start menu and on the desktop. The Visual C++
@@ -35,7 +48,8 @@ first release they had not yet been opened on a real Windows or Mac machine
 
 ### macOS (Intel and Apple Silicon, 10.15 or newer)
 
-1. Open the `.dmg` and drag **Rasgo Synth Asterismus** to Applications.
+1. Open `rasgo-synth-asterismus-<version>-macos-universal.dmg` and drag
+   **Rasgo Synth Asterismus** to Applications.
 2. The first time, macOS says it cannot verify the developer: right-click the
    app → **Open** → **Open**. (On recent versions: System Settings → Privacy &
    Security → **Open Anyway**.)
@@ -86,21 +100,34 @@ publicação (GPLv3; JUCE pela via AGPLv3).
 Os pacotes ficam na
 [página de releases](https://github.com/lucioaraujo/rasgo-synth-asterismus/releases).
 Os de Windows e macOS são montados pela integração contínua da publicação;
-nesta primeira versão ainda não foram abertos numa máquina Windows ou Mac de
-verdade (ver a matriz de plataformas no README).
+ainda não foram abertos numa máquina Windows ou Mac de verdade (ver a matriz
+de plataformas no README).
+
+Para conferir um arquivo baixado, baixe `SHA256SUMS` da mesma publicação e
+rode `grep -F '<nome-do-arquivo>' SHA256SUMS | sha256sum -c -`, trocando
+`<nome-do-arquivo>` pelo nome exato do pacote.
 
 ### Linux
 
 - **Pacote `.deb`** (Debian, Ubuntu e derivados):
-  `sudo apt install ./rasgo-synth-asterismus-<versão>-Linux.deb`
+  `sudo apt install ./rasgo-synth-asterismus-<versão>-linux-x86_64.deb`
   — o atalho aparece no menu de aplicativos (Som e Vídeo).
-- **Arquivo `.tar.gz`**: extraia e rode `usr/bin/rasgo-synth-asterismus`;
-  os recursos ficam em `usr/share/rasgo-synth-asterismus/` (o programa os
-  encontra sozinho).
+- **AppImage**: torne-o executável e rode-o:
+  ```sh
+  chmod +x rasgo-synth-asterismus-<versão>-linux-x86_64.AppImage
+  ./rasgo-synth-asterismus-<versão>-linux-x86_64.AppImage
+  ```
+  Se o sistema não tiver suporte a FUSE, rode com
+  `APPIMAGE_EXTRACT_AND_RUN=1 ./rasgo-synth-asterismus-<versão>-linux-x86_64.AppImage`.
+- **Arquivo `.tar.gz`** (outras distribuições): extraia, entre na pasta e rode
+  `./install.sh`. A instalação fica no usuário atual e requer Python 3. Para
+  remover, rode `./install.sh --remove`. O app e os recursos são instalados
+  juntos em `~/.local/`.
 
 ### Windows
 
-1. Rode o instalador `rasgo-synth-asterismus-<versão>-win64.exe`.
+1. Rode o instalador `rasgo-synth-asterismus-<versão>-windows-x64.exe` (ou
+   extraia o arquivo portátil `rasgo-synth-asterismus-<versão>-windows-x64.zip`).
 2. Se aparecer "O Windows protegeu o computador" (SmartScreen): clique em
    **Mais informações** → **Executar assim mesmo**.
 3. O atalho fica no Menu Iniciar e na Área de Trabalho. O runtime do Visual
@@ -108,7 +135,8 @@ verdade (ver a matriz de plataformas no README).
 
 ### macOS (Intel e Apple Silicon, 10.15 ou mais novo)
 
-1. Abra o `.dmg` e arraste **Rasgo Synth Asterismus** para Aplicativos.
+1. Abra `rasgo-synth-asterismus-<versão>-macos-universal.dmg` e arraste
+   **Rasgo Synth Asterismus** para Aplicativos.
 2. Na primeira vez, o macOS diz que não pode verificar o desenvolvedor:
    clique com o botão direito no app → **Abrir** → **Abrir**. (Em versões
    recentes: Ajustes do Sistema → Privacidade e Segurança → **Abrir Mesmo

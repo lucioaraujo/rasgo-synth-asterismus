@@ -20,7 +20,7 @@ SITE = {
     "raiz_do_dominio": False,
 }
 
-VERSAO = "0.5.2"
+VERSAO = "0.5.3"
 
 GRUPOS = [
     [
