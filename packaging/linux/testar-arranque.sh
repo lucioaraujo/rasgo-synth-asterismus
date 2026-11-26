@@ -6,6 +6,7 @@ PACKAGE_DIR=$(cd "${1:?package directory required}" && pwd -P)
 ARCHIVE=$(find "$PACKAGE_DIR" -maxdepth 1 -type f -name '*.tar.gz' -print -quit)
 APPIMAGE=$(find "$PACKAGE_DIR" -maxdepth 1 -type f -name '*.AppImage' -print -quit)
 [[ -n "$ARCHIVE" && -n "$APPIMAGE" ]] || { echo 'missing Linux package format' >&2; exit 1; }
+chmod +x "$APPIMAGE"
 NAME=$(basename "$ARCHIVE" .tar.gz)
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
