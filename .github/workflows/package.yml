@@ -249,12 +249,14 @@ jobs:
                 freetype2 glib2 fontconfig zlib ttf-dejavu
               ;;
           esac
-      - name: Open the .deb, AppImage and user-local install
+      - name: Checkout the startup check
         uses: actions/checkout@v5
-      - name: Test package startup
+        with:
+          path: source
+      - name: Open the .deb, AppImage and user-local install
         shell: bash
         run: |
-          bash packaging/linux/testar-arranque.sh packages
+          bash source/packaging/linux/testar-arranque.sh packages
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
