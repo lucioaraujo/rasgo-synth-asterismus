@@ -1,21 +1,27 @@
 # Publicação do Asterismus — estado e checklist
 
-## Atualização 2026-11-26 — proposta 0.5.3 em revisão local
+## Atualização 2026-11-26 — proposta 0.5.3 validada, sem release
 
-A fonte oficial `main` continua em 0.5.2. O workflow de pacotes
-`45734870722` gerou os cinco formatos multiplataforma, e o workflow de abertura
-`45737356541` passou em Debian 12, Ubuntu 24.04, Fedora e Arch, usando os
-artefatos desse pacote. A matriz Linux incluiu a instalação e remoção do
-arquivo `.tar.gz` e a abertura do AppImage. Os nomes reais foram conferidos:
-três pacotes Linux, instalador e ZIP Windows, e `.dmg` macOS.
+A fonte oficial `main` e o site público continuam em 0.5.2. A proposta está
+no branch remoto `codex/asterismus-0.5.3-review`, commit `1c3f738`. O workflow
+manual [`45867324966`](https://github.com/lucioaraujo/rasgo-synth-asterismus/actions/runs/45867324966)
+passou nos pacotes Linux, Windows e macOS e na matriz Linux: Debian 12,
+Ubuntu 24.04, Fedora e Arch. Linux produziu `.deb`, AppImage e `.tar.gz`,
+com SHA-256 conferido no workflow e novamente após baixar o artefato. Os
+formatos Windows e macOS também foram gerados; o `.app` Universal 2 passou a
+validação da CI. A matriz abriu os três formatos Linux e confirmou o
+instalador por usuário.
 
-Preparei uma proposta local em `/tmp/asterismus-0.5.3-review`, branch
-`codex/asterismus-0.5.3-review`, ainda não compilada: guia de instalação
-atualizado, nomes de downloads corrigidos, três formatos Linux, páginas de
-instalação em quatro idiomas e versões do README/SEO alinhadas em 0.5.3. A
-proposta não foi enviada, marcada, compilada ou publicada. Não criar a tag
-`v0.5.3-rc1` nem substituir os links públicos até aprovação autoral e geração
-dos artefatos da versão proposta.
+Artefatos conferidos: `rasgo-synth-asterismus-0.5.3-linux-x86_64.deb`,
+`rasgo-synth-asterismus-0.5.3-linux-x86_64.AppImage`,
+`rasgo-synth-asterismus-0.5.3-linux-x86_64.tar.gz`,
+`rasgo-synth-asterismus-0.5.3-windows-x64.exe`,
+`rasgo-synth-asterismus-0.5.3-windows-x64.zip` e
+`rasgo-synth-asterismus-0.5.3-macos-universal.dmg`.
+
+O workflow não criou tag ou release; o job `release` foi ignorado. Não houve
+deploy das páginas propostas. A decisão de tag/release e a atualização do site
+continuam pendentes de aprovação autoral.
 
 ## ▶ Estado em 2026-11-09: versão 0.4.0 publicada
 
@@ -136,12 +142,12 @@ Legenda: **feito** · **falta** (trabalho técnico) · **decisão** (do autor).
 
 | Item | Estado |
 |---|---|
-| Linux: `.deb` e `.tar.gz` (CPack), instalação FHS conferida (binário instalado abre e acha as fontes) | **feito** (30/10) — AppImage e teste em contêiner/distribuição mais velha: **falta** (CI) |
+| Linux: `.deb`, AppImage e `.tar.gz` instalável; abertura em Debian, Ubuntu, Fedora e Arch | **feito na CI** (26/11, run `45867324966`); verificar novamente em cada release |
 | Windows: runtime MSVC estático; instalador NSIS com atalho no menu Iniciar (`CPACK_PACKAGE_EXECUTABLES`) e ícone | **feito no CMake** (30/10) — compilar e conferir com `dumpbin` só na CI/Windows: **falta** |
 | macOS: Universal 2 (x86_64;arm64), 10.15, antes do `project()`; `.dmg` (DragNDrop) | **feito no CMake** (30/10; o código não usa `std::filesystem` nem `from_chars/to_chars`) — selar ad hoc e conferir na CI/Mac: **falta** |
 | Sem assinatura paga: guia de instalação (Gatekeeper, SmartScreen) | **feito** — `INSTALL.md` |
 | Ícone do aplicativo | **decisão** — proposta em `packaging/icon/proposta/` (gerada por `tools/gerar_icone_proposta.py`); aprovada, copiar para `packaging/icon/` e o build a embute |
-| CI multiplataforma (portão de lançamento) | **feito o arquivo** (2/11): `.github/workflows/package.yml`, só em tags `v*` e pelo botão manual — **nunca rodou**; a primeira execução é decisão do autor (sem custo de cota: repositório público). AppImage e testes de arranque em outras distribuições: **falta** |
+| CI multiplataforma (portão de lançamento) | `.github/workflows/package.yml`, tags `v*` e execução manual; pacotes v0.5.3 e matriz Linux passaram na execução manual `45867324966` (26/11) |
 | Repositório público próprio | **feito** (2/11, "pode criar" do autor): `lucioaraujo/rasgo-synth-asterismus`, aninhado e ignorado pelo monorepo; os diários (`CONTINUIDADE.md`, `TAREFAS.md`) ficam só no monorepo privado |
 
 ## 4. Licenças, créditos, proveniência
