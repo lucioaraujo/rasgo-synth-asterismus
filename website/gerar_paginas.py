@@ -33,10 +33,12 @@ PUBLICADO = True
 LEARN_PUBLICO = True
 RELEASE = REPO + "/releases/tag/v" + VERSAO
 DL = REPO + "/releases/download/v" + VERSAO + "/"
+WINDOWS_INSTALLER = f"rasgo-synth-asterismus-{VERSAO}-win64.exe"
+LINUX_DEB = f"rasgo-synth-asterismus-{VERSAO}-Linux.deb"
 PACOTES = [
-    ("Windows", [("rasgo-synth-asterismus-%s-win64.exe" % VERSAO, "exe")]),
+    ("Windows", [(WINDOWS_INSTALLER, "exe")]),
     ("macOS", [("rasgo-synth-asterismus-%s-Darwin.dmg" % VERSAO, "dmg")]),
-    ("Linux", [("rasgo-synth-asterismus-%s-Linux.deb" % VERSAO, "deb"),
+    ("Linux", [(LINUX_DEB, "deb"),
                ("rasgo-synth-asterismus-%s-Linux.tar.gz" % VERSAO, "tar.gz")]),
 ]
 
@@ -605,46 +607,46 @@ def corpo_learn(lang):
 
 INSTALACAO = {
     "pt-BR": [
-        ("Windows", ["Rode o instalador rasgo-synth-asterismus-0.3.0-win64.exe (ou use o .zip portátil).",
+        ("Windows", [f"Rode o instalador {WINDOWS_INSTALLER} (ou use o .zip portátil).",
                      "Se aparecer \"O Windows protegeu o computador\" (SmartScreen): Mais informações → Executar assim mesmo.",
                      "O atalho fica no Menu Iniciar. O runtime do Visual C++ vai dentro do programa."]),
         ("macOS (Intel e Apple Silicon, 10.15 ou mais novo)", ["Abra o .dmg e arraste Rasgo Synth Asterismus para Aplicativos.",
                      "Na primeira vez: botão direito no app → Abrir → Abrir (ou Ajustes do Sistema → Privacidade e Segurança → Abrir Mesmo Assim).",
                      "Se ainda recusar, no Terminal: xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
-        ("Linux", ["Pacote .deb: sudo apt install ./rasgo-synth-asterismus-0.3.0-Linux.deb — o atalho aparece em Som e Vídeo.",
+        ("Linux", [f"Pacote .deb: sudo apt install ./{LINUX_DEB} — o atalho aparece em Som e Vídeo.",
                    "Arquivo .tar.gz: extraia e rode usr/bin/rasgo-synth-asterismus."]),
         ("Onde ficam as gravações", ["~/Music/Rasgo Synth Performance/recordings/ (uma pasta por tomada: a mistura em WAV de 24 bits, um WAV por estrela e o manifesto), os álbuns em albuns/ e o diagnóstico em diagnostico/."]),
     ],
     "en": [
-        ("Windows", ["Run the installer rasgo-synth-asterismus-0.3.0-win64.exe (or use the portable .zip).",
+        ("Windows", [f"Run the installer {WINDOWS_INSTALLER} (or use the portable .zip).",
                      "If \"Windows protected your PC\" (SmartScreen) appears: More info → Run anyway.",
                      "The shortcut is in the Start menu. The Visual C++ runtime is inside the program."]),
         ("macOS (Intel and Apple Silicon, 10.15 or newer)", ["Open the .dmg and drag Rasgo Synth Asterismus to Applications.",
                      "The first time: right-click the app → Open → Open (or System Settings → Privacy & Security → Open Anyway).",
                      "If it still refuses, in Terminal: xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
-        ("Linux", [".deb package: sudo apt install ./rasgo-synth-asterismus-0.3.0-Linux.deb — the shortcut appears in Sound & Video.",
+        ("Linux", [f".deb package: sudo apt install ./{LINUX_DEB} — the shortcut appears in Sound & Video.",
                    ".tar.gz archive: extract it and run usr/bin/rasgo-synth-asterismus."]),
         ("Where the recordings go", ["~/Music/Rasgo Synth Performance/recordings/ (one folder per take: the mix as a 24-bit WAV, one WAV per star and the manifest), albums in albuns/ and the diagnostics in diagnostico/."]),
     ],
     "fr": [
-        ("Windows", ["Lancez l'installeur rasgo-synth-asterismus-0.3.0-win64.exe (ou utilisez le .zip portable).",
+        ("Windows", [f"Lancez l'installeur {WINDOWS_INSTALLER} (ou utilisez le .zip portable).",
                      "Si « Windows a protégé votre ordinateur » (SmartScreen) apparaît : Informations complémentaires → Exécuter quand même.",
                      "Le raccourci est dans le menu Démarrer. Le runtime Visual C++ est dans le programme."]),
         ("macOS (Intel et Apple Silicon, 10.15 ou plus récent)", ["Ouvrez le .dmg et glissez Rasgo Synth Asterismus dans Applications.",
                      "La première fois : clic droit sur l'app → Ouvrir → Ouvrir (ou Réglages Système → Confidentialité et sécurité → Ouvrir quand même).",
                      "S'il refuse encore, dans le Terminal : xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
-        ("Linux", ["Paquet .deb : sudo apt install ./rasgo-synth-asterismus-0.3.0-Linux.deb — le raccourci apparaît dans Son et vidéo.",
+        ("Linux", [f"Paquet .deb : sudo apt install ./{LINUX_DEB} — le raccourci apparaît dans Son et vidéo.",
                    "Archive .tar.gz : extrayez-la et lancez usr/bin/rasgo-synth-asterismus."]),
         ("Où vont les enregistrements", ["~/Music/Rasgo Synth Performance/recordings/ (un dossier par prise : le mixage en WAV 24 bits, un WAV par étoile et le manifeste), les albums dans albuns/ et le diagnostic dans diagnostico/."]),
     ],
     "es": [
-        ("Windows", ["Ejecute el instalador rasgo-synth-asterismus-0.3.0-win64.exe (o use el .zip portátil).",
+        ("Windows", [f"Ejecute el instalador {WINDOWS_INSTALLER} (o use el .zip portátil).",
                      "Si aparece «Windows protegió su PC» (SmartScreen): Más información → Ejecutar de todas formas.",
                      "El acceso directo queda en el menú Inicio. El runtime de Visual C++ va dentro del programa."]),
         ("macOS (Intel y Apple Silicon, 10.15 o más nuevo)", ["Abra el .dmg y arrastre Rasgo Synth Asterismus a Aplicaciones.",
                      "La primera vez: clic derecho en la app → Abrir → Abrir (o Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente).",
                      "Si aún se niega, en la Terminal: xattr -dr com.apple.quarantine \"/Applications/Rasgo Synth Asterismus.app\""]),
-        ("Linux", ["Paquete .deb: sudo apt install ./rasgo-synth-asterismus-0.3.0-Linux.deb — el acceso aparece en Sonido y vídeo.",
+        ("Linux", [f"Paquete .deb: sudo apt install ./{LINUX_DEB} — el acceso aparece en Sonido y vídeo.",
                    "Archivo .tar.gz: extráigalo y ejecute usr/bin/rasgo-synth-asterismus."]),
         ("Dónde quedan las grabaciones", ["~/Music/Rasgo Synth Performance/recordings/ (una carpeta por toma: la mezcla en WAV de 24 bits, un WAV por estrella y el manifiesto), los álbumes en albuns/ y el diagnóstico en diagnostico/."]),
     ],
