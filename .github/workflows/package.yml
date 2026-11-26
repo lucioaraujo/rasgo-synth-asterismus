@@ -220,7 +220,7 @@ jobs:
               apt-get update
               alsa=libasound2
               test '${{ matrix.image }}' != ubuntu:24.04 || alsa=libasound2t64
-              DEBIAN_FRONTEND=noninteractive apt-get install -y xvfb xauth openbox xdotool wmctrl \
+              DEBIAN_FRONTEND=noninteractive apt-get install -y xvfb x11-utils \
                 "$alsa" libx11-6 libxext6 libxss1 libxrender1 libxcursor1 libxinerama1 \
                 libxrandr2 libfreetype6 libglib2.0-0 libfontconfig1 zlib1g fonts-dejavu-core \
                 python3 dpkg
@@ -230,12 +230,12 @@ jobs:
               fi
               ;;
             fedora:*)
-              dnf install -y xorg-x11-server-Xvfb xorg-x11-xauth openbox xdotool wmctrl python3 \
+              dnf install -y xorg-x11-server-Xvfb xwininfo python3 \
                 alsa-lib libX11 libXext libXScrnSaver libXrender libXcursor libXinerama \
                 libXrandr freetype glib2 fontconfig zlib dejavu-sans-fonts
               ;;
             archlinux:*)
-              pacman -Syu --noconfirm xorg-server-xvfb xorg-xauth openbox xdotool wmctrl python \
+              pacman -Syu --noconfirm xorg-server-xvfb xorg-xwininfo python \
                 alsa-lib libx11 libxext libxss libxrender libxcursor libxinerama libxrandr \
                 freetype2 glib2 fontconfig zlib ttf-dejavu
               ;;
