@@ -52,11 +52,11 @@ jobs:
           - os: windows-latest
             generator: NSIS
             artifact-glob: |
-              build/*.exe
+              build/packages/*.exe
               build/*.zip
           - os: macos-latest
             generator: DragNDrop
-            artifact-glob: build/*.dmg
+            artifact-glob: build/packages/*.dmg
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Asterismus
